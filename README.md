@@ -137,26 +137,29 @@ Verify it works — in Claude Code, type `/doc-harness` and you should see the h
 
 > **Windows note**: Use `cp -r doc-harness/skill $HOME/.claude/skills/doc-harness` in Git Bash, or manually copy the `skill` folder to `%USERPROFILE%\.claude\skills\doc-harness`.
 
-### Starting a Brand New Project
+### Use It
 
-Navigate to an empty project folder in Claude Code:
+Once installed, the AI agent knows about Doc Harness. You don't need to memorize commands — just talk naturally:
 
-```
-/doc-harness init
-```
+> *"Let's set up project documentation for this."*
+> *"I want to organize this project so we don't lose track of things."*
+> *"Create a status documentation system for this project."*
 
-The agent asks about your project (name, goals, first tasks, any rules) and creates all 5 documents tailored to your situation.
+The agent will recognize what you need and set up the five documents, asking you about your project's name, goals, and current state along the way.
 
-### Adding to a Project Already in Progress
+You can also use the slash command directly if you prefer: `/doc-harness init`
 
-Doc Harness works just as well mid-project. Run `/doc-harness init` in your existing project folder. The agent will:
-- Ask about your project's current state (not just its beginning)
-- Create the five documents reflecting where you are NOW
-- Populate tire tracks with a summary of work done so far (based on what you tell it)
-- Set up headlights with your actual next steps
-- You can then gradually register existing files in FILE_INDEX
+### Works for New and Existing Projects
 
-You don't need to start from day one — Doc Harness meets your project where it is.
+**New project?** The agent creates documents for a fresh start — your goals, first tasks, initial rules.
+
+**Project already underway?** Works just as well. Tell the agent where you are:
+
+> *"We've been working on this for two weeks already. We finished the data collection phase and are now building the analysis pipeline."*
+
+The agent will create documents that reflect your current state — not a blank slate. Existing files can be gradually registered in FILE_INDEX.
+
+You don't need to start from day one. Doc Harness meets your project where it is.
 
 ---
 
@@ -241,9 +244,8 @@ Every agent reading these two files can immediately continue your work.
 ### What You (the Human) Do
 
 - **Most of the time: nothing extra.** The rules are in CLAUDE.md; the agent follows them.
-- **Occasionally: remind the agent** if you notice it's not updating status or registering files. (AI agents are good at following rules but not perfect — a gentle "update the status docs" helps.)
-- **When you want a check: say** *"run /doc-harness check"* or *"check the status docs in the background."*
-- **When things feel messy:** `/doc-harness check` will tell you exactly what's out of order.
+- **Occasionally: nudge the agent** if you notice it's not updating status or registering files. A natural *"make sure you update the project status"* or *"did you register that new file?"* is enough.
+- **When things feel messy:** Just say *"check the status documentation"* or *"let's do a health check on the project docs."* The agent knows what to do. (You can also type `/doc-harness check` directly.)
 
 ### Non-Sequential Work
 
@@ -254,19 +256,22 @@ Not all projects proceed in neat sequential phases. You might work on data analy
 
 ---
 
-## Health Check: `/doc-harness check`
+## Health Check
 
-Run anytime:
+At any point, you can ask the agent to check how well the project documentation is maintained:
 
-```
-/doc-harness check
-```
+> *"Check the project documentation health."*
+> *"Run a status doc check in the background."*
 
-**Part 1 — File audit**: Are all 4 documents present? Is CURRENT_STATUS up to date? Does FILE_INDEX match actual files on disk? Any issues get flagged with specific fixes.
+(Or directly: `/doc-harness check`)
 
-**Part 2 — Principle reflection**: Reads your iron rules and phase principles, prompts the agent to honestly reflect: *"Am I following these?"* Also checks: *"Is there anything important only in context right now? Write it down!"*
+The check does two things:
 
-> Tip: Ask the agent to run this as a background task so it doesn't interrupt your main work.
+**File audit** — Are all documents present? Is CURRENT_STATUS fresh? Does FILE_INDEX match actual files on disk? Issues get flagged with specific fixes.
+
+**Principle reflection** — Reads your iron rules and phase principles, prompts the agent: *"Am I actually following these?"* Also checks: *"Is there anything important sitting only in context right now?"*
+
+> Tip: Ask for this as a background task so it doesn't interrupt your main work.
 
 ---
 
