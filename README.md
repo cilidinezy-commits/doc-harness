@@ -30,7 +30,7 @@ Doc Harness solves these by maintaining a **self-contained documentation system*
 
 Anything that has a goal, spans multiple work sessions, and generates files:
 
-- A PhD thesis or research paper
+- An academic thesis or research paper
 - A SaaS feature or software module
 - A data analysis pipeline for a client
 - A long-form article or report
