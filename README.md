@@ -2,267 +2,281 @@
 
 **Document-based project control for AI-human collaboration.**
 
-Doc Harness is a [Claude Code](https://claude.ai/code) skill that helps you and AI agents stay in control of any project — from a research paper to a software build to a data analysis pipeline. It maintains a small set of structured documents that capture everything about your project's state, so that any agent (or you, after a break) can pick up exactly where things left off.
+Doc Harness is a [Claude Code](https://claude.ai/code) skill that helps you and AI agents stay in control of any project. It maintains a small set of structured documents that capture your project's state, so that any agent — or you, after a break — can pick up exactly where things left off.
+
+Works for any project: writing a thesis, building a SaaS feature, analyzing data for a client, researching an investigative article, developing a software library, or anything else that spans multiple sessions and produces files.
 
 ---
 
 ## What Problem Does This Solve?
 
-When you work with AI agents on a project over days or weeks, several things go wrong:
+When you work with AI agents on a project over days or weeks:
 
-**Your AI loses its memory.** AI context windows compress or reset. The agent that spent two hours analyzing your data yesterday doesn't remember any of it today.
+- **Your AI loses its memory.** Context windows compress or reset. Yesterday's analysis is forgotten today.
+- **Files pile up without a map.** After a few sessions you have 30 files and nobody remembers what's where.
+- **Principles drift.** You set rules ("validate on out-of-sample data"), but the AI gradually forgets them.
+- **Handoffs fail.** A different agent arrives with zero context. You spend 20 minutes re-explaining.
+- **You lose your place.** After a weekend, neither you nor the AI knows exactly where you left off.
 
-**Files multiply without a map.** After a few sessions, your project has 30 files — analysis reports, plans, notes, scripts — and nobody remembers what's where.
-
-**Principles drift.** You establish important rules ("always validate on out-of-sample data"), but as work gets complex, the AI gradually forgets to follow them.
-
-**Handoffs fail.** A different agent arrives and asks "what is this project?" — there's no single place that answers this question.
-
-Doc Harness solves all four by creating a **self-contained documentation system** that any agent can read and immediately understand.
+Doc Harness solves these by maintaining a **self-contained documentation system** — a set of files that any agent can read and immediately understand, without any external memory or briefing.
 
 ---
 
 ## What Is a "Project"?
 
-A **project** is any structured work effort that has a goal, spans multiple sessions, and generates files along the way. Examples: writing a research paper, building a data pipeline, developing a library, conducting a literature review, running experiments.
+Anything that has a goal, spans multiple work sessions, and generates files:
 
-A project is simply a folder. Inside it, Doc Harness creates its five status documents alongside whatever folders and files your work needs:
+- A PhD thesis or research paper
+- A SaaS feature or software module
+- A data analysis pipeline for a client
+- A long-form article or report
+- An experiment series
+- A product launch plan
+
+A project is simply **a folder**. Inside it, Doc Harness creates five status documents alongside whatever folders and files your work needs:
 
 ```
-my-research-project/
+my-project/
 ├── CLAUDE.md                ← Doc Harness: stable anchor
 ├── CURRENT_STATUS.md        ← Doc Harness: living pulse
 ├── FILE_INDEX.md            ← Doc Harness: file catalog
 ├── WORKLOG.md               ← Doc Harness: permanent archive
 ├── DOC_HARNESS_SPEC.md      ← Doc Harness: reference manual
 │
-├── notes/                   ← Your work
-│   ├── literature_review.md
-│   └── key_findings.md
-├── scripts/                 ← Your work
-│   ├── analyze_data.py
-│   └── generate_figures.py
-├── data/                    ← Your work
-│   └── sample_data.csv
-└── drafts/                  ← Your work
-    └── chapter1.tex
+├── notes/                   ← Your work (organize however you like)
+├── scripts/
+├── data/
+└── drafts/
 ```
 
-Doc Harness doesn't dictate how you organize your work — it only asks that every file gets registered in FILE_INDEX so nothing becomes invisible.
+Doc Harness doesn't dictate your folder structure — it only asks that every file gets registered in FILE_INDEX.
 
 ---
 
-## The Five Documents: What They Do and Why They Matter
+## The Five Documents: How They Work
 
-Each document has a distinct role, a different update rhythm, and a different temporal focus. Together they answer every question an agent or collaborator could ask about the project.
+Each document serves a distinct purpose, updates at a different rhythm, and answers a different question. Together they cover everything an agent or collaborator needs to know.
 
 ### CLAUDE.md — The Stable Anchor
 
-**Answers**: *"What is this project? What are the rules? Where do I start?"*
+*Answers: "What is this project? What are the rules? Where do I start?"*
 
-The first thing any agent reads. Contains:
-- **Project overview** (what, why, for whom — 3-5 lines)
-- **Recovery chain** (read this → then CURRENT_STATUS → then FILE_INDEX → then WORKLOG)
-- **Iron rules** (permanent, non-negotiable constraints — e.g., "always validate on out-of-sample data")
-- **Technical info** (build commands, paths, dependencies — things that don't change phase to phase)
-- **Operational rules** (the embedded Doc Harness rules that teach agents how to maintain the system)
+The first thing any agent reads. Contains your project overview, non-negotiable rules ("iron rules"), technical details (build commands, paths), and — crucially — the **embedded operational rules** that teach the agent how to maintain Doc Harness. This means you never have to explain the system to a new agent; it's right there in the file.
 
-**How it evolves**: This is the most stable document. It changes only at phase transitions (updating the "current phase" line) and when important lessons become permanent iron rules. The body stays the same for weeks.
-
-**Why it matters**: Without it, every new agent starts from zero. With it, any agent reads one file and knows exactly what this project is, what's forbidden, and where to look next. The embedded operational rules mean the agent automatically knows how to maintain Doc Harness — you don't have to explain the system each time.
-
----
+**Barely changes.** Updated only when phases shift or important rules are added. It's the stable foundation everything else hangs from.
 
 ### CURRENT_STATUS.md — The Living Pulse
 
-**Answers**: *"What just happened? What's happening now? What's next? What should I watch out for?"*
+*Answers: "What just happened? What's happening now? What's next?"*
 
-The most dynamic document, organized as a **"moving car"**:
+The most dynamic document. Structured as a **moving car** with four sections:
 
-```
-┌──────────────────────────────────────────────────────┐
-│  🛤️  Tire Tracks   — 2-3 recent completed phases     │
-│       Short summaries (3-5 lines each) pointing to    │
-│       WORKLOG for full details                        │
-│                                                       │
-│  🚗 Car Body       — current phase in FULL detail     │
-│       Every completed step: what was done, files       │
-│       created, decisions made, problems found          │
-│                                                       │
-│  🔦 Headlights    — what comes next                   │
-│       Immediate actions + longer-term plans            │
-│                                                       │
-│  📋 Driving Manual — this phase's working principles  │
-│       Rules that live and die with the current phase   │
-└──────────────────────────────────────────────────────┘
-```
+| Section | Plain label | What's in it |
+|---------|------------|-------------|
+| Tire Tracks | **Recent History** | 2-3 short summaries of recently completed phases. Points to WORKLOG for details. |
+| Car Body | **Current Phase Detail** | Everything about what's happening RIGHT NOW — every completed step, files created, decisions made. The detailed working record. |
+| Headlights | **Next Steps** | What to do next: immediate actions + future plans. |
+| Driving Manual | **Phase Principles** | Working guidelines for the current phase — rules that matter now but may not matter next phase. |
 
-**How it evolves**: Updated every session. As you work, completed steps are added to the car body. When a phase ends (e.g., "literature review" is done, "data analysis" begins), a **phase transition** occurs:
+**Updated every session.** When a phase of work ends, the car body (full details) is archived to WORKLOG, compressed to a summary in tire tracks, and cleared for the new phase. This keeps the document always compact (~200 lines) while nothing is ever lost.
 
-1. The car body (full details) is copied to WORKLOG — data protected first
-2. The car body is compressed to a 3-5 line tire track summary
-3. Old tire tracks beyond 3 are removed (they're safe in WORKLOG)
-4. The car body clears for the new phase
-5. The driving manual updates for new phase principles
-
-This cycle keeps CURRENT_STATUS compact (~200 lines) while nothing is ever lost.
-
-**Why it matters**: This is what makes context recovery possible. An agent whose memory was just wiped reads CURRENT_STATUS and within seconds knows: what was recently finished (tire tracks), what's in progress right now (car body), what to do next (headlights), and what principles to follow (driving manual). No briefing needed, no asking the user "where were we?"
-
----
+**This is what makes recovery work.** An agent with zero memory reads this and within seconds knows: where the project has been (tire tracks), where it is now (car body), where it's going (headlights), and what rules to follow (driving manual).
 
 ### FILE_INDEX.md — The Library Catalog
 
-**Answers**: *"What files exist in this project, what are they, and where are they?"*
+*Answers: "What files exist, what are they, and where are they?"*
 
-Organized by **category**, not by time:
+Every file in the project gets a one-line entry, organized by category:
 
 ```markdown
 ## Research Notes
 - `notes/literature_review.md` — Survey of 30 papers on price impact
-- `notes/key_findings.md` — Cross-paper synthesis of main results
+- `notes/key_findings.md` — Cross-paper synthesis
 
 ## Scripts
-- `scripts/analyze_data.py` — Price impact regression analysis
-- `scripts/generate_figures.py` — Publication-quality figure generation
-
-## Data
-- `data/sample_data.csv` — 10,000 order book snapshots
+- `scripts/analyze_data.py` — Price impact regression
 ```
 
-**How it evolves**: Grows as files are created — every new file gets a one-line entry. Categories are yours to define and can be added anytime. When a category grows beyond 10-20 files, it can have its own sub-index file in its folder to keep things manageable.
-
-**Why it matters**: Without an index, projects become graveyards of forgotten files. You *know* you created that analysis last week, but which file was it? FILE_INDEX eliminates this. The rule is simple: **create a file → register it immediately**. If a file isn't in FILE_INDEX, it might as well not exist.
-
----
+**Grows as files are created.** The rule is simple: create a file → register it immediately. An unregistered file is invisible to future agents — it might as well not exist.
 
 ### WORKLOG.md — The Permanent Archive
 
-**Answers**: *"What exactly happened in phase 3? What did we try, what did we find, what files did we create?"*
+*Answers: "What exactly happened in phase 2, three weeks ago?"*
 
-```markdown
-## TOC
-| Phase | Time | Anchor |
-|-------|------|--------|
-| Phase 3: Data Analysis | 2026-03-14~03-28 | [→](#phase-3) |
-| Phase 2: Literature Review | 2026-03-01~03-14 | [→](#phase-2) |
-| Phase 1: Project Setup | 2026-02-15~03-01 | [→](#phase-1) |
+When a phase ends, its complete record moves here from CURRENT_STATUS. A table of contents at the top keeps it navigable. Content is append-only — never edited, never deleted.
 
----
-
-## Phase 3: Data Analysis (2026-03-14 ~ 2026-03-28)
-### Phase Summary
-Completed price impact regression on 10K snapshots. Found concave impact...
-### Detailed Record
-[Full step-by-step record, copied verbatim from CURRENT_STATUS when phase ended]
-```
-
-**How it evolves**: Grows only at phase transitions, when CURRENT_STATUS's car body is copied here in full. A TOC at the top keeps it navigable even after many phases. Content is **append-only** — once written, never modified or deleted.
-
-**Why it matters**: CURRENT_STATUS keeps only 2-3 recent phase summaries to stay compact. WORKLOG is where the complete history lives. Need to recall what you tried three weeks ago in phase 1? It's here, recorded exactly as it happened. This is especially valuable when you need to understand *why* a decision was made or *what* was tried before.
-
----
+CURRENT_STATUS keeps only recent summaries to stay compact. WORKLOG is where the full history lives, permanently searchable.
 
 ### DOC_HARNESS_SPEC.md — The Reference Manual
 
-The complete specification with design rationale, edge cases, worked examples showing all four documents evolving through two phase transitions, and glossary of terms. You rarely need it — the operational rules in CLAUDE.md cover 95% of daily use. The spec is for unusual situations or when you want to understand *why* the system works this way.
+Complete specification with design rationale, edge cases, and worked examples. For daily work you don't need it — the operational rules in CLAUDE.md are enough. The spec is for unusual situations or understanding the system's design.
+
+### Why They Work Together
+
+| Document | Updates | Answers |
+|----------|---------|---------|
+| CLAUDE.md | Rarely | "What is this project?" |
+| CURRENT_STATUS | Every session | "What's happening now?" |
+| FILE_INDEX | When files change | "Where is everything?" |
+| WORKLOG | Phase transitions | "What happened before?" |
+
+Each fact lives in exactly **one** document (Single Source of Truth), so there are no contradictions. The operational rules are embedded in CLAUDE.md, so any agent reading it knows how to maintain the entire system.
 
 ---
 
-### Why These Five Work Together
+## Getting Started
 
-| Document | Updates | Temporal Focus | Question It Answers |
-|----------|---------|---------------|-------------------|
-| CLAUDE.md | Rarely | Timeless | "What is this project?" |
-| CURRENT_STATUS | Every session | Present | "What's happening now?" |
-| FILE_INDEX | When files change | Spatial | "Where is everything?" |
-| WORKLOG | Phase transitions | Past | "What happened before?" |
-| Spec | Never | Reference | "Why does the system work this way?" |
-
-Each fact lives in exactly **one** document (Single Source of Truth), so there are no contradictions. And because the operational rules are embedded in CLAUDE.md, any agent reading it automatically knows how to maintain the entire system.
-
----
-
-## The Three Commands
-
-### `/doc-harness init` — Set Up a New Project
-
-Run at the beginning of a project. The agent asks about your project (or extracts info from conversation context) and creates all 5 documents, tailored to your specific situation.
-
-```
-/doc-harness init MyProject A study of price dynamics in limit order book markets
-```
-
-### `/doc-harness check` — Audit and Reflect
-
-Run anytime to verify the documentation is healthy and remind yourself of the rules:
-
-```
-/doc-harness check
-```
-
-**Part 1 — File audit**: Are all documents present? Is CURRENT_STATUS fresh? Does FILE_INDEX match actual files? Any issues flagged with fix suggestions.
-
-**Part 2 — Principle reflection**: Reads the project's iron rules and driving manual, prompts the agent: *"Am I following these?"* Also runs a "Write It Down" check for unsaved information.
-
-> Tip: Run as a background agent to avoid interrupting main work.
-
-### `/doc-harness` — Help
-
-Shows available commands and suggests `init` or `check` based on whether the project already has Doc Harness.
-
----
-
-## How to Use It Day-to-Day
-
-### Starting a project
-
-1. Navigate to your project folder in Claude Code
-2. Run `/doc-harness init` — answer the agent's questions
-3. Start working. The rules are now embedded in CLAUDE.md — every agent that reads it will know what to do.
-
-### During work
-
-The agent follows the operational rules automatically (they're in CLAUDE.md). Key behaviors:
-- **Complete a step → update CURRENT_STATUS car body** (one line: what was done, files created)
-- **Create a file → register in FILE_INDEX** (one line: path + description)
-- **Important insight or decision → write to a file** ("Write It Down or Lose It")
-- **Session end → run quick checklist** (status updated? files registered? anything unsaved?)
-
-You don't need to remind the agent — the rules are there every time it reads CLAUDE.md.
-
-### Running a health check
-
-Say to your AI: *"Run a doc-harness check"* or *"Check the status documentation in the background."*
-
-The check will report issues (❌ unregistered files, ⚠️ stale dates) and prompt reflection on working principles. It takes about 2 minutes.
-
-### When phases change
-
-When your work shifts focus (e.g., "finished literature review, starting analysis"), tell the agent or it will recognize the shift. The five-step phase transition runs automatically — data is protected first, then reorganized.
-
----
-
-## Core Principle: "Write It Down or Lose It"
-
-The single most important rule. AI context is temporary — analysis results, design decisions, important insights, code logic, meeting notes — if it's not in a file, it will vanish when context resets. Better to create one extra file than to lose an hour of thinking.
-
-And writing isn't enough — the file must be **registered in FILE_INDEX**. An unregistered file is invisible to future agents.
-
----
-
-## Install
+### Install
 
 ```bash
 git clone https://github.com/cilidinezy-commits/doc-harness.git
 cp -r doc-harness/skill ~/.claude/skills/doc-harness
 ```
 
-Or project-level (one project only):
-```bash
-mkdir -p .claude/skills
-cp -r doc-harness/skill .claude/skills/doc-harness
+Verify it works — in Claude Code, type `/doc-harness` and you should see the help message.
+
+> **Windows note**: Use `cp -r doc-harness/skill $HOME/.claude/skills/doc-harness` in Git Bash, or manually copy the `skill` folder to `%USERPROFILE%\.claude\skills\doc-harness`.
+
+### Starting a Brand New Project
+
+Navigate to an empty project folder in Claude Code:
+
 ```
+/doc-harness init
+```
+
+The agent asks about your project (name, goals, first tasks, any rules) and creates all 5 documents tailored to your situation.
+
+### Adding to a Project Already in Progress
+
+Doc Harness works just as well mid-project. Run `/doc-harness init` in your existing project folder. The agent will:
+- Ask about your project's current state (not just its beginning)
+- Create the five documents reflecting where you are NOW
+- Populate tire tracks with a summary of work done so far (based on what you tell it)
+- Set up headlights with your actual next steps
+- You can then gradually register existing files in FILE_INDEX
+
+You don't need to start from day one — Doc Harness meets your project where it is.
+
+---
+
+## What Actually Happens After You Install It
+
+Here's what the generated CLAUDE.md looks like for a real project:
+
+```markdown
+# Market Analysis Tool — Entry Document
+
+**Last updated**: 2026-04-02
+**Current phase**: Data pipeline (⏳)
+**One-line status (as of 2026-04-02)**: Core scraper working, building transformation layer
+
+## Recovery Chain
+1. Read this file → project scope, rules
+2. Read CURRENT_STATUS.md → current work details
+3. As needed: FILE_INDEX.md → find files
+4. As needed: WORKLOG.md → historical details
+
+## Project Overview
+Building a market data analysis tool for internal use. Scrapes order book data,
+transforms it, and generates daily reports. Python + pandas, deployed on AWS.
+
+## Iron Rules
+- Never commit API keys to git
+- All data transformations must be idempotent
+- "Write It Down or Lose It" — save important info to files, register in FILE_INDEX
+
+## Doc Harness — Operational Rules
+[~100 lines of rules that teach any agent how to maintain the system]
+```
+
+And CURRENT_STATUS.md:
+
+```markdown
+# CURRENT_STATUS — Market Analysis Tool
+
+**Last updated**: 2026-04-02
+**Current phase**: Data pipeline
+
+## Recent History (Tire Tracks)
+### Phase 1: Scraper (2026-03-20 ~ 2026-04-01)
+Built order book scraper for 3 exchanges. Handles rate limits and reconnection.
+Created `scripts/scraper.py` and `tests/test_scraper.py`. Details in WORKLOG.
+
+## Current Phase Detail (Car Body)
+### Phase Goal
+Build the data transformation layer (raw → clean → aggregated)
+
+### Completed Steps
+#### Set up transformation framework (2026-04-02)
+- Created `scripts/transform.py` with pipeline architecture
+- Registered in FILE_INDEX
+
+## Next Steps (Headlights)
+### Immediate
+1. Implement OHLCV aggregation
+2. Add data quality checks
+
+## Phase Principles (Driving Manual)
+- Write tests before transformations
+- Validate output schema after each stage
+```
+
+Every agent reading these two files can immediately continue your work.
+
+---
+
+## Day-to-Day Usage
+
+**Session starts** → Agent reads CLAUDE.md (overview + rules) → CURRENT_STATUS (current state) → continues working.
+
+**During work** → Agent completes a step → updates CURRENT_STATUS. Creates a file → registers in FILE_INDEX. Has an important insight → saves to a file ("Write It Down!").
+
+**Phase ends** → Five-step transition: car body archived to WORKLOG (data protected first), compressed to a tire track summary, car body cleared for new phase.
+
+**Session ends** → Quick checklist: status updated? Files registered? Anything unsaved?
+
+**Context resets or new agent arrives** → Reads CLAUDE.md → CURRENT_STATUS → fully oriented.
+
+### What You (the Human) Do
+
+- **Most of the time: nothing extra.** The rules are in CLAUDE.md; the agent follows them.
+- **Occasionally: remind the agent** if you notice it's not updating status or registering files. (AI agents are good at following rules but not perfect — a gentle "update the status docs" helps.)
+- **When you want a check: say** *"run /doc-harness check"* or *"check the status docs in the background."*
+- **When things feel messy:** `/doc-harness check` will tell you exactly what's out of order.
+
+### Non-Sequential Work
+
+Not all projects proceed in neat sequential phases. You might work on data analysis and report writing in parallel, or jump between features. Doc Harness handles this:
+- Use the car body to track **all** active work threads with sub-headings
+- A "phase transition" happens when the *overall focus* shifts, not every time you switch tasks
+- When in doubt, don't trigger a phase transition — just organize within the car body
+
+---
+
+## Health Check: `/doc-harness check`
+
+Run anytime:
+
+```
+/doc-harness check
+```
+
+**Part 1 — File audit**: Are all 4 documents present? Is CURRENT_STATUS up to date? Does FILE_INDEX match actual files on disk? Any issues get flagged with specific fixes.
+
+**Part 2 — Principle reflection**: Reads your iron rules and phase principles, prompts the agent to honestly reflect: *"Am I following these?"* Also checks: *"Is there anything important only in context right now? Write it down!"*
+
+> Tip: Ask the agent to run this as a background task so it doesn't interrupt your main work.
+
+---
+
+## Core Principle: "Write It Down or Lose It"
+
+AI context is temporary. Analysis results, design decisions, insights, debugging discoveries — if it's not in a file, it will vanish when context resets. And the file must be **registered in FILE_INDEX** — an unregistered file is invisible to future agents.
+
+This single principle prevents more information loss than any other feature.
+
+---
 
 ## Languages
 
@@ -276,17 +290,26 @@ cp -r doc-harness/skill .claude/skills/doc-harness
 
 ## FAQ
 
+**Q: Can I add this to a project that's already underway?**
+Yes — this is a common use case. Run `/doc-harness init` and tell the agent about your project's current state. It will create documents reflecting where you are now, not just the beginning. Existing files can be gradually registered in FILE_INDEX.
+
+**Q: My work isn't sequential — I juggle multiple things at once. Does this still work?**
+Yes. Use sub-headings in the car body to track parallel work threads. Phase transitions happen when the overall focus shifts, not every time you switch tasks. The system is flexible about internal organization.
+
 **Q: Does this work with AI tools other than Claude Code?**
 The `/doc-harness` commands are Claude Code specific. But the documentation system itself is universal — any AI that reads markdown can follow the operational rules in CLAUDE.md.
 
+**Q: How does this relate to Claude Code's MEMORY.md?**
+They're complementary. MEMORY.md is Claude's personal memory across sessions (maintained automatically). Doc Harness is project-level documentation (maintained explicitly). Doc Harness is designed to work without MEMORY.md — any agent, with or without personal memory, can recover the project state from the files alone.
+
 **Q: How much overhead does this add?**
-Minimal. One line per completed step, one line per new file. The check takes ~2 minutes and can run in the background.
+Minimal. One line per completed step, one line per new file. The check takes ~2 minutes and can run in the background. The system is designed to serve the project, not burden it.
+
+**Q: Will the AI actually follow the rules?**
+The operational rules are embedded in CLAUDE.md, which the agent reads at session start. Most of the time it follows them well. Occasionally you may need to remind it — "update the status" or "register that file." The `/doc-harness check` catches drift.
 
 **Q: Can I customize the structure?**
-Yes. Add sections, define your own categories, adjust principles. Core requirements: keep the four documents, follow phase transitions, register files.
-
-**Q: Existing project with many files?**
-Run `/doc-harness init`, then populate FILE_INDEX. The agent can help scan and categorize.
+Yes. Add sections, define your own categories, adjust principles. Core requirements: keep the four documents, follow the phase transition protocol, register files.
 
 **Q: Sub-projects?**
 Each gets its own Doc Harness. Parent's FILE_INDEX links to sub-project entries.
