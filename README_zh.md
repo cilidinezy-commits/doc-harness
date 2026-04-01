@@ -1,5 +1,7 @@
 # Doc Harness
 
+[English README](README.md)
+
 **基于文档的项目控制系统，服务于 AI 与人类的协作。**
 
 Doc Harness 是一个 [Claude Code](https://claude.ai/code) skill，帮助你和 AI 智能体掌控任何项目——无论是撰写论文、开发 SaaS 功能、为客户做数据分析、写深度调查报道，还是开发软件库。它维护一组结构化的文档来记录项目状态，让任何智能体（或你自己在休息之后）都能准确地从上次中断的地方继续。
