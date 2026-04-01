@@ -4,7 +4,9 @@
 
 **Document-based project control for AI-human collaboration.**
 
-Doc Harness is a [Claude Code](https://claude.ai/code) skill that helps you and AI agents stay in control of any project. It maintains a small set of structured documents that capture your project's state, so that any agent — or you, after a break — can pick up exactly where things left off.
+Doc Harness is a [Claude Code](https://claude.ai/code) skill that gives you and AI agents a structured way to manage any project — like a harness that keeps a horse's power directed and under control.
+
+It keeps your project organized as it grows, ensures AI agents follow the principles you establish, captures every important result and decision in persistent documents instead of letting them vanish with AI context, and makes it possible for any new agent — or you, after a break — to pick up exactly where things left off.
 
 Works for any project: writing a thesis, building a SaaS feature, analyzing data for a client, researching an investigative article, developing a software library, or anything else that spans multiple sessions and produces files.
 
