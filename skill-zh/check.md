@@ -10,11 +10,15 @@
 
 ### 1.1 核心文件是否存在？
 
-在当前目录（或最近的含 CLAUDE.md 的父目录）中查找：
+在当前目录（或最近的含 CLAUDE.md 的父目录）中查找以下4个核心文件：
 - `CLAUDE.md`、`CURRENT_STATUS.md`、`FILE_INDEX.md`、`WORKLOG.md`
 
 缺失 → `❌ 缺失: [文件名]`
 全部未找到 → `❌ 未找到 Doc Harness。使用 /doc-harness init 创建。` → 停止。
+
+同时检查：`DOC_HARNESS_SPEC.md` — 这是参考规范文档。
+- 存在 → `✅ 规范文档存在`
+- 不存在 → `⚠️ DOC_HARNESS_SPEC.md 未找到 — 建议但非必须。可从 skill 目录部署。`
 
 ### 1.2 CURRENT_STATUS 时效性
 
@@ -31,14 +35,25 @@
 
 ### 1.4 FILE_INDEX 完整性
 
+将 FILE_INDEX 条目与磁盘实际文件进行对比。使用以下经过验证的方法：
+
 ```bash
-# 列出实际的 .md 文件（排除 _archive）
-find . -name "*.md" -not -path "./_archive*" | sort
+# 第1步：列出实际文件（排除 _archive、dist、.git、node_modules）
+find . -name "*.md" -not -path "./_archive*" -not -path "./dist/*" -not -path "./.git/*" | sed 's|^\./||' | sort > /tmp/dh_disk.txt
+
+# 第2步：提取 FILE_INDEX 中的条目（包括引用的子 FILE_INDEX 文件）
+grep -oP '`[^`]+\.(md|py|tex|json|csv|txt|pdf|png|bib)`' FILE_INDEX.md | tr -d '`' | sort > /tmp/dh_index.txt
+
+# 第3步：对比
+echo "未注册:" && comm -23 /tmp/dh_disk.txt /tmp/dh_index.txt
+echo "幽灵条目:" && comm -13 /tmp/dh_disk.txt /tmp/dh_index.txt
 ```
 
-对比 FILE_INDEX.md 条目：
-- 磁盘有文件但索引中没有 → `❌ 未注册: [路径]`
-- 索引有条目但文件不存在 → `❌ 幽灵条目: [路径]`
+如果项目有子 FILE_INDEX.md 文件，还需检查子索引与对应目录的一致性。
+
+- 全部已注册 → `✅ 完整`
+- 发现未注册文件 → `❌ 未注册: [列表]`
+- 发现幽灵条目 → `❌ 幽灵条目: [列表]`
 
 **Token 效率**：只读 FILE_INDEX.md 内容和 `find` 输出。不读任何叶子文档内容。
 
@@ -86,7 +101,23 @@ find . -name "*.md" -not -path "./_archive*" | sort
    → 如果有 → 现在立刻保存。
 ```
 
-### 2.4 Session 结束清单（如适用）
+### 2.4 阶段一致性检查
+
+列出 CURRENT_STATUS 车身区域中所有 `####` 步骤标题，然后自问：
+
+```
+🔄 阶段一致性：
+   车身中的步骤：
+   1. [步骤标题1]
+   2. [步骤标题2]
+   3. [步骤标题3]
+   ...
+   → 这些步骤是否都服务于同一个阶段目标？
+   → 有没有步骤实际上代表了不同的目标，应该开启新阶段？
+   → 如果目标已发生偏移，考虑执行阶段切换。
+```
+
+### 2.5 Session 结束清单（如适用）
 
 ```
 - [ ] 车身反映了本 session 全部工作？
@@ -110,7 +141,7 @@ find . -name "*.md" -not -path "./_archive*" | sort
 
 ── 第一部分：文件健康 ──
 
-[1.1] 核心文件:      ✅/❌
+[1.1] 核心文件:      ✅/❌  |  规范: ✅/⚠️
 [1.2] CURRENT_STATUS: ✅/⚠️/❌
 [1.3] CLAUDE.md:      ✅/⚠️
 [1.4] FILE_INDEX:     ✅/❌ N个未注册/N个幽灵
@@ -122,6 +153,7 @@ find . -name "*.md" -not -path "./_archive*" | sort
 🔒 铁律: [列出并反思]
 📋 驾驶手册: [列出并反思]
 📝 落笔为安: [状态]
+🔄 阶段一致性: [步骤标题 + 评估]
 
 ── 需要的行动 ──
 [修复 ❌/⚠️ 项目的具体措施]
