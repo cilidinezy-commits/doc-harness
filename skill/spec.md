@@ -1,7 +1,7 @@
 # Doc Harness — Complete Specification
 
-**Version**: v1.0
-**Date**: 2026-04-02
+**Version**: v1.1
+**Date**: 2026-04-03
 **Status**: Production-ready
 
 ---
@@ -457,8 +457,11 @@ The four core documents live as long as the project.
 | State | Meaning | Marking |
 |-------|---------|---------|
 | Active | In use or still valid | Default (no marking needed) |
-| SUPERSEDED | Replaced by a new document | First line: `⚠️ SUPERSEDED BY [new document]` |
-| ARCHIVED | Moved to _archive/ | Remove from FILE_INDEX |
+| SUPERSEDED (retained) | Replaced, but still has reference value | First line: `⚠️ SUPERSEDED BY [new document]`. Move to `## Superseded` category in FILE_INDEX. |
+| SUPERSEDED (archived) | Replaced and no longer needed | First line: `⚠️ SUPERSEDED BY [new document]`. Move to _archive/. Remove from FILE_INDEX. |
+| ARCHIVED | Historical, moved to _archive/ | Remove from FILE_INDEX |
+
+Most superseded documents in practice are **retained** because they contain valuable reference information (e.g., original README with style guides, old STATUS with detailed session logs). Use the "retained" option unless the document truly has no remaining value.
 
 ---
 
@@ -489,6 +492,33 @@ When multiple independent projects share a parent directory, the parent may have
 ```
 
 When an agent arrives at a project group, the user's instructions typically determine which sub-project to enter.
+
+---
+
+## Chapter 10.3: Adapting to Existing Projects
+
+**Core principle: Doc Harness adapts to the project, not the other way around.**
+
+### Mid-Project Adoption
+
+Most real-world adoption happens mid-project — the project already has files, possibly existing status documents, and a history of work. The process:
+
+1. **Understand the project first.** Read all existing status/readme documents thoroughly before creating Doc Harness files. Understand the project's goals, current state, directory structure, and what documentation already exists.
+
+2. **Create the four core documents.** CLAUDE.md, CURRENT_STATUS.md, FILE_INDEX.md, WORKLOG.md — populated with the project's actual current state, not blank templates.
+
+3. **Handle existing status documents.** Most should be marked SUPERSEDED but retained:
+   - Add `⚠️ SUPERSEDED BY [new doc]` at the first line
+   - Move to the `## Superseded` category in FILE_INDEX
+   - Note why it's retained (e.g., "contains detailed session logs" or "has style guide reference")
+
+4. **Reconstruct WORKLOG from history.** Use existing logs, status docs, and git history to build phase records. Mark reconstructed sections: "(Reconstructed from [source document])". The goal is useful history, not perfect accuracy — real-time records will always be more detailed.
+
+5. **Preserve existing high-quality indexes.** If a sub-directory already has a well-maintained index (e.g., a research analysis INDEX.md with 100+ entries and status labels), FILE_INDEX.md should **point to it** rather than rebuild it. Add a line like: `→ See [subdir/INDEX.md] (N entries, covers [scope])`.
+
+### Sub-Index Guidelines for Large Directories
+
+For directories with more than 20 files, create a sub-FILE_INDEX.md. For initial creation of large sub-indexes (100+ files), automated file-system scanning can generate the initial structure, which should then be manually verified and annotated where possible.
 
 ---
 

@@ -105,4 +105,6 @@ Iron rules live in CLAUDE.md; they persist for the project's lifetime. New iron 
 
 ## Document Lifecycle
 
-Superseded documents: add at **first line**: `⚠️ SUPERSEDED BY [new document path] — this file is for historical reference only`. Archived documents: remove from FILE_INDEX.
+Superseded documents: add at **first line**: `⚠️ SUPERSEDED BY [new document path]`. Then choose:
+- **Retained as reference** (most common): move to `## Superseded` category in FILE_INDEX. Note why retained.
+- **No longer useful**: move to `_archive/` and remove from FILE_INDEX.
