@@ -130,16 +130,60 @@ Each fact lives in exactly **one** document (Single Source of Truth), so there a
 
 ## Getting Started
 
-### Install
+### Install (first time)
 
+The skill is a folder of Markdown files. "Installing" means copying that folder into Claude Code's skills directory so the agent can find it.
+
+**Step 1 — clone the repo:**
 ```bash
 git clone https://github.com/cilidinezy-commits/doc-harness.git
-cp -r doc-harness/skill ~/.claude/skills/doc-harness
+cd doc-harness
 ```
 
-Verify it works — in Claude Code, type `/doc-harness` and you should see the help message.
+**Step 2 — pick a language.** `skill/` is English; `skill-zh/` is Chinese. They install to the same path and cannot coexist — pick the language that matches the documentation your projects will use.
 
-> **Windows note**: Use `cp -r doc-harness/skill $HOME/.claude/skills/doc-harness` in Git Bash, or manually copy the `skill` folder to `%USERPROFILE%\.claude\skills\doc-harness`.
+**Step 3 — copy into Claude Code's skills directory.**
+
+Unix / macOS / Git Bash on Windows:
+```bash
+cp -r skill ~/.claude/skills/doc-harness        # English
+# or:
+cp -r skill-zh ~/.claude/skills/doc-harness     # Chinese
+```
+
+Windows PowerShell / cmd:
+```powershell
+xcopy skill %USERPROFILE%\.claude\skills\doc-harness\ /E /I
+```
+
+**Step 4 — verify.** Open Claude Code in any directory and type `/doc-harness`. You should see the help output describing `init` and `check`. If the command isn't recognized, the files weren't copied to the right path — check `~/.claude/skills/doc-harness/SKILL.md` exists.
+
+**Check the installed version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should print the `**Version**` line (e.g., `v1.4`).
+
+### Project-level install (optional)
+
+If you want a specific project to pin a particular Doc Harness version independent of your user-level install, put the skill at `<project_root>/.claude/skills/doc-harness/` instead. Claude Code prefers project-level skills over user-level when both exist. `/doc-harness check` resolves install paths in this order: project → `~/.claude` → XDG → Windows default.
+
+### Upgrade an existing install
+
+1. **Pull the latest**: `cd doc-harness && git pull`
+2. **Re-copy the skill folder** — the same command as Step 3 of first-install. It overwrites in place; no local state lives in the installed skill directory, so nothing is lost.
+3. **Verify the new version**: `head -3 ~/.claude/skills/doc-harness/spec.md`.
+4. **Upgrade your existing projects' CLAUDE.md** (important): the operational rules embedded inside each project's `CLAUDE.md` are a **snapshot** taken at `init` time — they do NOT update automatically when you upgrade the skill. To bring a project up to date, replace the bytes between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->` in that project's `CLAUDE.md` with the new contents of `operational_rules.md`. Anything outside those sentinels (custom iron rules, project-specific sections) is preserved. Run `/doc-harness check` in the project — §1.10 tells you if the embedded version is stale.
+5. **(If the project has `DOC_HARNESS_SPEC.md`)** overwrite with the new `spec.md`.
+6. **v1.2 → v1.3 / v1.4 specifically**: if the project has cross-project dependencies, follow the retrofit in `spec.md` §14.7 to enable `inbox/outbox`. Skip if the project is standalone.
+
+### Uninstall
+
+**Remove the skill globally** (stops Doc Harness from being available in any project):
+```bash
+rm -rf ~/.claude/skills/doc-harness
+```
+or Windows: `rmdir /S %USERPROFILE%\.claude\skills\doc-harness`.
+
+**Stop using Doc Harness on one project** (keeps it available elsewhere): delete or move aside that project's 4 core files (`CLAUDE.md`, `CURRENT_STATUS.md`, `FILE_INDEX.md`, `WORKLOG.md`) — e.g., `mv *.md _archive/`. The skill itself is inert on a project that has no Doc Harness files.
+
+**Downgrade to an earlier version**: `cd doc-harness && git checkout v1.3` (or whatever tag), then re-copy. Existing projects' embedded rules stay at whatever version they were when `init`'d.
 
 ### Use It
 
@@ -301,14 +345,7 @@ This single principle prevents more information loss than any other feature.
 - `skill/` — English
 - `skill-zh/` — 中文版
 
-Install **one**: the two install to the same path (`~/.claude/skills/doc-harness/`) and cannot coexist. Pick the language that matches the documentation language you plan to use in your projects — the templates and embedded operational rules are all in that language.
-
-## Upgrading from an earlier version
-
-1. **Installed skill**: overwrite `~/.claude/skills/doc-harness/` (and any project-level `.claude/skills/doc-harness/`) with the new `skill/` (or `skill-zh/`). No local state lives there.
-2. **Existing project's `CLAUDE.md`**: the operational rules embedded inside each project's `CLAUDE.md` are a **snapshot** taken at `init` time — they do NOT update automatically when you upgrade the skill. To bring a project up to date, replace the "Doc Harness — Operational Rules" section of its `CLAUDE.md` with the current contents of `operational_rules.md`. Existing `CURRENT_STATUS.md`, `WORKLOG.md`, and `FILE_INDEX.md` keep their contents unchanged.
-3. **Existing project's `DOC_HARNESS_SPEC.md`**: if present, overwrite with the new `spec.md`.
-4. **v1.2 → v1.3 specifically**: if the project has cross-project dependencies, follow the retrofit procedure in `spec.md` §14.7 to enable `inbox/outbox`. Skip if the project is standalone.
+Install **one**: the two install to the same path and cannot coexist. Pick the language that matches the documentation your projects will use — install/upgrade/uninstall procedures are in the Getting Started section above.
 
 ## Requirements
 
