@@ -140,7 +140,24 @@ CURRENT_STATUS 只保留最近的摘要以保持简洁。WORKLOG 是完整历史
 
 ### 首次安装
 
-Skill 就是一个装着若干 Markdown 文件的目录。"安装"就是把这个目录复制到 Claude Code 的 skills 目录下，让智能体能找到它。
+本仓库是一个 Claude Code 插件市场。有两种安装方式，选一种即可。
+
+#### 方式 A——原生插件市场（推荐，Claude Code 已支持 /plugin 命令的版本）
+
+在 Claude Code 中输入：
+
+```
+/plugin marketplace add cilidinezy-commits/doc-harness
+/plugin install doc-harness-zh@doc-harness
+```
+
+若想安装英文版，第二行改为 `/plugin install doc-harness@doc-harness`——两者是独立插件，同时只装其一（它们暴露同一个 `/doc-harness` 命令）。
+
+验证：输入 `/doc-harness`，应能看到 `init` 与 `check` 的帮助说明。
+
+#### 方式 B——手动复制（任何环境都可用）
+
+Skill 就是一个装着若干 Markdown 文件的目录。"手动安装"就是把这个目录复制到 Claude Code 的 skills 目录下。
 
 **第一步——克隆仓库：**
 ```bash
@@ -174,16 +191,22 @@ xcopy skill-zh %USERPROFILE%\.claude\skills\doc-harness\ /E /I
 
 ### 升级已有安装
 
+**如果你用的是方式 A（插件市场）**：`/plugin marketplace update doc-harness`——Claude Code 会拉取最新并原地更新已安装的插件。
+
+**如果你用的是方式 B（手动复制）**：
 1. **拉取最新代码**：`cd doc-harness && git pull`
 2. **重新复制 skill 文件夹**——命令与首次安装第三步相同，会原地覆盖；已安装 skill 目录中不保存本地状态，不会丢失任何内容。
 3. **验证新版本**：`head -3 ~/.claude/skills/doc-harness/spec.md`。
-4. **升级已有项目的 CLAUDE.md**（重要）：每个项目 `CLAUDE.md` 中嵌入的操作规则是 `init` 时的**快照**，**不会**随 skill 升级自动更新。要同步至最新版，请将 `CLAUDE.md` 中 `<!-- doc-harness-ops-start -->` 与 `<!-- doc-harness-ops-end -->` 之间的字节替换为新版 `operational_rules.md` 的内容。哨兵**之外**的内容（自定义铁律、项目特定章节等）保留不动。在项目中运行 `/doc-harness check`——§1.10 会告诉你嵌入版本是否陈旧。
+
+**两种方式都需要：升级已有项目的 CLAUDE.md**（重要）：每个项目 `CLAUDE.md` 中嵌入的操作规则是 `init` 时的**快照**，**不会**随 skill 升级自动更新。要同步至最新版，请将 `CLAUDE.md` 中 `<!-- doc-harness-ops-start -->` 与 `<!-- doc-harness-ops-end -->` 之间的字节替换为新版 `operational_rules.md` 的内容。哨兵**之外**的内容（自定义铁律、项目特定章节等）保留不动。在项目中运行 `/doc-harness check`——§1.10 会告诉你嵌入版本是否陈旧。
 5. **（若项目存在 `DOC_HARNESS_SPEC.md`）**：用新 `spec.md` 覆盖。
 6. **v1.2 → v1.3 / v1.4 特殊情况**：若项目有跨项目依赖，按 `spec.md` §14.7 追溯启用 `inbox/outbox`。独立项目可跳过。
 
 ### 卸载
 
-**全局移除 skill**（所有项目不再可用）：
+**如果你用的是方式 A（插件市场）**：`/plugin uninstall doc-harness`（中文版则是 `/plugin uninstall doc-harness-zh`）。
+
+**如果你用的是方式 B（手动复制）**——全局移除 skill：
 ```bash
 rm -rf ~/.claude/skills/doc-harness
 ```
