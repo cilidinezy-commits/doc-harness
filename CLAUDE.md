@@ -1,8 +1,8 @@
 # Doc Harness — Entry Document
 
 **Last updated**: 2026-04-19
-**Current phase**: v1.4 shipped (⏳ idle)
-**One-line status (as of 2026-04-19)**: v1.4 released. Commit `e4a7938`, tag `v1.4` on GitHub; both installed copies synced. Six-review comprehensive hardening: 30 issues closed. Skill file sizes stable (spec 1320, check 278, init 221, operational_rules 180, SKILL 58). Next: real-world smoke test in a sister project.
+**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ idle)
+**One-line status (as of 2026-04-19)**: v1.4 shipped + published. Plugin marketplace live (`/plugin marketplace add cilidinezy-commits/doc-harness`), smoke-tested, submitted to awesome-claude-code + two catalogs. Phase 3 (v1.2→v1.3→v1.4 + publishing) closed cleanly. Project now idle; reactivate on v1.5 triggers (see CURRENT_STATUS driving manual).
 
 ---
 

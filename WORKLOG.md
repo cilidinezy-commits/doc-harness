@@ -3,7 +3,8 @@
 ## Table of Contents
 | Phase | Period | Anchor |
 |-------|--------|--------|
-| Phase 3: v1.2 development | 2026-04-19 | [→](#phase-3-v12-development-2026-04-19) |
+| Phase 4: Maintenance & field-feedback watch | 2026-04-19~ | (in CURRENT_STATUS; no WORKLOG entry yet) |
+| Phase 3: v1.2 → v1.3 → v1.4 + publishing | 2026-04-19 | [→](#phase-3-v12-development-2026-04-19) |
 | Phase 2: Independent project | 2026-04-03 | [→](#phase-2-independent-project-setup-2026-04-03) |
 | Phase 1: Design → publish (in project_reorganization) | 2026-04-01 ~ 04-03 | [→](#phase-1-design-development-and-publishing-2026-04-01--2026-04-03) |
 
@@ -149,6 +150,28 @@ After v1.3 shipped, user requested self-review (3 issues). User pivoted from the
 **Skill-creator consultation**: `skill-creator:skill-creator` loaded and applied as the final structural review gate. Its guidance drove the description rewrite, TOC, and tool-list update. All recommendations applied.
 
 **Pending**: commit + tag v1.4 + push + deploy to both installed copies.
+
+#### v1.4 shipped and published (2026-04-19)
+
+v1.4 committed (`e4a7938`) and tagged; deploy sync to both installed copies done. Follow-up self-application commit (`b46eeae`) flipped status docs from "pre-commit" to "shipped."
+
+**Install/upgrade/uninstall documentation rewrite**: user flagged that the lifecycle was underdocumented — a reader who installed an old version had no clear procedure for: where the skill lives, how to check installed version, how to upgrade while preserving custom iron rules, how to uninstall globally vs per-project, how to downgrade. Getting Started section in both READMEs rewritten to cover all of this end-to-end. Previous standalone "Upgrading" section dissolved into one cohesive lifecycle block. Commit `011a983`.
+
+**Published as Claude Code plugin marketplace**: added `.claude-plugin/marketplace.json` exposing two plugins (`doc-harness` English + `doc-harness-zh` Chinese) from the existing `./skill` and `./skill-zh` directories. Schema verified against `anthropics/skills` reference implementation — no per-plugin `plugin.json` needed; plugin metadata lives in `marketplace.json` `plugins[]` array and `skills[]` points to existing skill directories via relative paths. Both manual install (`git clone + cp -r`) and plugin-marketplace install (`/plugin marketplace add cilidinezy-commits/doc-harness` + `/plugin install doc-harness@doc-harness`) now work; users can pick either. READMEs updated to present both options. Commit `4e3d33f`.
+
+**Smoke test passed**: user ran `/plugin marketplace add cilidinezy-commits/doc-harness` + `/plugin install doc-harness@doc-harness` + `/doc-harness` in Claude Code — all three succeeded. The v1.4 SKILL.md dispatcher logic correctly detected the all-files-present case in the WhoAMI project and suggested `/doc-harness check` as the next step. Real-world validation of §1.4, §1.8 language-independent anchors, and the partial-state branch in SKILL.md.
+
+**GitHub repo polish**: description rewritten to be more descriptive and triggering-oriented (mentions inbox/outbox, phase-transition detection); 11 topics applied (claude-code, claude-skill, claude-code-skill, agent-skills, ai-agent, ai-human-collaboration, documentation, productivity, project-management, context-management, anthropic).
+
+**Community catalog submissions**: user submitted to awesome-claude-code (Target 1 — 39.5k stars, the dominant list) and claudemarketplaces.com / claudepluginhub.com via their respective web forms. `hesreallyhim/awesome-claude-code` explicitly forbids CLI submissions (auto-closed as spam), so these had to go through browser UI.
+
+**Skill-creator structural consultation**: applied during v1.4 development. Drove the SKILL.md description rewrite (pushier, trigger-accurate), TOC at top of spec.md, addition of `Edit` to allowed-tools, and the narrative explanation of the car metaphor in §3.1.
+
+### Phase 3 summary (recap)
+
+Phase 3 spanned v1.2 → v1.3 → v1.4 + publishing. What started as a quick v1.2 patch (Recovery Chain two-layer, WORKLOG archival, optional docs) expanded into a comprehensive hardening release after six independent review cycles surfaced 30 distinct issues. The final release is production-ready: a document-based project control skill with bilingual support, a full plugin-marketplace install path, tested on real projects, and open to community discovery via awesome-lists and plugin catalogs.
+
+The phase closed cleanly — `PARKING_LOT.md` that had been created mid-work was deleted because v1.4 closed every parked item. Two inbox messages (SMSS mandate, WhoAMI proposals) that motivated the work were marked `actioned`. doc-harness now enters a maintenance phase, awaiting real-world field feedback before a potential v1.5.
 
 ---
 
