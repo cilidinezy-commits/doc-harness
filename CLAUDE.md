@@ -1,8 +1,8 @@
 # Doc Harness — Entry Document
 
 **Last updated**: 2026-04-19
-**Current phase**: v1.4 pre-commit (⏳)
-**One-line status (as of 2026-04-19)**: v1.4 comprehensive release — 6 review cycles, 30 issues closed. Design additions (mid-transition detection §6.3.1, HHMMSS disambiguator, malformed-message quarantine §14.8, quarter-boundary archival, language-independent check.md, sub-index recursion with prune, version-drift detection via `<!-- doc-harness-ops-* -->` sentinels, auto-resume decision tree §6.4, §11.2 quantified threshold, driving-manual ritual §6.2.2). Structural upgrade per skill-creator (pushy description, spec TOC, car metaphor explained). Pending: commit + tag + deploy.
+**Current phase**: v1.4 shipped (⏳ idle)
+**One-line status (as of 2026-04-19)**: v1.4 released. Commit `e4a7938`, tag `v1.4` on GitHub; both installed copies synced. Six-review comprehensive hardening: 30 issues closed. Skill file sizes stable (spec 1320, check 278, init 221, operational_rules 180, SKILL 58). Next: real-world smoke test in a sister project.
 
 ---
 
@@ -54,7 +54,7 @@ Doc Harness is a Claude Code skill that provides document-based project control 
 
 ## Key Technical Information
 
-**GitHub**: https://github.com/cilidinezy-commits/doc-harness (latest tag: v1.3; v1.4 pending push)
+**GitHub**: https://github.com/cilidinezy-commits/doc-harness (latest tag: v1.4)
 **License**: MIT
 
 **File structure**:

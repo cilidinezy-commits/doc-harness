@@ -1,7 +1,7 @@
 # CURRENT_STATUS — Doc Harness
 
 **Last updated**: 2026-04-19
-**Current phase**: v1.4 pre-commit (⏳)
+**Current phase**: v1.4 shipped (⏳ idle)
 
 ---
 
@@ -126,11 +126,10 @@ Deliver v1.2 and v1.3 of Doc Harness skill files. v1.2 scope: Recovery Chain two
 
 ### Immediate Actions
 
-1. [DONE] Commit v1.3 — `bc8637d` on master; tag `v1.3` pushed.
-2. [DONE] v1.4 comprehensive release drafted (30 fixes).
-3. Commit v1.4; tag `v1.4`; push master + tag.
-4. Deploy sync v1.4: copy `skill/` → `~/.claude/skills/doc-harness/` and `C:\Users\ZY\Documents\ObsVault_Tools\.claude\skills\doc-harness\`.
-5. Smoke-test: run `/doc-harness check` on a live project to verify v1.4 check.md logic (§1.4 sub-index recursion, §1.9 mid-transition, §1.10 version drift). Defer to next session working in a sister project.
+1. [DONE] v1.4 released — commit `e4a7938` on master; tag `v1.4` pushed.
+2. [DONE] Deploy sync: `skill/` copied to `~/.claude/skills/doc-harness/` and `C:\Users\ZY\Documents\ObsVault_Tools\.claude\skills\doc-harness\`.
+3. Smoke-test: run `/doc-harness check` on a live project to verify v1.4 check.md logic (§1.4 sub-index recursion + prune, §1.7 four sub-checks, §1.9 mid-transition coherence, §1.10 version drift). Defer to next session working in a sister project.
+4. Consider sharing v1.4 release notes to awesome-claude-skills PR / community channels.
 
 ### Future Plans
 
