@@ -61,9 +61,56 @@ All five files (SKILL.md, operational_rules.md, init.md, check.md, spec.md) mirr
 
 User caught §13.3 "What is NOT an optional long-horizon document" — a spec subsection explaining why VISION isn't included. Rationale accepted: if VISION isn't introduced anywhere else, defining-by-negation reintroduces the concept. Removed from both English and Chinese spec. Root DOC_HARNESS_SPEC.md re-synced. Principle promoted to driving manual: "Define by what IS, not by what isn't."
 
-#### DOC_HARNESS_SPEC.md re-synced
+#### DOC_HARNESS_SPEC.md re-synced (v1.2)
 
 Copied `skill/spec.md` → project root `DOC_HARNESS_SPEC.md` (987 lines after §13.3 removal).
+
+#### v1.3 addendum: inbox/outbox reversal (2026-04-19)
+
+User reversed the v1.2 inbox/outbox rejection: "可以考虑做为本机能的一个选项" — cross-project communication can be an optional Doc Harness feature. Design constraint: "不应该依赖于项目之外的东西" — must be fully self-contained, no external spec references.
+
+Built Chapter 14 (Optional Inter-Project Communication) in spec.md with:
+- Complete sending/receiving lifecycle and message format
+- Recovery Chain integration (task-conditional entry)
+- Archival rule (30-day actioned messages → inbox/_archive/)
+- Retrofit procedure for existing projects
+- Appendix E FAQ updated (removed inbox exclusion rationale; added new entry explaining why it IS optional)
+
+Updated operational_rules.md: new "Optional Inter-Project Communication" section with receiving/sending rules and snapshot-over-pointers principle.
+
+DOC_HARNESS_SPEC.md re-synced (1139 lines, v1.3).
+
+#### v1.3 addendum: "portfolio" purge (2026-04-19)
+
+User: "考虑去掉所谓的portfolio，那是第一个版本的残留思想" — portfolio concept was v1 residue from project→sub-project hierarchy thinking. Each project is self-contained; a parent navigation file is an optional lightweight pattern, not a doc-harness concept.
+
+Removed all "portfolio-level" / "portfolio-wide" language from spec.md and operational_rules.md in both languages. Replaced with "sibling project," "project group," or neutral framing. PHILOSOPHY.md section updated: principles can be shared to sibling projects, not "promoted to portfolio level."
+
+#### v1.3 addendum: skill files updated — English and Chinese (2026-04-19)
+
+English skill files:
+- `check.md`: §1.7 inbox status (new); §1.8 car body (renumbered from §1.7); §2.5 Recovery Chain health (new); §2.6 session-end checklist (was duplicate §2.5); output format updated.
+- `init.md`: Step 3.6 optional inbox/outbox setup (4 sub-steps: create folders, add iron rule block, add Recovery Chain entry, register in FILE_INDEX); Step 4 verification updated.
+- `SKILL.md`: optional inbox/outbox mechanism listed alongside PARKING_LOT and PHILOSOPHY.
+
+Chinese skill files (mirrored per iron rule 1):
+- `skill-zh/check.md`: §1.7 收件箱状态; §1.8 车身长度; §2.6 Session结束清单; output format.
+- `skill-zh/init.md`: Step 3.6 with full Chinese translation; Step 1 optional info; Step 4 verification.
+- `skill-zh/SKILL.md`: optional inbox/outbox mechanism in Chinese.
+- `skill-zh/operational_rules.md` and `skill-zh/spec.md`: already mirrored in v1.2 pass; portfolio language and Chapter 14 already applied.
+
+#### v1.3 self-application: project docs updated (2026-04-19)
+
+- `CLAUDE.md`: phase → v1.3; Recovery Chain adds inbox task-conditional; Iron Rule 6 added (inter-project comms block verbatim from init.md template).
+- `CURRENT_STATUS.md`: phase → v1.3; car body updated with all v1.3 steps; headlights → commit+deploy+smoke-test.
+- `FILE_INDEX.md`: Inter-Project Communication category updated to reference Chapter 14.
+- `README.md` / `README_zh.md`: v1.2 FAQ bullet corrected (removed erroneous exclusion of inbox/outbox); v1.3 FAQ entry added.
+
+#### v1.3 addition: context-aware update cadence (2026-04-19)
+
+User prompted late in v1.3: should Doc Harness guide agents to monitor remaining context window and pre-emptively flush to files before compression? Accepted — fits naturally with "write it down or lose it." Added a 4th bullet to `spec.md §11.2` ("During Work") and the corresponding section of `operational_rules.md`, in both languages. Rule is platform-conditional: only applies if the runtime exposes context-usage metrics. Threshold suggested at ~<20% remaining. Action: update CURRENT_STATUS before the next tool call; if the car body holds substantial unsaved work, trigger a phase transition immediately rather than wait for the next "meaningful step" that may never land.
+
+README v1.3 FAQ entry updated with this bullet. DOC_HARNESS_SPEC.md re-synced (1140 lines).
 
 ---
 

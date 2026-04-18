@@ -1,8 +1,8 @@
 # Doc Harness — Entry Document
 
 **Last updated**: 2026-04-19
-**Current phase**: v1.2 development (⏳)
-**One-line status (as of 2026-04-19)**: v1.2 drafted (Recovery Chain two-layer + self-contained; WORKLOG 1000-line archival; optional PARKING_LOT/PHILOSOPHY; inbox/outbox explicitly NOT in scope). English and Chinese skill files synced. Self-application in progress. Not yet pushed.
+**Current phase**: v1.3 development — pre-commit (⏳)
+**One-line status (as of 2026-04-19)**: v1.3 skill files complete. Inbox/outbox is now opt-in Doc Harness feature (Chapter 14); portfolio language purged; bilingual sync done; self-application done. Pending: commit + tag + deploy sync.
 
 ---
 
@@ -15,6 +15,7 @@
 
 ### Task-conditional
 
+- If `inbox/` has any file with `status: unread`: read and action those first
 - If looking up a file: read `FILE_INDEX.md`
 - If investigating phase history: read `WORKLOG.md`
 - If editing the spec or operational rules: read `skill/spec.md` (authoritative)
@@ -41,6 +42,15 @@ Doc Harness is a Claude Code skill that provides document-based project control 
 3. **spec.md is the authoritative specification**: All other files (operational_rules.md, init.md, check.md, README) derive from spec.md. Contradictions are resolved in favor of spec.md.
 4. **Test before release**: Every change must be validated (blind test, real project test, or simulation) before pushing to GitHub or updating installed copies.
 5. **Deployment sync**: After any change, update all 3 locations: dev source → GitHub push → installed copies (user-level + project-level).
+
+6. **Inter-project communication via inbox/outbox (file-based protocol)**
+
+   - **Mechanism**: This project maintains `inbox/` (received messages) and `outbox/` (sent messages). Messages are Markdown files with YAML frontmatter; filename `YYYY-MM-DD-from-<source>-<topic>.md`.
+   - **Why this is mandatory (if adopted)**: Cross-project information exchanged only in chat is lost on session end. File-based messages survive session boundaries and are discoverable by any future agent through this project's Recovery Chain.
+   - **Receiving**: Recovery Chain checks `inbox/` for `status: unread`. Read → update to `status: read`. After acting on the message → `status: actioned`. Never edit received messages beyond the status field; to respond, write a new message.
+   - **Sending**: Write to this project's `outbox/` (permanent sender-side record) AND copy the same file into the recipient project's `inbox/`. Record the exchange in CURRENT_STATUS so it is traceable next session.
+   - **Snapshots over pointers**: When communicating numbers/deliverables to another project, put the value in the message body rather than referencing internal files.
+   - **Full specification**: `DOC_HARNESS_SPEC.md` §14 (in this project's root).
 
 ## Key Technical Information
 

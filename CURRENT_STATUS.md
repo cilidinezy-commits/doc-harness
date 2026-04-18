@@ -1,7 +1,7 @@
 # CURRENT_STATUS — Doc Harness
 
 **Last updated**: 2026-04-19
-**Current phase**: v1.2 development (⏳)
+**Current phase**: v1.3 development (⏳)
 
 ---
 
@@ -19,7 +19,7 @@ Full lifecycle in project_reorganization: spec v0.1→v1.0→v1.1, /doc-harness 
 
 ### Phase Goal
 
-Incorporate v1.2 improvements motivated by sister-project feedback (WhoAMI 2026-04-19 proposals + SMSS 2026-04-18 mandate, both archived in `inbox/`). Scope: Recovery Chain two-layer structure + self-contained constraint; WORKLOG archival rule; optional PARKING_LOT.md and PHILOSOPHY.md; explicit rejection of inbox/outbox as doc-harness framework element. Apply v1.2 to doc-harness own docs as test-before-release.
+Deliver v1.2 and v1.3 of Doc Harness skill files. v1.2 scope: Recovery Chain two-layer + self-contained; WORKLOG archival; optional PARKING_LOT/PHILOSOPHY. v1.3 scope (reversal from v1.2): inbox/outbox IS an optional Doc Harness feature (Chapter 14); "portfolio" language purged. Apply both to doc-harness own docs and ship.
 
 ### Completed Steps
 
@@ -46,7 +46,41 @@ Incorporate v1.2 improvements motivated by sister-project feedback (WhoAMI 2026-
 - All five files mirrored to v1.2 per iron rule 1 (bilingual sync).
 
 #### DOC_HARNESS_SPEC.md re-synced (2026-04-19)
-- Copied `skill/spec.md` → `DOC_HARNESS_SPEC.md` at project root (987 lines).
+- Copied `skill/spec.md` → `DOC_HARNESS_SPEC.md` at project root (987 lines, v1.2).
+
+#### v1.3 design: inbox/outbox reversal (2026-04-19)
+- User reversed earlier v1.2 stance: inbox/outbox IS an optional Doc Harness feature.
+- Rationale: "inter-project communication must not depend on anything outside the project."
+- New Chapter 14 in spec: self-contained inbox/outbox protocol (folders, YAML frontmatter, lifecycle unread→read→actioned, archival, retrofit). DOC_HARNESS_SPEC.md re-synced (1139 lines, v1.3).
+
+#### v1.3 "portfolio" purge (2026-04-19)
+- User: "portfolio is a remnant of v1 thinking." Projects are flat self-contained peers.
+- Removed all "portfolio-level" / "portfolio-wide" language from spec.md and operational_rules.md (both languages). Replaced with "sibling project," "project group," neutral framing.
+
+#### v1.3 skill files updated — English (2026-04-19)
+- `spec.md`: v1.3 — Chapter 14 (inbox/outbox), portfolio language purged, §13.3 removed.
+- `operational_rules.md`: new "Optional Inter-Project Communication" section; "portfolio" purged.
+- `init.md`: Step 3.6 (optional inbox/outbox setup); Step 4 verification updated.
+- `check.md`: §1.7 inbox status (new); §1.8 car body (renumbered); §2.6 session-end checklist (was duplicate §2.5); §2.5 Recovery Chain health.
+- `SKILL.md`: optional inbox/outbox mechanism listed.
+
+#### v1.3 skill files mirrored — Chinese (2026-04-19)
+- `skill-zh/check.md`: §1.7 收件箱状态; §1.8 车身长度; §2.6 session结束清单; output format.
+- `skill-zh/init.md`: Step 3.6 (跨项目通信设置); Step 4 verification; inbox optional info in Step 1.
+- `skill-zh/SKILL.md`: optional inbox/outbox mechanism listed.
+- `skill-zh/operational_rules.md`: "portfolio" purged (done in v1.2 pass).
+- `skill-zh/spec.md`: full Chapter 14 + portfolio purge (done in v1.2 pass).
+
+#### v1.3 self-application: doc-harness project docs updated (2026-04-19)
+- `CLAUDE.md`: phase → v1.3 development; inbox task-conditional in Recovery Chain; Iron Rule 6 (inter-project comms block).
+- `FILE_INDEX.md`: Inter-Project Communication category updated (references Chapter 14).
+- README.md / README_zh.md: v1.2 FAQ corrected (removed erroneous inbox exclusion); v1.3 FAQ entry added.
+
+#### v1.3 addition: context-aware update cadence (2026-04-19)
+- User prompted: should agents monitor remaining context window and adjust doc-update frequency accordingly?
+- Accepted: added a 4th bullet to "During Work" in both `spec.md §11.2` and `operational_rules.md` (English + Chinese). Rule is platform-conditional — only applies if the runtime exposes context-usage metrics. Threshold: ~<20% remaining → immediate CURRENT_STATUS update before next tool call; consider phase transition if car body substantial.
+- Rationale: compression is involuntary session end; "write it down or lose it" principle extends naturally to "write it down *before* it's too late."
+- README FAQ v1.3 entry updated with this bullet. DOC_HARNESS_SPEC.md re-synced (1140 lines).
 
 ### Unresolved Issues
 
@@ -58,16 +92,15 @@ Incorporate v1.2 improvements motivated by sister-project feedback (WhoAMI 2026-
 
 ### Immediate Actions
 
-1. Update README.md and README_zh.md with concise v1.2 What's New section.
-2. Commit v1.2 work with clear message; tag `v1.2`; push to GitHub.
-3. Deploy sync: copy `skill/` → `~/.claude/skills/doc-harness/` and `C:\Users\ZY\Documents\ObsVault_Tools\.claude\skills\doc-harness\`.
-4. Smoke-test: run `/doc-harness check` on a live project to verify v1.2 check.md logic works.
+1. Commit v1.3 work with clear message; tag `v1.3`; push master + tag to GitHub.
+2. Deploy sync: copy `skill/` → `~/.claude/skills/doc-harness/` and `C:\Users\ZY\Documents\ObsVault_Tools\.claude\skills\doc-harness\`.
+3. Smoke-test: run `/doc-harness check` on a live project to verify v1.3 check.md logic works.
 
 ### Future Plans
 
-- Field-test v1.2 in 1–2 projects over the coming weeks; collect drift/rough-edge reports via inbox.
-- Monitor GitHub issues and community PR (awesome-claude-skills #476, anthropics/skills #846).
-- Possible v1.3 directions: automation for WORKLOG archival trigger; FILE_INDEX auto-generation script; integration patterns with external memory systems that DO exist (opt-in only).
+- Field-test v1.3 in 1–2 projects over the coming weeks; collect drift/rough-edge reports via inbox.
+- Monitor GitHub issues and community PRs.
+- Possible v1.4 directions: WORKLOG archival automation trigger; FILE_INDEX auto-generation script.
 
 ---
 
@@ -76,5 +109,6 @@ Incorporate v1.2 improvements motivated by sister-project feedback (WhoAMI 2026-
 - **Bilingual sync is non-negotiable** (iron rule 1). Every English edit must land in Chinese in the same session. Don't defer.
 - **Test before release** (iron rule 4). v1.2 applies itself before v1.2 ships — dogfooding is the smoke test.
 - **Deployment sync is three places**: dev source → GitHub → installed copies (user-level + ObsVault_Tools). Missing any one produces inconsistent behavior.
-- **Doc-harness is agnostic about inter-project concerns.** When tempted to add inbox/outbox or cross-project hooks, remember: that's a separate spec's job. Keep the skill narrow.
+- **inbox/outbox is opt-in, self-contained, and doc-harness-native.** The mechanism depends only on files inside each project and DOC_HARNESS_SPEC.md — no external spec, no external memory, no portfolio layer needed.
 - **Define by what IS, not by what isn't.** If a concept isn't introduced, don't introduce it just to reject it.
+- **Projects are self-contained peers.** "Portfolio" thinking was v1 residue; remove it wherever it creeps back in.

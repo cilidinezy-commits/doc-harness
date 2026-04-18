@@ -1,6 +1,6 @@
 # Doc Harness — Complete Specification
 
-**Version**: v1.2
+**Version**: v1.3
 **Date**: 2026-04-19
 **Status**: Production-ready
 
@@ -582,6 +582,7 @@ Do not unconditionally read all task-conditional entries at startup. That defeat
 1. Complete a **meaningful step** → update CURRENT_STATUS car body
 2. Create a new file → **do two things simultaneously**: (1) register in FILE_INDEX (2) record in CURRENT_STATUS car body
 3. **"Write It Down"**: important analysis results, design ideas, decision rationale → save to file + register
+4. **Watch remaining context** (if exposed by the runtime): context compression is involuntary session end. If your environment reports a context-usage percentage or token count, treat **low remaining context** (~<20%) as an immediate trigger — update CURRENT_STATUS before the next tool call; if the car body has substantial unsaved work, consider a phase transition now. Don't wait for a "meaningful step" that may never land.
 
 ### 11.3 Session End
 
@@ -666,11 +667,162 @@ These documents are opt-in. A project that doesn't need them should not create t
 **Scope**: [where this applies — this project only? likely broader? already confirmed broader?]
 ```
 
-**Promotion pipeline (optional)**: When a principle turns out to apply beyond this project, it may be promoted to portfolio-level (a workspace's own `PRINCIPLES.md` or parent CLAUDE.md section, if the portfolio maintains one). Promotion **does not remove** the entry from PHILOSOPHY.md — this file remains the birthplace record. Annotate promoted entries with `[Promoted to <destination> YYYY-MM-DD]`.
+**Sharing across projects (optional)**: When a principle turns out to apply beyond this project, it may be copied into a sibling project's own `PHILOSOPHY.md`, or (if a parent navigation CLAUDE.md exists over a project group — see Chapter 10) referenced there. Copying/referencing **does not remove** the entry from this project's `PHILOSOPHY.md` — each project that adopted the principle keeps its own birthplace record, and this file documents how *this* project arrived at it. Annotate shared entries with `[Also adopted by <project> YYYY-MM-DD]` for traceability.
 
 **Lifecycle**: Principles may be refined with errata (`[Refined YYYY-MM-DD: ...]`) or marked superseded (`[Superseded YYYY-MM-DD by: new formulation]`), but entries are not deleted. A PHILOSOPHY.md is read rarely but should survive intact.
 
 **Recovery Chain integration**: Add to task-conditional layer for reflective decisions, e.g. `- If making a major architectural decision: read PHILOSOPHY.md`.
+
+---
+
+## Chapter 14: Optional Inter-Project Communication (inbox/outbox)
+
+When a project operates alongside other projects that depend on it or that it depends on, cross-project information (requirements, deliverables, status changes, confirmations) must persist across session boundaries. Verbal/chat-only exchange is lost when a session ends; the recipient project's next agent has no way to discover it. Doc Harness offers an **optional** file-based protocol for this.
+
+This entire chapter is **self-contained** — a project that adopts it needs no documentation beyond this chapter and its own `DOC_HARNESS_SPEC.md`. No external protocol file required, no dependency on any parent folder or sibling project. A project that does NOT adopt it is unaffected.
+
+### 14.1 When to adopt
+
+Adopt if any of the following is true:
+- This project has a dependency on another project (e.g., consumes data, an API, or deliverables from it).
+- Another project depends on this one.
+- Cross-project coordination happens repeatedly (decisions, requirements, numbers exchanged more than once).
+
+Skip if the project is truly standalone.
+
+### 14.2 Folder structure
+
+Two directories at the project root:
+
+```
+project_root/
+├── inbox/        ← messages addressed TO this project
+├── outbox/       ← messages sent FROM this project (drafts / sent-copies)
+└── ... (rest of project)
+```
+
+Both start empty. Git-track them by adding a `.gitkeep` (or equivalent) if your VCS requires it.
+
+### 14.3 Message format
+
+**Filename**: `YYYY-MM-DD-from-<source-project>-<topic-slug>.md`
+
+- `<source-project>`: short identifier of the sender (e.g. `whoami`, `smss`).
+- `<topic-slug>`: kebab-case summary of the topic.
+- Example: `2026-04-19-from-whoami-skill-improvement-proposals.md`.
+
+**Header** (YAML frontmatter, required):
+
+```yaml
+---
+from: <source project name>
+to: <target project name>
+date: YYYY-MM-DD
+subject: <one-line subject>
+status: unread | read | actioned
+in-reply-to: <original filename, if this message is a reply; else null>
+priority: low | normal | high
+---
+```
+
+**Body**: free-form Markdown. Tables, checklists, code blocks permitted.
+
+### 14.4 Message lifecycle and rules
+
+```
+Sender                                        Recipient
+  │                                              │
+  ├─ writes new message to own outbox/           │
+  ├─ copies the same file into recipient inbox/  │
+  │  (status: unread, set by sender)             │
+  │                                              │
+  │   ─── session boundary ───                   │
+  │                                              │
+  │                      recipient's Recovery ──┤
+  │                      Chain points to inbox/ ─┤
+  │                      recipient reads msg    ─┤
+  │                      → status: read         ─┤
+  │                      performs any action    ─┤
+  │                      → status: actioned     ─┤
+  │                      (if reply needed:      ─┤
+  │                       sends a NEW message)  ─┤
+```
+
+**Rules**:
+
+1. **Received messages are immutable** — never edit a file in your `inbox/` beyond updating the `status` field. To respond, write a new message.
+2. **Status transitions** — sender sets `unread` at delivery. Recipient changes to `read` after reading, then to `actioned` after completing any required action. An `actioned` message with no required action is equivalent to acknowledged-and-closed.
+3. **Archival** — messages older than 30 days with `status: actioned` may be moved to `inbox/_archive/` to keep the active inbox scannable. Archived messages are permanent records; do not delete.
+4. **Sender retains a copy** — the sender's `outbox/` is the permanent draft/record. If the recipient loses their copy, the sender's `outbox/` is authoritative for what was sent.
+5. **Cross-project reference snapshots** — when communicating numbers, deliverables, or state ("our model reached accuracy 0.88"), send a **snapshot** in an inbox message rather than pointing the recipient at your internal files. Internal files churn and refactors break external references. A snapshot, once delivered, does not lie.
+
+### 14.5 Integration with the four core documents
+
+**CLAUDE.md** — add one iron rule block (copy-paste template, no customization required):
+
+```markdown
+**Inter-project communication via inbox/outbox (file-based protocol)**
+
+- **Mechanism**: This project maintains `inbox/` (received messages) and `outbox/` (sent messages). Messages are Markdown files with YAML frontmatter; filename `YYYY-MM-DD-from-<source>-<topic>.md`.
+- **Why this is mandatory (if adopted)**: Cross-project information exchanged only in chat is lost on session end. File-based messages survive session boundaries and are discoverable by any future agent through this project's Recovery Chain.
+- **Receiving**: Recovery Chain checks `inbox/` for `status: unread`. Read → update to `status: read`. After acting on the message → `status: actioned`. Never edit received messages beyond the status field; to respond, write a new message.
+- **Sending**: Write to this project's `outbox/` (permanent sender-side record) AND copy the same file into the recipient project's `inbox/`. Record the exchange in CURRENT_STATUS so it is traceable next session.
+- **Snapshots over pointers**: When communicating numbers/deliverables to another project, put the value in the message body rather than referencing internal files.
+- **Full specification**: `DOC_HARNESS_SPEC.md` §14 (in this project's root).
+```
+
+**CURRENT_STATUS.md** — when an incoming message requires action, add it to Headlights:
+
+```markdown
+### Immediate Actions
+- [ ] Respond to <sender>'s <topic> (see `inbox/YYYY-MM-DD-from-<source>-<topic>.md`)
+```
+
+Also record outbound exchanges in the car body as they happen:
+
+```markdown
+#### Sent deliverable to <target> (YYYY-MM-DD)
+- Message: `outbox/YYYY-MM-DD-to-<target>-<topic>.md`
+- Summary: <one line>
+```
+
+**FILE_INDEX.md** — register both directories under their own category:
+
+```markdown
+## Inter-Project Communication
+- `inbox/` — Incoming messages from other projects
+- `outbox/` — Outgoing messages (drafts and sent-copies)
+```
+
+**Recovery Chain (CLAUDE.md)** — add one task-conditional entry:
+
+```markdown
+### Task-conditional
+- If `inbox/` has any file with `status: unread`: read and action those first
+- ...
+```
+
+Note: this entry sits in **task-conditional**, not must-read. Reading the entire inbox at every session start would burn context; only unread messages matter. If inbox is empty or all messages are `read`/`actioned`, this entry is a no-op.
+
+### 14.6 Quick Start for a fresh agent
+
+If you arrive at a project and see `inbox/` and `outbox/` in the root, the project uses this protocol. Do this:
+
+1. Scan `inbox/` for any file whose frontmatter has `status: unread`.
+2. For each: read it, take the required action if any, update its `status` field (`read` after reading, `actioned` after completing).
+3. Before modifying project internal files that other projects might reference (models, interfaces, numbers), consider whether a snapshot needs to be sent to dependents via their inbox.
+4. To send: write to your project's `outbox/` AND copy the same file to the recipient's `inbox/`. Record the exchange in CURRENT_STATUS.
+
+Everything you need is in this chapter. No external file required.
+
+### 14.7 Adopting on an existing project
+
+To retrofit an existing project:
+1. Create `inbox/` and `outbox/` at project root.
+2. Copy the iron rule block from §14.5 into CLAUDE.md's Iron Rules section.
+3. Add the task-conditional entry to Recovery Chain (also §14.5).
+4. Add the `## Inter-Project Communication` category to FILE_INDEX.
+5. (Optional) Send a notification message to dependent projects that this project is now reachable via inbox.
 
 ---
 
@@ -954,13 +1106,13 @@ Agent opens CLAUDE.md:
 
 ## Appendix E: Design Choices (FAQ)
 
-### Why doesn't Doc Harness include inbox/outbox folders or cross-project communication rules?
+### Why is inter-project inbox/outbox an optional mechanism, not a required one?
 
-Because that is a **separate concern** from document-based project control. Doc Harness is a general-purpose skill: any single project benefits from the four-document system whether or not it coordinates with other projects.
+Because many projects are standalone and have no dependents. Mandating inbox/outbox on every project would impose empty directories and an unused iron rule, eroding trust in the skill. The mechanism is offered as a standard optional feature with a complete self-contained spec (Chapter 14) so projects that need it can adopt it consistently and projects that don't need it ignore it.
 
-Inter-project communication — message protocols, inbox/outbox directories, YAML message schemas — belongs to a different skill or spec maintained alongside Doc Harness, not within it. A project using Doc Harness may independently adopt such a protocol; its Recovery Chain task-conditional layer can then reference `inbox/` as a project-local condition (e.g. `- If inbox/ has unread messages: read them`). But Doc Harness itself stays agnostic: no inbox/outbox in templates, no init behavior creating them, no session-end checks for them.
+### Why is the mechanism described inside doc-harness instead of as a separate spec?
 
-Mixing the two concerns would bind Doc Harness to a particular workspace's coordination protocol. We prefer to keep the skill narrow.
+Because an external spec is **brittle**. An agent working inside a project has no reliable entry point to an external file; over long project lifetimes the external reference tends to be lost, misinterpreted, or forgotten. By embedding the full mechanism into doc-harness's spec, every project that deploys `DOC_HARNESS_SPEC.md` carries a self-contained description — the project becomes its own authoritative source for how the protocol works.
 
 ### Why are PARKING_LOT.md and PHILOSOPHY.md optional, not mandatory?
 
@@ -984,4 +1136,5 @@ Phase density varies enormously across projects — from ~20 lines per phase (in
 | v0.2 | 2026-04-02 | Incorporated feedback from three independent reviews |
 | v1.0 | 2026-04-02 | Production release. CLAUDE.md template embeds operational rules; 8 ambiguities resolved (session-end status refresh, new project initial state, WORKLOG TOC format, cross-phase context, driving manual lifecycle, FILE_INDEX cross-category, iron rule management §8.3, session-end checklist additions) |
 | v1.1 | 2026-04-03 | Mid-project adoption guidance (§10.3); SUPERSEDED-but-retained document lifecycle (§9.2); improved `/doc-harness check` (spec presence, FILE_INDEX script, phase coherence); sub-index guidelines for large directories |
-| v1.2 | 2026-04-19 | Recovery Chain two-layer structure (must-read + task-conditional) with self-contained constraint; WORKLOG archival rule (§5.5, ~1000-line threshold, quarterly archive files); new optional documents PARKING_LOT.md and PHILOSOPHY.md (Chapter 13); anti-pattern additions; Appendix E Design Choices including rationale for NOT including inbox/outbox |
+| v1.2 | 2026-04-19 | Recovery Chain two-layer structure (must-read + task-conditional) with self-contained constraint; WORKLOG archival rule (§5.5, ~1000-line threshold, quarterly archive files); new optional documents PARKING_LOT.md and PHILOSOPHY.md (Chapter 13); anti-pattern additions; Appendix E Design Choices |
+| v1.3 | 2026-04-19 | New Chapter 14: Optional Inter-Project Communication (inbox/outbox) — self-contained, portable mechanism for file-based cross-project messaging. Spec covers folder structure, message format (YAML frontmatter + Markdown body), lifecycle (unread→read→actioned), integration with all four core documents, quick start for fresh agents, and adopt-on-existing-project procedure. init gains one y/n prompt to enable. Appendix E updated to explain why the mechanism is optional and why it lives inside doc-harness rather than as an external spec. "Portfolio" framing removed throughout — project groups are flat peers. §11.2 gains a context-aware update rule: if the runtime exposes context-window usage, low remaining context (~<20%) is an immediate trigger to flush CURRENT_STATUS and possibly phase-transition. |

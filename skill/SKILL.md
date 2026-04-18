@@ -20,6 +20,9 @@ Two **optional** documents may be added when a project accumulates such content 
 - **PARKING_LOT.md** — Deferred items with preconditions for revival
 - **PHILOSOPHY.md** — Principles forged by this project's practice
 
+One **optional** mechanism may be adopted when a project coordinates with others (see spec.md Chapter 14):
+- **Inter-project inbox/outbox** — self-contained file-based messaging protocol. `inbox/` and `outbox/` directories; YAML-frontmatter Markdown messages; lifecycle `unread → read → actioned`. Fully described inside doc-harness itself; no external spec needed.
+
 ## Commands
 
 ### `/doc-harness init [project-name] [description]`

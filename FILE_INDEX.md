@@ -1,6 +1,6 @@
 # FILE_INDEX — Doc Harness
 
-**Last updated**: 2026-04-19
+**Last updated**: 2026-04-19 (v1.3)
 
 ---
 
@@ -30,11 +30,9 @@
 - `README_zh.md` — Chinese project description
 - `LICENSE` — MIT license
 
-## Inter-project Communication
+## Inter-Project Communication
 
-> Note: `inbox/` and `outbox/` are ordinary directories used by the portfolio's
-> inter-project communication protocol (spec: `D:\Projects\docs\INTERPROJECT_COMM_SPEC.md`).
-> They are not part of the Doc Harness framework itself.
+Protocol: Doc Harness Chapter 14 (see `DOC_HARNESS_SPEC.md` §14).
 
-- `inbox/` — Incoming messages from other portfolio projects (2 archived messages so far)
-- `outbox/` — Outgoing message drafts (empty)
+- `inbox/` — Incoming messages from other projects (2 archived messages so far)
+- `outbox/` — Outgoing messages (drafts and sent-copies; currently empty)

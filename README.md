@@ -336,7 +336,13 @@ Each gets its own Doc Harness. Parent's FILE_INDEX links to sub-project entries.
 - **Recovery Chain is now two-layer**: a minimal must-read baseline (2–3 files) plus a task-conditional list for work-specific lookups. Self-contained — no dependency on agent-side memory or external services.
 - **WORKLOG archival**: when `WORKLOG.md` passes ~1000 lines, older phases move to `WORKLOG_ARCHIVE_<YYYY-QN>.md` (quarterly). Keeps the active WORKLOG readable without losing history.
 - **Two optional documents** for long-horizon content: `PARKING_LOT.md` (deferred items with revival preconditions) and `PHILOSOPHY.md` (principles forged by project practice). Both opt-in — create only when there's content to put there.
-- Doc Harness deliberately does **not** include inbox/outbox or cross-project communication — those belong to a separate concern. See spec Appendix E for the reasoning.
+
+**Q: What's new in v1.3?**
+- **Inter-project inbox/outbox** is now an optional Doc Harness feature (Chapter 14 of the spec). When a project coordinates with others, it can adopt `inbox/` and `outbox/` directories with a YAML-frontmatter Markdown message protocol. The complete specification is self-contained inside each project's `DOC_HARNESS_SPEC.md` — no external spec needed.
+- `/doc-harness init` now asks whether to enable the inbox/outbox protocol and sets up the folders, iron rule block, Recovery Chain entry, and FILE_INDEX category automatically (Step 3.6).
+- `/doc-harness check` now audits inbox unread-message count (§1.7) and checks Recovery Chain health for the two-layer structure (§2.5).
+- "Portfolio" framing removed from the spec. Projects in a group are self-contained peers; a parent navigation file is just a lightweight optional pattern, not a Doc Harness concept.
+- **Context-aware update cadence**: operational rules now instruct agents whose runtime exposes context-window usage to treat low remaining context (~<20%) as an immediate trigger for CURRENT_STATUS update and possible phase transition. Compression is involuntary session end — don't wait for a "meaningful step" that may never land.
 
 ## License
 

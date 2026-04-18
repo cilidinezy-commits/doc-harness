@@ -20,6 +20,7 @@ You need these details. Gather from three sources in priority order:
 - Initial iron rules
 - Key technical details (tools, languages, paths)
 - Known sub-projects
+- **Inter-project inbox/outbox**: one y/n question — "Does this project coordinate with other projects (has dependencies in either direction)? If yes, I'll enable the inter-project inbox/outbox protocol (Chapter 14 of the spec)." Default: **yes** if the user mentioned dependencies or sibling projects in context; **no** for standalone projects. If enabled, see Step 3.6 below.
 
 ## Step 2: Check Existing Files
 
@@ -164,12 +165,46 @@ Read [spec.md](spec.md) and write its content to the project directory as `DOC_H
 
 If spec.md is not accessible, note in FILE_INDEX: "DOC_HARNESS_SPEC.md — not yet deployed (operational rules in CLAUDE.md are sufficient for daily use)".
 
+### Step 3.6: (Optional) Enable inter-project inbox/outbox
+
+If the user opted in (see Step 1), do the following:
+
+**(a) Create folders**: `inbox/` and `outbox/` at project root (both empty; git-track with `.gitkeep` if needed).
+
+**(b) Add the iron rule block** to CLAUDE.md inside the Iron Rules section (copy-paste, no customization needed):
+
+```markdown
+**Inter-project communication via inbox/outbox (file-based protocol)**
+
+- **Mechanism**: This project maintains `inbox/` (received messages) and `outbox/` (sent messages). Messages are Markdown files with YAML frontmatter; filename `YYYY-MM-DD-from-<source>-<topic>.md`.
+- **Why this is mandatory (if adopted)**: Cross-project information exchanged only in chat is lost on session end. File-based messages survive session boundaries and are discoverable by any future agent through this project's Recovery Chain.
+- **Receiving**: Recovery Chain checks `inbox/` for `status: unread`. Read → update to `status: read`. After acting on the message → `status: actioned`. Never edit received messages beyond the status field; to respond, write a new message.
+- **Sending**: Write to this project's `outbox/` (permanent sender-side record) AND copy the same file into the recipient project's `inbox/`. Record the exchange in CURRENT_STATUS so it is traceable next session.
+- **Snapshots over pointers**: When communicating numbers/deliverables to another project, put the value in the message body rather than referencing internal files.
+- **Full specification**: `DOC_HARNESS_SPEC.md` §14 (in this project's root).
+```
+
+**(c) Add to Recovery Chain** task-conditional layer in CLAUDE.md:
+
+```markdown
+- If `inbox/` has any file with `status: unread`: read and action those first
+```
+
+**(d) Register in FILE_INDEX**:
+
+```markdown
+## Inter-Project Communication
+- `inbox/` — Incoming messages from other projects
+- `outbox/` — Outgoing messages (drafts and sent-copies)
+```
+
 ## Step 4: Verify
 
 - All 5 files exist
-- FILE_INDEX lists all 5
+- FILE_INDEX lists all 5 (plus `inbox/`/`outbox/` if enabled)
 - CURRENT_STATUS has all 4 sections
-- CLAUDE.md contains embedded operational rules
+- CLAUDE.md contains embedded operational rules (and inter-project iron rule block if enabled)
 - WORKLOG has empty TOC
+- If inter-project comms enabled: `inbox/` and `outbox/` exist; Recovery Chain includes the task-conditional entry
 
-Report: "Doc Harness initialized for [PROJECT_NAME]. 5 files created."
+Report: "Doc Harness initialized for [PROJECT_NAME]. 5 files created[, with inter-project inbox/outbox enabled if applicable]."

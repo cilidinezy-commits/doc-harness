@@ -70,7 +70,15 @@ Count total lines of WORKLOG.md (use `wc -l` or equivalent; do not read the full
 - 1000–1500 → `⚠️ [N] lines — consider archival (§5.5)`
 - >1500 → `❌ [N] lines — archival overdue`
 
-### 1.7 Car body length
+### 1.7 Inbox status (if inter-project comms adopted)
+
+If `inbox/` exists at project root, count messages by `status` (use Grep on the YAML `status:` line, not full file reads).
+
+- No `inbox/` → skip this check
+- All messages `read` or `actioned` → `✅ Inbox clean (N total, 0 unread)`
+- Any `unread` → `⚠️ Inbox has N unread message(s) — action needed`
+
+### 1.8 Car body length
 
 Count lines in CURRENT_STATUS between "## Current Work" and the next "##" heading (use Grep/line counting, not full read).
 - <200 → `✅ [N] lines`
@@ -137,7 +145,7 @@ Read the Recovery Chain section from CLAUDE.md.
    → Any must-read entry rarely actually needed? → demote to task-conditional.
 ```
 
-### 2.5 Session-end checklist (if applicable)
+### 2.6 Session-end checklist (if applicable)
 
 ```
 - [ ] Car body reflects all session work?
@@ -167,7 +175,8 @@ Read the Recovery Chain section from CLAUDE.md.
 [1.4] FILE_INDEX:      ✅/❌ N unregistered/N ghosts
 [1.5] WORKLOG TOC:     ✅/⚠️
 [1.6] WORKLOG length:  ✅ N lines / ⚠️/❌
-[1.7] Car body:        ✅ N lines / ⚠️/❌
+[1.7] Inbox:           ✅ / ⚠️ N unread  (skipped if not adopted)
+[1.8] Car body:        ✅ N lines / ⚠️/❌
 
 ── Part 2: Principle Reflection ──
 

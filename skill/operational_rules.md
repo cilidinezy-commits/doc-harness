@@ -107,6 +107,7 @@ Recovery Chain is defined in CLAUDE.md and has two layers:
 - Complete a **meaningful step** → update CURRENT_STATUS car body. "Meaningful" = if context is lost now, next agent needs to know this step is done.
 - Create a new file → **do two things simultaneously**: (1) register in FILE_INDEX (2) record in CURRENT_STATUS car body.
 - Important information → **immediately** write to file and register (Write It Down!).
+- **Watch remaining context** (if the runtime exposes it). Compression is involuntary session end. When remaining context drops low (~<20%), update CURRENT_STATUS *before* the next tool call; if the car body holds substantial unsaved work, consider a phase transition now. Don't wait for the next "meaningful step" — it may not land in time.
 
 ## Session End Checklist
 
@@ -144,6 +145,26 @@ Two opt-in documents exist outside the core four. Create only when there is cont
 
 - **`PARKING_LOT.md`** — Deferred items: things you want to do but can't now. Each entry: what, why deferred, preconditions for revival, re-check date. Never silently delete; annotate when revived or dropped. Use when CURRENT_STATUS would otherwise lose an item to work churn.
 
-- **`PHILOSOPHY.md`** — Principles from practice: generalizable lessons forged by this project's specific work. Each entry: principle statement, the practice that forged it, scope, first-recorded date. Can be promoted to portfolio-level elsewhere but remains in PHILOSOPHY.md as the birthplace record. Use when an insight likely applies beyond the immediate situation.
+- **`PHILOSOPHY.md`** — Principles from practice: generalizable lessons forged by this project's specific work. Each entry: principle statement, the practice that forged it, scope, first-recorded date. Principles may be shared into sibling projects' PHILOSOPHY.md; this file remains the birthplace record for *this* project. Use when an insight likely applies beyond the immediate situation.
 
 See `DOC_HARNESS_SPEC.md` Chapter 13 for full formats, lifecycle, and rationale.
+
+## Optional Inter-Project Communication (inbox/outbox)
+
+Adopted when this project coordinates with other projects (dependencies in either direction, repeated cross-project decisions/deliverables). If `inbox/` and `outbox/` directories exist at the project root, the protocol is active.
+
+**Receiving**:
+- Recovery Chain task-conditional includes: "If `inbox/` has any file with `status: unread`: read them."
+- Read the message → update its YAML `status` field to `read` → perform any required action → update to `actioned`.
+- Never edit received messages beyond the status field. To respond, write a **new** message.
+
+**Sending**:
+- Filename: `YYYY-MM-DD-from-<this-project>-<topic-slug>.md`.
+- YAML frontmatter: `from`, `to`, `date`, `subject`, `status: unread` (sender sets), `in-reply-to` (if reply), `priority`.
+- Body: free-form Markdown.
+- Write to this project's `outbox/` (sender-side permanent record) AND copy the same file to recipient's `inbox/`.
+- Record the exchange in CURRENT_STATUS car body.
+
+**Snapshots over pointers**: when communicating numbers/deliverables to another project, put the value in the message body — do NOT point the recipient at your internal files (they churn and break external references).
+
+Complete specification, including archival (30-day actioned messages → `inbox/_archive/`) and retrofit procedure: see `DOC_HARNESS_SPEC.md` Chapter 14.
