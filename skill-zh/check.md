@@ -33,29 +33,58 @@
 - 日期与 CURRENT_STATUS 一致 → `✅ 当前`
 - 更旧 → `⚠️ 过期`
 
-### 1.4 FILE_INDEX 完整性
+### 1.4 FILE_INDEX 完整性（根与子索引）
 
-将 FILE_INDEX 条目与磁盘实际文件进行对比。使用以下经过验证的方法：
+将 FILE_INDEX 条目与磁盘实际文件进行对比。算法是**递归的**——项目根下可能有子 FILE_INDEX.md 文件，每个都要对自己的子树做一致性检查。使用以下方法：
 
 ```bash
-# 第1步：列出实际文件（排除 _archive、dist、.git、node_modules）
-find . -name "*.md" -not -path "./_archive*" -not -path "./dist/*" -not -path "./.git/*" | sed 's|^\./||' | sort > /tmp/dh_disk.txt
+# 找到项目中所有 FILE_INDEX.md 文件（根 + 子索引）
+find . -type f -name 'FILE_INDEX.md' \
+  -not -path "./_archive*" -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./dist/*" \
+  | sort > /tmp/dh_indexes.txt
 
-# 第2步：提取 FILE_INDEX 中的条目（包括引用的子 FILE_INDEX 文件）
-grep -oP '`[^`]+\.(md|py|tex|json|csv|txt|pdf|png|bib)`' FILE_INDEX.md | tr -d '`' | sort > /tmp/dh_index.txt
+# 对每个索引，检查其自身子树——并**在子索引边界处剪枝**
+# 以便 data/experiments/foo.md 属于 data/experiments/FILE_INDEX.md 的范围，
+# 而不是被 data/FILE_INDEX.md 当作幽灵条目报告。
+while IFS= read -r INDEX; do
+  DIR="$(dirname "$INDEX")"
+  echo "── 检查 $INDEX （范围：$DIR）──"
 
-# 第3步：对比
-echo "未注册:" && comm -23 /tmp/dh_disk.txt /tmp/dh_index.txt
-echo "幽灵条目:" && comm -13 /tmp/dh_disk.txt /tmp/dh_index.txt
+  # 构建排除列表：DIR 之下严格拥有自己的 FILE_INDEX.md 的目录，
+  # 它们属于各自子索引的范围。
+  EXCLUDES=()
+  while IFS= read -r OTHER_INDEX; do
+    OTHER_DIR="$(dirname "$OTHER_INDEX")"
+    if [ "$OTHER_DIR" != "$DIR" ] && [[ "$OTHER_DIR" == "$DIR"* ]]; then
+      EXCLUDES+=("-not" "-path" "$OTHER_DIR/*" "-not" "-path" "$OTHER_DIR")
+    fi
+  done < /tmp/dh_indexes.txt
+
+  # 该索引范围内实际存在的文件（在子索引边界处剪枝）
+  find "$DIR" -maxdepth 10 -type f \
+    "${EXCLUDES[@]}" \
+    \( -name '*.md' -o -name '*.py' -o -name '*.tex' -o -name '*.json' -o -name '*.csv' -o -name '*.txt' -o -name '*.pdf' -o -name '*.png' -o -name '*.bib' \) \
+    -not -path "*/_archive/*" -not -path "*/.git/*" -not -path "*/node_modules/*" -not -path "*/dist/*" \
+    -not -path "*/inbox/*" -not -path "*/outbox/*" \
+    | sed "s|^$DIR/||" | sort > /tmp/dh_disk.txt
+
+  # 该索引中提及的条目
+  grep -oE '`[^`]+\.(md|py|tex|json|csv|txt|pdf|png|bib)`' "$INDEX" | tr -d '`' | sort > /tmp/dh_entries.txt
+
+  echo "未注册（磁盘存在但 $INDEX 未列）："
+  comm -23 /tmp/dh_disk.txt /tmp/dh_entries.txt
+  echo "幽灵（$INDEX 中列出但无文件）："
+  comm -13 /tmp/dh_disk.txt /tmp/dh_entries.txt
+done < /tmp/dh_indexes.txt
 ```
 
-如果项目有子 FILE_INDEX.md 文件，还需检查子索引与对应目录的一致性。
+注意：若子目录本身有子 `FILE_INDEX.md`，父索引只需一行引用子索引文件（spec §4.3）。子树下的详细文件应由子索引审计，不在父索引范围。
 
-- 全部已注册 → `✅ 完整`
-- 发现未注册文件 → `❌ 未注册: [列表]`
-- 发现幽灵条目 → `❌ 幽灵条目: [列表]`
+- 所有层级全部已注册 → `✅ 完整（检查了 N 个索引）`
+- 有未注册 → `❌ 未注册：[列表，注明应由哪个索引注册]`
+- 有幽灵条目 → `❌ 幽灵：[列表，注明在哪个索引中]`
 
-**Token 效率**：只读 FILE_INDEX.md 内容和 `find` 输出。不读任何叶子文档内容。
+**Token 效率**：只读 `FILE_INDEX.md` 文件和 `find` 输出。不读任何叶子文档内容。
 
 ### 1.5 WORKLOG 目录一致性
 
@@ -72,18 +101,61 @@ echo "幽灵条目:" && comm -13 /tmp/dh_disk.txt /tmp/dh_index.txt
 
 ### 1.7 收件箱状态（如已启用跨项目通信）
 
-如项目根目录存在 `inbox/`，统计各 `status` 的消息数（用 Grep 检查 YAML `status:` 行，不读全文）。
+若根目录存在 `inbox/`，依次执行四个子检查。使用 Grep 读取 YAML `status:` 行和文件 mtime（不读正文）。
 
-- 无 `inbox/` → 跳过本项检查
-- 所有消息均为 `read` 或 `actioned` → `✅ 收件箱清空（共N条，0条未读）`
-- 有 `unread` 消息 → `⚠️ 收件箱有N条未读消息 — 需要处理`
+**(a) 未读计数**（范围：`inbox/` 的直接子文件；**排除** `inbox/_archive/` 和 `inbox/_malformed/`，以免隔离或归档消息与其他子检查重复计数）：
+- 无 `inbox/` → 跳过整个 §1.7
+- 全部 `read` 或 `actioned` → `✅ 收件箱清空（共 N 条，0 条未读）`
+- 有 `unread` → `⚠️ 收件箱有 N 条未读消息——需要处理`
 
-### 1.8 车身长度
+**(b) 归档触发**（对应 spec §14.4 规则 3）：
+统计 `status: actioned` 且 mtime 超过 30 天的消息数。
+- ≥5 条 → `⚠️ 归档到期：N 条 actioned 消息超过 30 天——本 session 内移入 inbox/_archive/`
+- <5 条 → 无需动作（仅在 ✅ 级别汇报）
 
-统计 CURRENT_STATUS 中"当前工作"区域到下一个 `##` 之间的行数（用 Grep/行计数，不读全文）。
+**(c) 异常消息**（对应 §14.8）：
+统计 `inbox/_malformed/` 目录中的文件数（若该目录存在）。
+- 0 或目录不存在 → ✅
+- ≥1 → `⚠️ 异常消息已隔离：inbox/_malformed/ 中有 N 条——需审查`
+
+**(d) 近期 outbox 发送未记录于 CURRENT_STATUS**：
+对 `outbox/` 中 mtime 在最近 3 天内的每个文件，核对 CURRENT_STATUS 车身是否提及该文件名。
+- 全部已记录 → ✅
+- 有遗漏 → `⚠️ Outbox 发送未在 CURRENT_STATUS 中记录：[列表]`
+
+### 1.8 车身长度（语言无关）
+
+统计 CURRENT_STATUS 中**车身标题**到下一个 `##` 之间的行数。匹配 `## Current Work` 或 `## 当前工作`（init 模板产生的两种变体）。用 Grep/行计数，不读全文。
 - <200行 → `✅ [N]行`
-- 200-250行 → `⚠️ 接近上限`
-- >250行 → `❌ 超出上限 — 建议执行阶段切换`
+- 200–250行 → `⚠️ 接近上限`
+- >250行 → `❌ 超出上限——建议执行阶段切换`
+
+### 1.9 Mid-Transition 一致性（spec §6.3.1）
+
+读取并比较三个值——用于检测在 Step 1 与 Step 5 之间被中断的阶段切换。
+
+- **A**：CLAUDE.md 中 "current phase" / "当前阶段" 行（前 10 行，两种语言都匹配）。
+- **B**：WORKLOG TOC 最新条目（TOC 表头之后首行 `| `）。
+- **C**：CURRENT_STATUS 车辙最新阶段摘要（"Recent Completed" / "近期已完成"下第一个 `###` 标题）。
+
+若 A、B、C 按 spec §6.3.1 表互相一致 → `✅ 一致`。
+否则 → `❌ 检测到 mid-transition 状态：A=[...] B=[...] C=[...]。按 §6.3.1 修复。`
+
+### 1.10 嵌入的操作规则版本
+
+Grep 查找 CLAUDE.md 中任意位置的 HTML 注释 `<!-- doc-harness-ops-version: N.N -->`（不区分大小写，单行）。
+- 找到且与安装的 skill 版本一致（如 `1.4`） → `✅ 操作规则已是最新（vN.N）`
+- 找到但旧于安装的 skill 版本 → `⚠️ 操作规则快照为 vX.X；安装的 skill 为 vY.Y——重新从 operational_rules.md 嵌入以升级`
+- 完全未找到 → `⚠️ 未找到版本标签——此 CLAUDE.md 早于 v1.4 或被手工编辑。建议重新嵌入 operational_rules.md。`
+
+安装的 skill 版本见已安装 `spec.md` 顶部的 `**Version**` 行。**按以下顺序解析安装路径**（命中即停）：
+
+1. 项目级：`<项目根>/.claude/skills/doc-harness/spec.md`
+2. 用户级，Claude Code Unix 默认：`$HOME/.claude/skills/doc-harness/spec.md`
+3. 用户级，XDG 覆盖：`${XDG_CONFIG_HOME:-$HOME/.config}/claude/skills/doc-harness/spec.md`
+4. 用户级，Windows：`%USERPROFILE%\.claude\skills\doc-harness\spec.md`（bash 下：`"$USERPROFILE/.claude/skills/doc-harness/spec.md"`——Windows bash 支持正斜杠）
+
+若无路径可解析，报告 `⚠️ 无法定位已安装的 skill——请在 skill 已部署的项目中运行 check，或安装到上述任一路径`。"安装版本未找到"**不**视为通过。
 
 ---
 
@@ -158,6 +230,10 @@ echo "幽灵条目:" && comm -13 /tmp/dh_disk.txt /tmp/dh_index.txt
 
 ---
 
+## 语言无关性说明
+
+第一部分的所有锚点（`## Current Work` / `## 当前工作`、`## Recent Completed` / `## 近期已完成`、`Iron Rules` / `铁律`、`Driving Manual` / `驾驶手册` 等）都应**兼容中英两种形式**——实现时 Grep 两种变体中的任一。混合语言项目（如中文 CLAUDE.md + 英文 CURRENT_STATUS）只要每个文档内部语言一致即可正确审计。
+
 ## 输出格式
 
 ```
@@ -172,11 +248,13 @@ echo "幽灵条目:" && comm -13 /tmp/dh_disk.txt /tmp/dh_index.txt
 [1.1] 核心文件:      ✅/❌  |  规范: ✅/⚠️
 [1.2] CURRENT_STATUS: ✅/⚠️/❌
 [1.3] CLAUDE.md:      ✅/⚠️
-[1.4] FILE_INDEX:     ✅/❌ N个未注册/N个幽灵
+[1.4] FILE_INDEX:     ✅/❌ N个未注册/N个幽灵  （递归：N个索引）
 [1.5] WORKLOG 目录:   ✅/⚠️
 [1.6] WORKLOG 长度:   ✅ N行 / ⚠️/❌
-[1.7] 收件箱:         ✅ / ⚠️ N条未读  （未启用则跳过）
+[1.7] 收件箱:         ✅ / ⚠️ <未读>/<归档>/<异常>/<outbox未记录>  （未启用则跳过）
 [1.8] 车身长度:       ✅ N行 / ⚠️/❌
+[1.9] Mid-transition: ✅ 一致 / ❌ 需按 §6.3.1 修复
+[1.10] 操作规则版本:   ✅ vN.N / ⚠️ vX.X (安装: vY.Y) — 重新嵌入
 
 ── 第二部分：原则反思 ──
 

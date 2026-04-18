@@ -1,8 +1,43 @@
 # Doc Harness — Complete Specification
 
-**Version**: v1.3
+**Version**: v1.4
 **Date**: 2026-04-19
 **Status**: Production-ready
+
+---
+
+## Table of Contents
+
+Use this TOC to jump directly to the chapter relevant to your task; the spec is ~1300 lines and reading it end-to-end is rarely necessary.
+
+**Part 1 — The four core documents**
+- Chapter 1: First Principles & Overview (what Doc Harness is, core scenarios)
+- Chapter 2: CLAUDE.md — Entry Document (template, iron rules, Recovery Chain)
+- Chapter 3: CURRENT_STATUS.md — Active Status (tire tracks / car body / headlights / driving manual metaphor explained)
+- Chapter 4: FILE_INDEX.md — File Index (organization rules, sub-indexes, bulk registration)
+- Chapter 5: WORKLOG.md — Work Log (TOC format, archival at ~1000 lines, quarter-boundary rule)
+
+**Part 2 — Information flow and protocols**
+- Chapter 6: Information Flow Rules (daily workflow, 5-step phase transition, mid-transition detection §6.3.1, pause/resume auto-resume tree)
+- Chapter 7: Single Source of Truth
+- Chapter 8: Two-Level Principle Management (iron rules vs driving manual)
+- Chapter 9: Document Lifecycle (SUPERSEDED handling)
+- Chapter 10: Sub-projects and Project Groups (including §10.3 mid-project adoption)
+
+**Part 3 — Agent behavior**
+- Chapter 11: Agent Behavior Guidelines (session start / during work / session end, context-aware update rule §11.2 bullet 4)
+- Chapter 12: Anti-patterns
+
+**Part 4 — Optional extensions**
+- Chapter 13: Optional Long-Horizon Documents (PARKING_LOT.md, PHILOSOPHY.md)
+- Chapter 14: Optional Inter-Project Communication (inbox/outbox protocol, message format, lifecycle, malformed handling §14.8)
+
+**Appendices**
+- A: Phase Boundary Decision Guide
+- B: Quick Checklist
+- C: Glossary
+- D: Worked Example — Four Documents Through Two Phase Transitions
+- E: Design Choices (FAQ)
 
 ---
 
@@ -139,14 +174,23 @@ The complete operational rules are in `operational_rules.md`. The `/doc-harness 
 
 ### 3.1 Role and Structure
 
-CURRENT_STATUS is the project's **active nerve center**, organized using the "moving car" metaphor:
+CURRENT_STATUS is the project's **active nerve center**. Think of the project as a car moving forward; CURRENT_STATUS is the cockpit view. Four sections, each with a distinct role, a distinct update rhythm, and a distinct metaphor:
+
+- **§1 Tire Tracks (Recent Completed)** — what you see in the rear-view mirror. The last 2–3 completed phases, each in 3–5 lines. Enough to situate "where have we been" without fetching the WORKLOG. Each entry points to the WORKLOG chapter for details. Rolling window: when a new phase completes, the oldest entry drops off.
+- **§2 Car Body (Current Work)** — the car itself, where you are right now. The full working record of the current phase: phase goal, each completed step (what was done, files created, key decisions), unresolved issues. This is the section you edit most — every meaningful step lands here. At phase transition its contents move into WORKLOG (permanent archive) and the body is cleared for the next phase.
+- **§3 Headlights (Next Steps)** — what the lights illuminate ahead. Immediate actions (1–3 concrete next steps) plus longer-range plans. When a session ends, the headlights should still point at something actionable so the next agent (or you) knows what to pick up. Updated every session.
+- **§4 Driving Manual (Working Principles)** — rules for driving *this* car on *this* road. Phase-specific guidelines (e.g., "validate on out-of-sample data this phase" / "run typecheck before every commit"). They live and die with the phase; at transition, each is reviewed (promote to iron rule, keep, or remove — see §6.2.2).
+
+Summarized:
 
 | Section | Metaphor | Content | Lifecycle |
 |---------|----------|---------|-----------|
-| §1 Recent Completed | Tire Tracks | Brief summaries of 2-3 most recent completed phases (3-5 lines each) | Rolling window |
+| §1 Recent Completed | Tire Tracks | Brief summaries of 2–3 most recent completed phases (3–5 lines each) | Rolling window |
 | §2 Current Work | Car Body | Full detailed record of current phase | Transfers to WORKLOG at phase end |
 | §3 Next Steps | Headlights | Immediate actions + future plans | Updated every session |
 | §4 Working Principles | Driving Manual | Guidelines for this phase | Lives and dies with the phase |
+
+**Why the metaphor matters**: each section answers a different question an agent asks on arrival — *where have we been?* (tire tracks), *where are we now?* (car body), *where next?* (headlights), *how do we drive here?* (driving manual). Keeping the four physically separate prevents them from blurring — a common failure mode when status documents devolve into narrative prose.
 
 ### 3.2 Template
 
@@ -352,13 +396,20 @@ WORKLOG is append-only, so it inevitably grows. A 2000-line WORKLOG is a liabili
 **Archival procedure**:
 
 1. Decide the cut point: keep the most recent **3 phases** in `WORKLOG.md`; move earlier phases out.
-2. Create `WORKLOG_ARCHIVE_<YYYY-QN>.md` (quarterly granularity, e.g. `WORKLOG_ARCHIVE_2026-Q1.md`). Use the date range of the archived phases to choose the quarter label. Multiple archive files accumulate over time.
+2. Create `WORKLOG_ARCHIVE_<YYYY-QN>.md` (quarterly granularity, e.g. `WORKLOG_ARCHIVE_2026-Q1.md`). **Assign each archived phase to the quarter of its end date**; a phase that spans a quarter boundary lives in a single archive file — the one matching its end date — and does not get split. Multiple archive files accumulate over time.
 3. Move the older phase sections (including their entries in the TOC) to the archive file. The archive file has the same structure as WORKLOG.md (TOC at top + phase sections below).
-4. At the top of `WORKLOG.md`, add a pointer line immediately under the title:
+4. At the top of the archive file (above the archive's TOC), add a **backlink**:
    ```
-   > Earlier history archived in: WORKLOG_ARCHIVE_2026-Q1.md, WORKLOG_ARCHIVE_2026-Q2.md, ...
+   > Part of the WORKLOG series. Current WORKLOG: `WORKLOG.md`. Other archives: `WORKLOG_ARCHIVE_2025-Q4.md`, ...
    ```
-5. Register each archive file in FILE_INDEX under a `## Archived History` category (create if missing).
+5. At the top of `WORKLOG.md`, add a **forward pointer** immediately under the title:
+   ```
+   > Earlier history archived in: `WORKLOG_ARCHIVE_2026-Q1.md`, `WORKLOG_ARCHIVE_2026-Q2.md`, ...
+   ```
+6. **Cross-quarter scar**: if an archived phase's start date falls in an *earlier* quarter than the archive file that contains it (because the phase spans a boundary and was filed by its end date per rule 2), add one line to the *earlier* archive file's TOC: `| (phase crosses into YYYY-QN) | YYYY-MM-DD~MM-DD | [→](WORKLOG_ARCHIVE_YYYY-QN.md#anchor) |`. This lets a reader scanning the Q1 archive for March activity find the phase that ended in Q2. If the earlier archive doesn't exist yet (i.e., this is the first archive and the spanning phase's start falls in an unarchived period), skip this step.
+7. Register each archive file in FILE_INDEX under a `## Archived History` category (create if missing).
+
+**Git commit convention**: Make the archival move a **single atomic commit** with message `Archive WORKLOG through YYYY-QN (keep most recent 3 phases)`. Do NOT squash the archive-creation commit with unrelated work — a future agent tracing history should be able to identify the archival event cleanly. Staging order inside the single commit: the archive file is added, WORKLOG is edited, FILE_INDEX is edited — all in one commit.
 
 **Non-goals**: Archival is not deletion. Archive files are permanent records, never edited after creation except for errata. Never delete an archive file.
 
@@ -406,17 +457,54 @@ Step 3:
 Step 4:
   Clear car body. Fill in new phase goal.
   May include one brief context line.
-  Update driving manual:
-    - Remove principles no longer applicable
-    - Check if any should be promoted to CLAUDE.md iron rules
-    - Add new principles for the new phase
+  Apply the driving-manual review ritual (see §6.2.2 below).
 
 Step 5:
   Update CLAUDE.md "current phase" and "one-line status (as of date)".
   Update WORKLOG TOC.
 ```
 
-**Interrupt safety**: Step 1 executes first (copying content to WORKLOG), ensuring that even if compact occurs during Steps 2-5, data is safely preserved. The next agent can find complete content in WORKLOG and finish the remaining steps.
+**Interrupt safety**: Step 1 executes first (copying content to WORKLOG), ensuring that even if compact occurs during Steps 2–5, data is safely preserved. Detection of an interrupted transition and the repair procedure are in §6.3.1.
+
+#### 6.2.1 Stepwise failure modes
+
+Each step has a characteristic failure signature. This table is for reference when diagnosing a malformed project state (see also §6.3.1):
+
+| Step | Failure signature | Repair |
+|------|-------------------|--------|
+| 1 | WORKLOG has no new entry; car body still full | No data risk yet — retry Step 1. |
+| 1 (partial) | WORKLOG has the detail block but no phase summary / no TOC row | Finish the summary from car body; add TOC row. |
+| 2 | CURRENT_STATUS tire tracks lack a new summary; WORKLOG has the entry | Insert the summary from WORKLOG into tire tracks. |
+| 3 | Tire tracks > 3 entries | Remove the oldest (it's permanent in WORKLOG). |
+| 4 | Car body still contains old phase content; new phase goal not written | Clear; write goal. |
+| 4 (partial) | Driving manual not reviewed | Apply §6.2.2 ritual. |
+| 5 | CLAUDE.md "current phase" still old; or WORKLOG TOC missing the new row | Update both. |
+
+A repair triggered during §6.3.1 mid-transition detection should perform these in order of downstream dependency, stopping when the project state is coherent again.
+
+#### 6.2.2 Driving-manual review ritual
+
+At Step 4 of every phase transition, walk the ritual below for each principle currently in the driving manual. This replaces ad-hoc judgment with a checklist.
+
+For each principle P in the current driving manual:
+
+1. **Is P marked `[DONE]` / `[已满足]`?**
+   → If the phase is ending (which it is, at a transition), **remove P**. Satisfied principles do not carry forward.
+
+2. **Has P been in the driving manual for ≥3 consecutive phases, with its semantic intent unchanged?**
+   "Unchanged" here means *the rule still says the same thing*, not literal text identity — rewording for clarity (rule 4) doesn't reset the counter. If in doubt, two principles carry the same intent when a violation of one would also be a violation of the other.
+   → **Candidate for promotion** to CLAUDE.md iron rules. Confirm by asking: would violating P in any future phase be a real problem? If yes, promote. Record the promotion in the WORKLOG phase-transition entry.
+
+3. **Does P respond to a constraint that no longer exists?** (e.g., "always use library X" after the project migrated off X)
+   → **Remove P**.
+
+4. **Does P apply to the NEW phase's expected work?**
+   → **Keep P** as-is. Optionally rewrite for clarity if the new phase context changes how P reads.
+
+5. **Does P apply to only some sub-tasks of the new phase?**
+   → **Keep P**, but consider annotating the narrower scope.
+
+Then add new principles specific to the new phase's work. Expect 1–4 principles per phase; a driving manual with >6 entries is usually a sign of overfitting — prune.
 
 ### 6.3 Context Compact Recovery
 
@@ -425,26 +513,78 @@ Compact occurs
   → Read CLAUDE.md → understand project and recovery chain
   → Read CURRENT_STATUS.md:
       Tire tracks → "what was recently completed"
-      Car body → "what's the current state" (if car body seems incomplete,
-                  check WORKLOG's latest entry for a more complete record —
-                  may indicate an interrupted phase transition)
+      Car body → "what's the current state"
       Headlights → "what to do next"
       Driving manual → "what to watch out for"
+  → Run §6.3.1 Mid-Transition Detection (below)
   → Continue working (if user is present, confirm whether next steps have changed)
 ```
 
+#### 6.3.1 Mid-Transition Detection and Repair
+
+A phase transition can be interrupted between Step 1 and Step 5 (compaction, crash, manual interruption). The symptom depends on which step completed. Run this three-way coherence check at every session start:
+
+**Three values to compare**:
+- **A** — CLAUDE.md "current phase" string.
+- **B** — WORKLOG TOC's newest entry (top row, after the TOC header).
+- **C** — CURRENT_STATUS tire tracks' newest phase summary (first `###` heading under "Recent Completed").
+
+**Coherence rules**:
+
+| A | B | C | State | Action |
+|---|---|---|-------|--------|
+| Phase N | Phase N (old) | Phase N−1 newest | ✅ Healthy mid-phase | Proceed. |
+| ⏸️ | any | any | Paused — possibly mid-transition | Apply §6.4 resume rules; detection resumes there. |
+| Phase N+1 | Phase N | Phase N−1 newest | ❌ Step 1 incomplete (phase title updated early but WORKLOG not written) | **Should never happen** if agents follow the 5-step order. If detected, protect data: re-read CURRENT_STATUS car body, treat as in-flight Phase N, execute Step 1 now. |
+| Phase N | Phase N (new) | Phase N−1 newest | ❌ Step 2 incomplete (WORKLOG has new Phase N entry from Step 1 but tire tracks not updated) | Copy the phase summary from WORKLOG's new entry to the top of CURRENT_STATUS tire tracks; if tire tracks now exceed 3, run Step 3. Then proceed to Step 4. |
+| Phase N | Phase N (new) | Phase N−1 newest, tire tracks >3 | ❌ Step 3 incomplete | Remove the oldest tire track entry. Then proceed to Step 4. |
+| Phase N (old) | Phase N (new) | Phase N (new) newest | ❌ Step 5 incomplete (WORKLOG and tire tracks advanced but CLAUDE.md still shows old phase) | Update CLAUDE.md "current phase" and "one-line status (as of date)"; update WORKLOG TOC if missing the row. |
+| Any other inconsistency | — | — | ⚠️ Ambiguous | Write the diagnostic to CURRENT_STATUS car body as a `#### Mid-transition detected (YYYY-MM-DD)` entry. If user is present → ask. Otherwise → complete the transition in the direction WORKLOG points (WORKLOG is authoritative for "what was intended"). |
+
+**Footnote on "Phase N" in column B**: "Phase N (old)" means B points at the *current* phase's WORKLOG entry (written when Phase N began). "Phase N (new)" means B points at a *newly-written* entry for an incoming Phase N that signals Step 1 completed for a transition *out of* Phase N−1. The distinguisher is the relationship to C: when C is Phase N−1 (the healthy predecessor), B=Phase N is the stable mid-phase entry; when C is Phase N−1 *and* there is a new Phase N row at B with contents that don't match CURRENT_STATUS car body, Step 1 of a transition wrote B but the rest didn't land. Agents implement the table by checking string equality of phase names and date fields, not by semantic interpretation.
+
+**Zero-progress Step 1 interrupt**: the table cannot detect an interrupt that happened *before* any writes landed in WORKLOG (A, B, C all still reflect the pre-transition state). This is not a data-loss scenario — no transition state exists yet — but the next agent should be cautious about extending the car body with new work if the phase goal is approaching a transition boundary. When in doubt, the agent should check whether §6.2's trigger conditions already met before compaction; if yes, initiate a fresh phase transition rather than prolonging the old phase.
+
+**After any repair action**: add one line to CURRENT_STATUS car body noting the repair (e.g., `#### Auto-repaired phase transition Step 2 on 2026-04-19 during compact recovery`). Do not write more than one such line per compact — subsequent edits belong to normal work.
+
+**Why this works**: Step 1 (data to WORKLOG) is protective — no real state is lost once Step 1 completes. Steps 2–5 are bookkeeping that can be finished deterministically from the WORKLOG state. The only dangerous case (first row in the table) is impossible if agents follow the 5-step order; detection exists for paranoia only.
+
 ### 6.4 Project Pause and Resume
 
-**Pausing**:
-1. Execute the five-step phase transition (save current work to WORKLOG)
-2. Write in CURRENT_STATUS car body: "Project paused on YYYY-MM-DD. Reason: ..."
-3. Update CLAUDE.md status to ⏸️
+#### Pausing (orderly)
 
-**Resuming**:
-1. Agent reads CLAUDE.md → sees ⏸️
-2. Reads CURRENT_STATUS → tire tracks have the last phase summary, car body has pause notice
-3. Reads WORKLOG latest phase → gets complete pre-pause work details
-4. **Critical**: Headlights "next steps" may be stale (circumstances may have changed during pause) — confirm with user before executing
+1. Execute the five-step phase transition (save current work to WORKLOG).
+2. Write in CURRENT_STATUS car body: `Project paused on YYYY-MM-DD. Reason: ...`
+3. Update CLAUDE.md status to ⏸️ and refresh the one-line status.
+4. Write down, in the car body pause note, any **time-sensitive context** that would invalidate headlights on resume (e.g., "depends on X deliverable expected 2026-05-15; confirm X state before acting on headlights").
+
+#### Pausing (emergency / mid-phase-transition)
+
+If the pause itself interrupts a phase transition (rare, but possible), do **not** try to finish the transition first — that risks losing data under time pressure. Instead:
+
+1. Write `Project paused on YYYY-MM-DD (during phase transition, Step N reached)` in whichever document is safest to edit (usually CURRENT_STATUS car body; fall back to CLAUDE.md one-line status if car body is also in an inconsistent state).
+2. Set CLAUDE.md status to ⏸️.
+3. On resume, §6.3.1 mid-transition detection will identify the interrupted state and repair it before normal work resumes.
+
+#### Resuming (user present)
+
+1. Agent reads CLAUDE.md → sees ⏸️.
+2. Reads CURRENT_STATUS → tire tracks have the last phase summary, car body has pause notice.
+3. Reads WORKLOG latest phase → gets complete pre-pause work details.
+4. **Critical**: Headlights "next steps" may be stale. Confirm with user before executing. Pay particular attention to any time-sensitive context recorded at pause time.
+5. Flip CLAUDE.md status from ⏸️ to ⏳; refresh one-line status.
+
+#### Resuming (no user present — auto-resume)
+
+Invoked when an agent is compacted back into a paused project without direct user input.
+
+1. Agent reads CLAUDE.md → sees ⏸️.
+2. Reads pause note in car body; notes pause date.
+3. **Run §6.3.1 mid-transition detection FIRST.** If a mid-transition state is detected, **repair it before any resume decision**. The pause may itself have occurred during a phase transition (see emergency-pause path above); resuming into such a project without repairing first risks acting on inconsistent state.
+4. Only after §6.3.1 returns a coherent state, **compare pause date to today**:
+   - **≤7 days** (pause date is today, 1, 2, 3, 4, 5, 6, or 7 days ago): likely resumable. Check headlights against time-sensitive context (if any). If everything looks current, write a car body entry `#### Auto-resumed on YYYY-MM-DD (user absent)`, flip CLAUDE.md to ⏳, and continue per headlights.
+   - **8–30 days**: headlights are suspect. Do NOT execute headlights silently. Write `#### Auto-resume attempted YYYY-MM-DD — waiting for user confirmation` in car body. Leave CLAUDE.md at ⏸️. At the next user interaction, raise the question.
+   - **>30 days**: never auto-resume. Always wait for explicit user direction.
 
 ---
 
@@ -582,7 +722,9 @@ Do not unconditionally read all task-conditional entries at startup. That defeat
 1. Complete a **meaningful step** → update CURRENT_STATUS car body
 2. Create a new file → **do two things simultaneously**: (1) register in FILE_INDEX (2) record in CURRENT_STATUS car body
 3. **"Write It Down"**: important analysis results, design ideas, decision rationale → save to file + register
-4. **Watch remaining context** (if exposed by the runtime): context compression is involuntary session end. If your environment reports a context-usage percentage or token count, treat **low remaining context** (~<20%) as an immediate trigger — update CURRENT_STATUS before the next tool call; if the car body has substantial unsaved work, consider a phase transition now. Don't wait for a "meaningful step" that may never land.
+4. **Watch remaining context** (if exposed by the runtime): context compression is involuntary session end. If your environment reports a context-usage percentage or token count, treat **low remaining context** (~<20%) as an immediate trigger — update CURRENT_STATUS before the next tool call; if the car body has **substantial unsaved work**, consider a phase transition now. Don't wait for a "meaningful step" that may never land.
+
+   **"Substantial unsaved work" — concrete threshold** (any one suffices): (a) ≥3 completed `####` step headings since the last car-body flush; (b) ≥50 lines added to the car body since the last flush; (c) car body ≥100 lines (half the 200-line phase-transition threshold). If none of (a)–(c) apply, just flush — don't force a phase transition from a thin car body.
 
 ### 11.3 Session End
 
@@ -711,6 +853,10 @@ Both start empty. Git-track them by adding a `.gitkeep` (or equivalent) if your 
 - `<topic-slug>`: kebab-case summary of the topic.
 - Example: `2026-04-19-from-whoami-skill-improvement-proposals.md`.
 
+**Disambiguator for same-day collisions**: if a filename would collide with one already present (same date + same source + same topic), append `-HHMMSS` (sender's local time, zero-padded) before `.md`. Example: `2026-04-19-from-whoami-skill-improvement-proposals-143052.md`. The sender checks its own outbox for collisions before writing; if found, include HHMMSS on the new message and leave the existing one unchanged. Recipients treat the disambiguated filename as a distinct message.
+
+**Sub-second collisions**: on rare occasions (automated senders issuing multiple messages per second) a `-HHMMSS` name may itself collide. If the check still finds a collision after applying `-HHMMSS`, further disambiguate by appending `-<N>` where `N` is the smallest positive integer that produces a unique name (e.g., `...-143052-2.md`). This is the terminal rule — do not fall back to overwriting. §14.8's "multiple messages with the same filename" row handles the pathological case where a collision still occurs despite these rules (e.g., two senders writing independently); the on-disk file wins and the sender is alerted via `/doc-harness check` §1.7.
+
 **Header** (YAML frontmatter, required):
 
 ```yaml
@@ -726,6 +872,20 @@ priority: low | normal | high
 ```
 
 **Body**: free-form Markdown. Tables, checklists, code blocks permitted.
+
+### 14.3.1 Pre-send verification (sender's responsibility)
+
+Before writing a new message to a recipient's `inbox/`, the sender **must** verify that the recipient has the inbox/outbox protocol active. Otherwise delivery is silent-failure: a file lands in a directory the recipient never scans, or the copy fails with `ENOENT` on a nonexistent target.
+
+Verification steps (in order, stop at first failure):
+1. **Target path exists**: the recipient project directory exists and is reachable from the sender.
+2. **Recipient's `inbox/` exists**: if absent, the recipient has not adopted the protocol (or is no longer participating). **Do not create `inbox/` in the recipient's project** — that would silently opt them in without consent.
+3. **Recipient's CLAUDE.md contains the inter-project iron rule block** (grep for the string `inbox/` in recipient CLAUDE.md). This confirms the recipient's next agent will actually scan its inbox.
+
+**If any step fails**: do NOT copy the file to recipient's `inbox/`. Instead:
+- Write the message to your own `outbox/` as normal (permanent record).
+- Record the failed delivery in CURRENT_STATUS car body: `#### Attempted to send <topic> to <recipient> on YYYY-MM-DD — recipient has not adopted inbox/outbox protocol. Message held in own outbox only.`
+- Raise the issue with the user at the next opportunity. Do not retry automatically.
 
 ### 14.4 Message lifecycle and rules
 
@@ -752,7 +912,7 @@ Sender                                        Recipient
 
 1. **Received messages are immutable** — never edit a file in your `inbox/` beyond updating the `status` field. To respond, write a new message.
 2. **Status transitions** — sender sets `unread` at delivery. Recipient changes to `read` after reading, then to `actioned` after completing any required action. An `actioned` message with no required action is equivalent to acknowledged-and-closed.
-3. **Archival** — messages older than 30 days with `status: actioned` may be moved to `inbox/_archive/` to keep the active inbox scannable. Archived messages are permanent records; do not delete.
+3. **Archival** — messages older than 30 days with `status: actioned` **should** be moved to `inbox/_archive/` (same structure inside). The archival audit runs as part of `/doc-harness check` §1.7 — when the check finds ≥5 actioned messages older than 30 days, it flags archival as an action item; the agent performs the move during the same session. Archived messages are permanent records; do not delete.
 4. **Sender retains a copy** — the sender's `outbox/` is the permanent draft/record. If the recipient loses their copy, the sender's `outbox/` is authoritative for what was sent.
 5. **Cross-project reference snapshots** — when communicating numbers, deliverables, or state ("our model reached accuracy 0.88"), send a **snapshot** in an inbox message rather than pointing the recipient at your internal files. Internal files churn and refactors break external references. A snapshot, once delivered, does not lie.
 
@@ -782,7 +942,7 @@ Also record outbound exchanges in the car body as they happen:
 
 ```markdown
 #### Sent deliverable to <target> (YYYY-MM-DD)
-- Message: `outbox/YYYY-MM-DD-to-<target>-<topic>.md`
+- Message: `outbox/YYYY-MM-DD-from-<this-project>-<topic>.md` (same filename convention as §14.3 — the outbox file has the same name as the copy sent to the recipient's inbox)
 - Summary: <one line>
 ```
 
@@ -808,10 +968,11 @@ Note: this entry sits in **task-conditional**, not must-read. Reading the entire
 
 If you arrive at a project and see `inbox/` and `outbox/` in the root, the project uses this protocol. Do this:
 
-1. Scan `inbox/` for any file whose frontmatter has `status: unread`.
+1. Scan `inbox/` for any file whose frontmatter has `status: unread` (see §14.3 for the frontmatter schema and lifecycle vocabulary).
 2. For each: read it, take the required action if any, update its `status` field (`read` after reading, `actioned` after completing).
 3. Before modifying project internal files that other projects might reference (models, interfaces, numbers), consider whether a snapshot needs to be sent to dependents via their inbox.
-4. To send: write to your project's `outbox/` AND copy the same file to the recipient's `inbox/`. Record the exchange in CURRENT_STATUS.
+4. To send: write to your project's `outbox/` AND copy the same file to the recipient's `inbox/` (same filename — see §14.3). Record the exchange in CURRENT_STATUS.
+5. If you encounter an inbox file that looks wrong (no frontmatter, unknown status value, nonconforming filename), handle it per §14.8 rather than guessing.
 
 Everything you need is in this chapter. No external file required.
 
@@ -823,6 +984,24 @@ To retrofit an existing project:
 3. Add the task-conditional entry to Recovery Chain (also §14.5).
 4. Add the `## Inter-Project Communication` category to FILE_INDEX.
 5. (Optional) Send a notification message to dependent projects that this project is now reachable via inbox.
+
+### 14.8 Malformed message handling
+
+When `inbox/` contains a file that does not conform to §14.3, do NOT silently skip it and do NOT guess. Apply the classification below, then act once — never enter a retry loop on a malformed file.
+
+| Symptom | Lenient or strict? | Action |
+|---------|--------------------|--------|
+| Filename does not match `YYYY-MM-DD-from-<source>-<topic>.md` but file has valid YAML | Lenient | Process normally. Note the filename anomaly in CURRENT_STATUS car body. Do NOT rename the file (it's the sender's record, immutable per §14.4 rule 1). |
+| No YAML frontmatter at all | Strict | Move to `inbox/_malformed/` (create if missing). Write a one-line entry in CURRENT_STATUS car body: `#### Quarantined malformed inbox/<filename> (no YAML) on YYYY-MM-DD`. Do NOT attempt to parse the body. |
+| YAML frontmatter present but `status:` field missing | Strict | Treat as `unread` for safety (err toward action). Add the `status: unread` line and proceed to read. Log the anomaly in car body. |
+| `status:` has unknown value (not `unread`/`read`/`actioned`) | Strict | Treat as `unread`. Log the anomaly in car body. After reading, set to `read` (then `actioned` if applicable) using canonical values. |
+| Required frontmatter field missing (`from`, `to`, `date`, `subject`) | Strict | Move to `inbox/_malformed/` with a one-line car body note. Do NOT fabricate the missing values. All four are required per §14.3. |
+| `priority:` missing or has unknown value | Lenient | Treat as `priority: normal`. Log the anomaly in car body. |
+| `in-reply-to:` missing entirely | Lenient | Treat as no-reply (null). No action needed. |
+| Frontmatter references `in-reply-to:` pointing at a file that does not exist in this project's outbox | Lenient | Process normally; note the dangling reference in car body but do not block. |
+| Multiple messages with the same filename (rare even after §14.3 disambiguator, e.g. two senders writing independently at the same moment) | Strict | The one on disk wins. Note in car body: `#### Filename collision observed on <name> — kept disk copy`. Do not merge contents. Report via `/doc-harness check` §1.7 so the sender can re-send with a different topic slug if needed. |
+
+`inbox/_malformed/` is not archival — it's a quarantine for agent/human inspection. Entries there should be reviewed by the user, not silently forgotten. `/doc-harness check` §1.7 reports the count.
 
 ---
 
@@ -1137,4 +1316,5 @@ Phase density varies enormously across projects — from ~20 lines per phase (in
 | v1.0 | 2026-04-02 | Production release. CLAUDE.md template embeds operational rules; 8 ambiguities resolved (session-end status refresh, new project initial state, WORKLOG TOC format, cross-phase context, driving manual lifecycle, FILE_INDEX cross-category, iron rule management §8.3, session-end checklist additions) |
 | v1.1 | 2026-04-03 | Mid-project adoption guidance (§10.3); SUPERSEDED-but-retained document lifecycle (§9.2); improved `/doc-harness check` (spec presence, FILE_INDEX script, phase coherence); sub-index guidelines for large directories |
 | v1.2 | 2026-04-19 | Recovery Chain two-layer structure (must-read + task-conditional) with self-contained constraint; WORKLOG archival rule (§5.5, ~1000-line threshold, quarterly archive files); new optional documents PARKING_LOT.md and PHILOSOPHY.md (Chapter 13); anti-pattern additions; Appendix E Design Choices |
+| v1.4 | 2026-04-19 | Comprehensive release — six review cycles (1 self + 4 independent scenario agents + 1 skill-creator structural review) surfaced and closed **30 distinct issues** in total. **Content (16)**: B1 `skill-zh/operational_rules.md` inbox/outbox section (iron rule 1 sync); B2 §14.5 outbox filename `from-<source>` fix; B3 README Upgrade section; B4 default-language contradiction; B5 v1.2→v1.3 reversal note; B6 `README_zh` portfolio mistranslation; B7 `init.md` Step 2 4-way branch (clean / adopted / mid-project / partial); B8 SKILL.md no-args dispatcher; P1 §6.3.1 mid-transition detection (three-way coherence, ⏸️ row, clarifying footnote, zero-progress-Step-1 note); P2 §14.3 HHMMSS disambiguator + sub-second fallback with `-<N>` counter; P3 §14.8 malformed-message handling with quarantine and full required-field enumeration; P4 §14.4 rule-3 archival as `check.md` §1.7(b) trigger at ≥5 stale messages; P5 §5.5 quarter-boundary rule, archive↔WORKLOG backlinks, cross-quarter scar, atomic-commit git convention; P6 `check.md` language-independence (dual-anchor matching + note); P7 `check.md` §1.4 recursive sub-index audit **with prune at sub-index boundaries** to prevent false ghosts; P8 `<!-- doc-harness-ops-start/end -->` sentinels + version tag + `check.md` §1.10 drift detection with full install-path resolution order (project / ~/.claude / XDG / Windows); P9 §11.2 bullet 4 quantified "substantial" threshold (a≥3 steps / b≥50 lines / c car body≥100); P10 §6.4 three-path pause/resume (orderly / emergency / auto-resume ≤7d/8–30d/>30d) with §6.3.1 repair gate; P11 §6.2.2 driving-manual review ritual (5-step) with "semantic intent" unchanged criterion; P12 §6.2.1 stepwise failure table. **Additional integrity fixes**: §14.3.1 pre-send verification (sender must confirm recipient adoption before writing to inbox); operational_rules.md archival section catches up to spec §5.5. **Structural (skill-creator review)**: SKILL.md description rewritten for triggering accuracy (implicit user phrases + explicit slash commands); spec.md gains a TOC for 1300-line navigation; allowed-tools adds Edit; §3.1 car-metaphor explained as narrative (tire tracks / car body / headlights / driving manual — four questions an agent asks on arrival). **Polish**: SKILL.md surfaces context-cadence corollary; README worked inbox-message example + bulk-registration / disable FAQ entries. |
 | v1.3 | 2026-04-19 | New Chapter 14: Optional Inter-Project Communication (inbox/outbox) — self-contained, portable mechanism for file-based cross-project messaging. Spec covers folder structure, message format (YAML frontmatter + Markdown body), lifecycle (unread→read→actioned), integration with all four core documents, quick start for fresh agents, and adopt-on-existing-project procedure. init gains one y/n prompt to enable. Appendix E updated to explain why the mechanism is optional and why it lives inside doc-harness rather than as an external spec. "Portfolio" framing removed throughout — project groups are flat peers. §11.2 gains a context-aware update rule: if the runtime exposes context-window usage, low remaining context (~<20%) is an immediate trigger to flush CURRENT_STATUS and possibly phase-transition. |

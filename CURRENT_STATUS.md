@@ -1,7 +1,7 @@
 # CURRENT_STATUS — Doc Harness
 
 **Last updated**: 2026-04-19
-**Current phase**: v1.3 development (⏳)
+**Current phase**: v1.4 pre-commit (⏳)
 
 ---
 
@@ -82,6 +82,40 @@ Deliver v1.2 and v1.3 of Doc Harness skill files. v1.2 scope: Recovery Chain two
 - Rationale: compression is involuntary session end; "write it down or lose it" principle extends naturally to "write it down *before* it's too late."
 - README FAQ v1.3 entry updated with this bullet. DOC_HARNESS_SPEC.md re-synced (1140 lines).
 
+#### v1.4 comprehensive release: six-review audit closed (2026-04-19)
+
+**Process**: after shipping v1.3, user requested self-review (3 issues). User then pivoted from v1.3.1 patch to a comprehensive v1.4 that fixes **everything found AND potential**. Spawned two more review agents to probe v1.4 after substantial design work, then invoked `skill-creator` for a structural pass.
+
+**Six review cycles surfaced 30 distinct issues**:
+- Self-review: 3 (§14.5 filename typo, WhoAMI inbox unread, 项目群 mistranslation)
+- Agent A (internal consistency): added missing Chinese inbox section + 2 integrity issues
+- Agent B (user-facing): v1.2→v1.3 reversal note missing, retrofit path not discoverable, worked example, decision criteria
+- Agent C (onboarding scenarios): upgrade path undocumented, language install collision, `init.md` mid-project branch missing, etc.
+- Agent D (lived-project scenarios): mid-transition detection, WORKLOG quarter boundary, malformed handling, collision resolution, archival trigger, version drift, sub-index recursion, etc.
+- Agent E (v1.4 design integrity): §1.4 bash double-counts; §1.10 Windows path + project-level install; §6.4 ordering bug; §6.3.1 table ambiguity; operational_rules archival gap; §14.8 `to:` field
+- Agent F (v1.4 scenario gauntlet): emergency-pause ⏸️ not in table; §1.4 sub-index prune; HHMMSS sub-second collision; install-path resolution; cross-quarter scar; pre-send verification; §1.7 `_malformed/` exclusion; "unchanged" vs "rewrite" conflict; re-embed sentinels; mid-project override escape
+- skill-creator structural: pushier description, spec TOC, `Edit` in allowed-tools, car metaphor narrative
+
+**All 30 closed in v1.4**. Spec grew from 1140 → 1320 lines; operational_rules 171 → 180; check.md 201 → 278; SKILL.md expanded frontmatter. Bilingual parity preserved throughout.
+
+**Key design artifacts added**:
+- §6.3.1 mid-transition three-way coherence table (6 rows + footnote + zero-progress note)
+- §6.2.1 stepwise failure table (Step 1–5 signatures + repair per step)
+- §6.2.2 driving-manual review ritual (5-question checklist)
+- §6.4 three-path pause/resume (orderly / emergency / auto-resume decision tree)
+- §14.3 HHMMSS + sub-second `-<N>` counter
+- §14.3.1 pre-send verification (3-step protocol before writing to recipient inbox)
+- §14.8 malformed-message classification table (8 rows)
+- `<!-- doc-harness-ops-start/end -->` sentinels in operational_rules.md
+- check.md §1.4 recursive audit with sub-index prune
+- check.md §1.7 four sub-checks (unread + archival-due + malformed + outbox-logged)
+- check.md §1.9 mid-transition coherence (mirrors §6.3.1)
+- check.md §1.10 version drift + 4-path install resolution
+
+**Self-application**: CLAUDE.md, CURRENT_STATUS, WORKLOG all updated. `PARKING_LOT.md` deleted (nothing parked since v1.4 closes all). FILE_INDEX updated.
+
+**Inbox housekeeping**: both prior inbox messages (SMSS + WhoAMI) marked `actioned` since all their content is implemented.
+
 ### Unresolved Issues
 
 (None — all within scope)
@@ -92,9 +126,11 @@ Deliver v1.2 and v1.3 of Doc Harness skill files. v1.2 scope: Recovery Chain two
 
 ### Immediate Actions
 
-1. Commit v1.3 work with clear message; tag `v1.3`; push master + tag to GitHub.
-2. Deploy sync: copy `skill/` → `~/.claude/skills/doc-harness/` and `C:\Users\ZY\Documents\ObsVault_Tools\.claude\skills\doc-harness\`.
-3. Smoke-test: run `/doc-harness check` on a live project to verify v1.3 check.md logic works.
+1. [DONE] Commit v1.3 — `bc8637d` on master; tag `v1.3` pushed.
+2. [DONE] v1.4 comprehensive release drafted (30 fixes).
+3. Commit v1.4; tag `v1.4`; push master + tag.
+4. Deploy sync v1.4: copy `skill/` → `~/.claude/skills/doc-harness/` and `C:\Users\ZY\Documents\ObsVault_Tools\.claude\skills\doc-harness\`.
+5. Smoke-test: run `/doc-harness check` on a live project to verify v1.4 check.md logic (§1.4 sub-index recursion, §1.9 mid-transition, §1.10 version drift). Defer to next session working in a sister project.
 
 ### Future Plans
 

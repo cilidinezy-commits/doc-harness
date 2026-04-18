@@ -3,7 +3,7 @@ from: WhoAMI
 to: doc-harness
 date: 2026-04-19
 subject: Doc-harness skill 改进建议：Recovery Chain 结构升级 + 长文档归档 + 长期知识载体
-status: unread
+status: actioned
 in-reply-to: null
 priority: high
 ---

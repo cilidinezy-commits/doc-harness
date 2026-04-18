@@ -33,29 +33,58 @@ Read the "one-line status (as of DATE)" from CLAUDE.md (only the first 5 lines).
 - Date matches CURRENT_STATUS → `✅ Current`
 - Older → `⚠️ Stale`
 
-### 1.4 FILE_INDEX completeness
+### 1.4 FILE_INDEX completeness (root and sub-indexes)
 
-Compare FILE_INDEX entries against actual files on disk. Use this tested approach:
+Compare FILE_INDEX entries against actual files on disk. The algorithm is recursive — a project may have sub-FILE_INDEX.md files below the root, and each must be checked against its own subtree. Use this approach:
 
 ```bash
-# Step 1: List actual files (exclude _archive, dist, .git, node_modules)
-find . -name "*.md" -not -path "./_archive*" -not -path "./dist/*" -not -path "./.git/*" | sed 's|^\./||' | sort > /tmp/dh_disk.txt
+# Locate all FILE_INDEX.md files in the project (root + sub-indexes)
+find . -type f -name 'FILE_INDEX.md' \
+  -not -path "./_archive*" -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./dist/*" \
+  | sort > /tmp/dh_indexes.txt
 
-# Step 2: Extract entries from FILE_INDEX (and any sub-FILE_INDEX files referenced)
-grep -oP '`[^`]+\.(md|py|tex|json|csv|txt|pdf|png|bib)`' FILE_INDEX.md | tr -d '`' | sort > /tmp/dh_index.txt
+# For each index, check its own subtree — BUT prune at any sub-index boundary
+# so a file like data/experiments/foo.md belongs to data/experiments/FILE_INDEX.md's
+# scope, not to data/FILE_INDEX.md's scope.
+while IFS= read -r INDEX; do
+  DIR="$(dirname "$INDEX")"
+  echo "── checking $INDEX (scope: $DIR) ──"
 
-# Step 3: Compare
-echo "Unregistered:" && comm -23 /tmp/dh_disk.txt /tmp/dh_index.txt
-echo "Ghosts:" && comm -13 /tmp/dh_disk.txt /tmp/dh_index.txt
+  # Build exclusion list: directories that contain OTHER FILE_INDEX.md files
+  # strictly below DIR. These belong to their own sub-index's scope.
+  EXCLUDES=()
+  while IFS= read -r OTHER_INDEX; do
+    OTHER_DIR="$(dirname "$OTHER_INDEX")"
+    if [ "$OTHER_DIR" != "$DIR" ] && [[ "$OTHER_DIR" == "$DIR"* ]]; then
+      EXCLUDES+=("-not" "-path" "$OTHER_DIR/*" "-not" "-path" "$OTHER_DIR")
+    fi
+  done < /tmp/dh_indexes.txt
+
+  # Files actually present in this index's scope (pruned at sub-index boundaries)
+  find "$DIR" -maxdepth 10 -type f \
+    "${EXCLUDES[@]}" \
+    \( -name '*.md' -o -name '*.py' -o -name '*.tex' -o -name '*.json' -o -name '*.csv' -o -name '*.txt' -o -name '*.pdf' -o -name '*.png' -o -name '*.bib' \) \
+    -not -path "*/_archive/*" -not -path "*/.git/*" -not -path "*/node_modules/*" -not -path "*/dist/*" \
+    -not -path "*/inbox/*" -not -path "*/outbox/*" \
+    | sed "s|^$DIR/||" | sort > /tmp/dh_disk.txt
+
+  # Entries mentioned inside this index
+  grep -oE '`[^`]+\.(md|py|tex|json|csv|txt|pdf|png|bib)`' "$INDEX" | tr -d '`' | sort > /tmp/dh_entries.txt
+
+  echo "Unregistered (files on disk but not in $INDEX):"
+  comm -23 /tmp/dh_disk.txt /tmp/dh_entries.txt
+  echo "Ghosts (entries in $INDEX but no such file):"
+  comm -13 /tmp/dh_disk.txt /tmp/dh_entries.txt
+done < /tmp/dh_indexes.txt
 ```
 
-For projects with sub-FILE_INDEX.md files, also check those sub-indexes against their respective directories.
+Note: if a sub-directory has its own sub-`FILE_INDEX.md`, the parent index registers the *sub-index file* in one line (per spec §4.3). The detailed files below belong to the sub-index's check, not the parent's.
 
-- All files registered → `✅ Complete`
-- Unregistered files found → `❌ UNREGISTERED: [list]`
-- Ghost entries found → `❌ GHOST: [list]`
+- All files registered at every level → `✅ Complete (N indexes checked)`
+- Unregistered files found → `❌ UNREGISTERED: [list with which index should register them]`
+- Ghost entries found → `❌ GHOST: [list with which index holds the ghost]`
 
-**Token efficiency**: Only read FILE_INDEX.md content and `find` output. Do NOT read any leaf document content.
+**Token efficiency**: Read `FILE_INDEX.md` files and `find` output only. Do NOT read leaf document content.
 
 ### 1.5 WORKLOG TOC consistency
 
@@ -72,18 +101,61 @@ Count total lines of WORKLOG.md (use `wc -l` or equivalent; do not read the full
 
 ### 1.7 Inbox status (if inter-project comms adopted)
 
-If `inbox/` exists at project root, count messages by `status` (use Grep on the YAML `status:` line, not full file reads).
+If `inbox/` exists at project root, do all four sub-checks. Use Grep on the YAML `status:` line and on file-age (don't read message bodies).
 
-- No `inbox/` → skip this check
+**(a) Unread count** (scope: direct children of `inbox/` only — exclude `inbox/_archive/` and `inbox/_malformed/` so quarantined and archived messages don't double-count here):
+- No `inbox/` → skip the whole §1.7
 - All messages `read` or `actioned` → `✅ Inbox clean (N total, 0 unread)`
 - Any `unread` → `⚠️ Inbox has N unread message(s) — action needed`
 
-### 1.8 Car body length
+**(b) Archival trigger** (ties to spec §14.4 rule 3):
+Count messages with `status: actioned` whose file-mtime is older than 30 days.
+- ≥5 such messages → `⚠️ Archival due: N actioned message(s) older than 30 days — move to inbox/_archive/ this session`
+- <5 → no action (reported only at ✅ level)
 
-Count lines in CURRENT_STATUS between "## Current Work" and the next "##" heading (use Grep/line counting, not full read).
+**(c) Malformed messages** (ties to §14.8):
+Count files in `inbox/_malformed/` if that directory exists.
+- 0 or no directory → ✅
+- ≥1 → `⚠️ Malformed messages quarantined: N in inbox/_malformed/ — review`
+
+**(d) Recent outbox send without CURRENT_STATUS entry**:
+For each file in `outbox/` whose mtime is within the last 3 days, verify CURRENT_STATUS car body mentions it by filename.
+- All recent sends recorded → ✅
+- Missing entries → `⚠️ Outbox sends not logged in CURRENT_STATUS: [list]`
+
+### 1.8 Car body length (language-independent)
+
+Count lines in CURRENT_STATUS between the **car body heading** and the next `##` heading. Match either `## Current Work` or `## 当前工作` (both variants produced by init templates). Use Grep/line counting, not full read.
 - <200 → `✅ [N] lines`
-- 200-250 → `⚠️ Approaching limit`
+- 200–250 → `⚠️ Approaching limit`
 - >250 → `❌ Over limit — consider phase transition`
+
+### 1.9 Mid-transition coherence (spec §6.3.1)
+
+Read three values and compare — this detects a phase transition interrupted between Steps 1 and 5.
+
+- **A**: CLAUDE.md "current phase" / "当前阶段" line (first 10 lines; match either language).
+- **B**: WORKLOG TOC's newest entry (first `| ` row after the TOC heading).
+- **C**: CURRENT_STATUS tire tracks' newest phase summary (first `###` heading under "Recent Completed" / "近期已完成").
+
+If A, B, C are mutually coherent per spec §6.3.1's table → `✅ Coherent`.
+Otherwise → `❌ Mid-transition state detected: A=[...] B=[...] C=[...]. Apply §6.3.1 repair.`
+
+### 1.10 Embedded operational-rules version
+
+Grep for the HTML comment `<!-- doc-harness-ops-version: N.N -->` anywhere in CLAUDE.md (case-insensitive, one line).
+- Found and matches the version of the installed skill (e.g. `1.4`) → `✅ Operational rules up to date (vN.N)`
+- Found but older than installed skill → `⚠️ Operational rules snapshot is vX.X; installed skill is vY.Y — re-embed from operational_rules.md to upgrade`
+- Missing entirely → `⚠️ No version marker found — this CLAUDE.md predates v1.4 or was hand-edited. Recommend re-embedding operational_rules.md.`
+
+The installed skill's version is the `**Version**` line at the top of the installed `spec.md`. **Resolve the install path in this order** (first hit wins):
+
+1. Project-level: `<project_root>/.claude/skills/doc-harness/spec.md`
+2. User-level, Claude Code default on Unix: `$HOME/.claude/skills/doc-harness/spec.md`
+3. User-level, XDG override: `${XDG_CONFIG_HOME:-$HOME/.config}/claude/skills/doc-harness/spec.md`
+4. User-level, Windows: `%USERPROFILE%\.claude\skills\doc-harness\spec.md` (bash: `"$USERPROFILE/.claude/skills/doc-harness/spec.md"` — forward slashes work on Windows bash)
+
+If no install path resolves, report `⚠️ Cannot locate installed skill — run check from a project where skill is deployed, or install at one of the paths above.` Do not treat "installed version not found" as passing.
 
 ---
 
@@ -158,6 +230,10 @@ Read the Recovery Chain section from CLAUDE.md.
 
 ---
 
+## Language-independence note
+
+All Part-1 anchors (`## Current Work`, `## Recent Completed`, `## Next Steps`, `## Current Working Principles`, `Iron Rules`, `Driving Manual`, etc.) match **either English or Chinese** headings produced by `init.md` templates — implementations should Grep for either variant. A mixed-language project (e.g., Chinese CLAUDE.md but English CURRENT_STATUS) still checks correctly as long as each document uses one consistent language internally.
+
 ## Output Format
 
 ```
@@ -172,11 +248,13 @@ Read the Recovery Chain section from CLAUDE.md.
 [1.1] Core files:      ✅/❌  |  Spec: ✅/⚠️
 [1.2] CURRENT_STATUS:  ✅/⚠️/❌
 [1.3] CLAUDE.md:       ✅/⚠️
-[1.4] FILE_INDEX:      ✅/❌ N unregistered/N ghosts
+[1.4] FILE_INDEX:      ✅/❌ N unregistered/N ghosts  (recursive: N indexes)
 [1.5] WORKLOG TOC:     ✅/⚠️
 [1.6] WORKLOG length:  ✅ N lines / ⚠️/❌
-[1.7] Inbox:           ✅ / ⚠️ N unread  (skipped if not adopted)
+[1.7] Inbox:           ✅ / ⚠️ <unread>/<archival>/<malformed>/<unlogged-outbox>  (skipped if not adopted)
 [1.8] Car body:        ✅ N lines / ⚠️/❌
+[1.9] Mid-transition:  ✅ coherent / ❌ §6.3.1 repair needed
+[1.10] Ops-rules ver.: ✅ vN.N / ⚠️ vX.X (installed: vY.Y) — re-embed
 
 ── Part 2: Principle Reflection ──
 

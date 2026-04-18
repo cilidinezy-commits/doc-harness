@@ -1,8 +1,8 @@
 # Doc Harness — Entry Document
 
 **Last updated**: 2026-04-19
-**Current phase**: v1.3 development — pre-commit (⏳)
-**One-line status (as of 2026-04-19)**: v1.3 skill files complete. Inbox/outbox is now opt-in Doc Harness feature (Chapter 14); portfolio language purged; bilingual sync done; self-application done. Pending: commit + tag + deploy sync.
+**Current phase**: v1.4 pre-commit (⏳)
+**One-line status (as of 2026-04-19)**: v1.4 comprehensive release — 6 review cycles, 30 issues closed. Design additions (mid-transition detection §6.3.1, HHMMSS disambiguator, malformed-message quarantine §14.8, quarter-boundary archival, language-independent check.md, sub-index recursion with prune, version-drift detection via `<!-- doc-harness-ops-* -->` sentinels, auto-resume decision tree §6.4, §11.2 quantified threshold, driving-manual ritual §6.2.2). Structural upgrade per skill-creator (pushy description, spec TOC, car metaphor explained). Pending: commit + tag + deploy.
 
 ---
 
@@ -54,7 +54,7 @@ Doc Harness is a Claude Code skill that provides document-based project control 
 
 ## Key Technical Information
 
-**GitHub**: https://github.com/cilidinezy-commits/doc-harness (latest tag: v1.1; v1.2 pending push)
+**GitHub**: https://github.com/cilidinezy-commits/doc-harness (latest tag: v1.3; v1.4 pending push)
 **License**: MIT
 
 **File structure**:
@@ -77,8 +77,8 @@ doc-harness/
 | SKILL.md | Entry point + router |
 | init.md | `/doc-harness init` — create 5 docs |
 | check.md | `/doc-harness check` — audit + reflect |
-| operational_rules.md | Rules embedded in each project's CLAUDE.md (~150 lines as of v1.2) |
-| spec.md | Complete specification (~990 lines as of v1.2, 13 chapters + 5 appendices) |
+| operational_rules.md | Rules embedded in each project's CLAUDE.md (180 lines as of v1.4; delimited by `<!-- doc-harness-ops-start/end -->` sentinels) |
+| spec.md | Complete specification (1320 lines as of v1.4, 14 chapters + 5 appendices, TOC at top) |
 
 ## Doc Harness — Operational Rules
 

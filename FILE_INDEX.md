@@ -1,6 +1,6 @@
 # FILE_INDEX — Doc Harness
 
-**Last updated**: 2026-04-19 (v1.3)
+**Last updated**: 2026-04-19 (v1.4)
 
 ---
 

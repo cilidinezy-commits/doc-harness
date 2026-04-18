@@ -1,7 +1,11 @@
 # Doc Harness — Operational Rules
 
+<!-- doc-harness-ops-start -->
+<!-- doc-harness-ops-version: 1.4 -->
+
 > This section is embedded in each project's CLAUDE.md as the complete guide for maintaining status documents.
 > For full design rationale, see `DOC_HARNESS_SPEC.md` (in the project root directory).
+> The HTML comments `doc-harness-ops-start` / `doc-harness-ops-end` delimit the embedded region — `init.md` re-embed and `/doc-harness check` §1.10 use them to locate and replace the block safely. Do not remove either marker. The `doc-harness-ops-version: N.N` tag is read by `check.md` §1.10 to detect stale operational-rules sections after a skill upgrade.
 
 ---
 
@@ -62,11 +66,15 @@ Arranged in this order, each separated by `##`:
 
 **Procedure**:
 1. Keep the most recent 3 phases in `WORKLOG.md`.
-2. Move earlier phases (and their TOC entries) to `WORKLOG_ARCHIVE_<YYYY-QN>.md` (quarterly, e.g. `WORKLOG_ARCHIVE_2026-Q1.md`). Archive file has the same structure (TOC + phase sections).
-3. Add a pointer at the top of `WORKLOG.md`: `> Earlier history archived in: WORKLOG_ARCHIVE_2026-Q1.md, ...`
-4. Register each archive file in FILE_INDEX under a `## Archived History` category.
+2. Move earlier phases (and their TOC entries) to `WORKLOG_ARCHIVE_<YYYY-QN>.md`. **Assign each phase to the quarter of its end date**; a phase that spans a quarter boundary lives in a single archive file (the one matching its end date) and is not split.
+3. At the top of the **archive file**, add a backlink: `> Part of the WORKLOG series. Current WORKLOG: WORKLOG.md. Other archives: ...`
+4. At the top of `WORKLOG.md`, add a forward pointer: `> Earlier history archived in: WORKLOG_ARCHIVE_2026-Q1.md, ...`
+5. **Cross-quarter scar**: if an archived phase's start date falls in an earlier quarter than the archive file it ended up in, add a one-line TOC entry in the earlier archive pointing forward to the phase's home.
+6. Register each archive file in FILE_INDEX under a `## Archived History` category.
 
-Archive files are permanent records; never delete.
+**Git convention**: make the entire archival move a single atomic commit with message `Archive WORKLOG through YYYY-QN (keep most recent 3 phases)`. Don't mix with unrelated work.
+
+Archive files are permanent records; never delete. Full details: `DOC_HARNESS_SPEC.md` §5.5.
 
 ## Phase Transition — Five Steps
 
@@ -168,3 +176,5 @@ Adopted when this project coordinates with other projects (dependencies in eithe
 **Snapshots over pointers**: when communicating numbers/deliverables to another project, put the value in the message body — do NOT point the recipient at your internal files (they churn and break external references).
 
 Complete specification, including archival (30-day actioned messages → `inbox/_archive/`) and retrofit procedure: see `DOC_HARNESS_SPEC.md` Chapter 14.
+
+<!-- doc-harness-ops-end -->

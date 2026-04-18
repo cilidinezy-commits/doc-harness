@@ -1,8 +1,8 @@
 ---
 name: doc-harness
-description: "Doc Harness: document-based project control system. Use '/doc-harness init' to set up status docs for a new project, or '/doc-harness check' to audit health and reflect on working principles."
+description: "Document-based project control that lets any AI agent or human resume work from files alone — no external memory needed. Use this skill whenever the user wants to structure a long-running project, track progress across sessions, recover state after context loss, coordinate multiple agents on the same project, audit project documentation health, or stop forgetting what was done last session. Triggers include: '/doc-harness init' and '/doc-harness check' (explicit slash commands); requests like 'help me set up this project', 'I keep losing track', 'my agent forgets between sessions', 'organize my project docs', 'audit this project', 'check the documentation', 'what did we do last time'; multi-week projects (theses, research, analyses, software modules) that span many sessions; cross-project coordination (inbox/outbox for file-based messages between projects)."
 argument-hint: "init [project-name] [description] | check"
-allowed-tools: Read, Write, Bash, Glob, Grep
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Doc Harness — Document-Based Project Control
@@ -39,13 +39,22 @@ Audit the current project's documentation health and reflect on working principl
 
 ### `/doc-harness` (no arguments)
 
-Show this help message. Suggest `init` or `check` based on whether CLAUDE.md exists in current directory.
+Inspect the current directory and suggest the right next step:
+- **All 4 core files present** (CLAUDE.md, CURRENT_STATUS.md, FILE_INDEX.md, WORKLOG.md) → suggest `/doc-harness check`.
+- **No Doc Harness files at all** → suggest `/doc-harness init` (clean init or mid-project adoption per `init.md` Step 2).
+- **Partial state** (some files present, others missing or malformed) → suggest `/doc-harness init` in **mid-project adoption mode** (see `init.md` Step 2 branch (b)/(c)); do NOT suggest `check` on a broken installation.
+
+Then show this help summary.
 
 ## Core Principle: "Write It Down or Lose It"
 
 Information in context will eventually be completely lost. Important information must be **written to a file** and **registered in FILE_INDEX**. Not written = lost. Not registered = undiscoverable = effectively lost.
 
+**Context-aware corollary**: if your runtime exposes a context-window usage metric (percentage or token count), treat **low remaining context** (~<20%) as an immediate trigger to flush CURRENT_STATUS before the next tool call, and consider a phase transition if the car body holds substantial unsaved work (see `spec.md` §11.2 bullet 4 for the concrete threshold). Compression is involuntary session end — preemptive writes are the only defense.
+
 ## Reference Documents
 
-- [operational_rules.md](operational_rules.md) — The operational rules embedded in every project's CLAUDE.md (~106 lines)
-- [spec.md](spec.md) — Complete Doc Harness specification with design rationale, worked examples, and edge cases
+- [init.md](init.md) — Read when executing `/doc-harness init`. Covers clean init, mid-project adoption, partial-state repair, and optional inter-project inbox/outbox setup.
+- [check.md](check.md) — Read when executing `/doc-harness check`. Audit procedures for file health, recovery-chain soundness, mid-transition detection, and inbox status.
+- [operational_rules.md](operational_rules.md) — The operational rules embedded verbatim into every project's CLAUDE.md at `init` time. Carries the `<!-- doc-harness-ops-version -->` version tag so the check command can detect stale embeddings.
+- [spec.md](spec.md) — Complete Doc Harness specification (14 chapters + 5 appendices). Authoritative — all other files derive from it. Has a Table of Contents at the top for navigation without full-read.

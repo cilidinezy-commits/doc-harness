@@ -305,7 +305,16 @@ AI 的上下文是临时的。分析结果、设计决策、重要洞见、调�
 ## 语言版本
 
 - `skill/` — English（英文版）
-- `skill-zh/` — 中文版（默认安装此版本）
+- `skill-zh/` — 中文版
+
+两者**只装一个**：均会安装到同一路径（`~/.claude/skills/doc-harness/`），不能并存。选择与你项目文档语言一致的版本——模板和嵌入的操作规则都是对应语言。
+
+## 从旧版本升级
+
+1. **已安装的 skill**：用新的 `skill/`（或 `skill-zh/`）覆盖 `~/.claude/skills/doc-harness/`（以及任何项目级 `.claude/skills/doc-harness/`）。本地状态不存放于此。
+2. **已有项目的 `CLAUDE.md`**：每个项目 `CLAUDE.md` 中嵌入的操作规则是 `init` 时的**快照**——skill 升级后**不会自动更新**。要让项目同步至新版，请用当前 `operational_rules.md` 的内容替换其 `CLAUDE.md` 中的"Doc Harness — 操作规则"一节。现有 `CURRENT_STATUS.md`、`WORKLOG.md`、`FILE_INDEX.md` 内容保持不动。
+3. **已有项目的 `DOC_HARNESS_SPEC.md`**：若存在，用新的 `spec.md` 覆盖。
+4. **v1.2 → v1.3 的具体情况**：如项目有跨项目依赖，按 `spec.md` §14.7 的追溯启用流程开启 `inbox/outbox`。独立项目可跳过。
 
 ## 系统要求
 
@@ -338,17 +347,60 @@ AI 的上下文是临时的。分析结果、设计决策、重要洞见、调�
 **Q: 子项目呢？**
 每个子项目可以有自己的 Doc Harness。父项目的 FILE_INDEX 链接到子项目入口。
 
+**Q: 我的项目有 1000+ 文件，真的要一个一个注册？**
+不用——这正是 FILE_INDEX 子索引和批量注册解决的问题。见 spec §4.3（子目录文件 >20 应建自己的子 FILE_INDEX.md）和 §4.4（批量注册允许一条条目记录"文件夹 + 数量 + 命名规则"，无需逐一列出）。`/doc-harness check` §1.4 会自动递归检查子索引。
+
+**Q: 如何在某个项目上停用 Doc Harness？**
+删除四个核心文件（CLAUDE.md、CURRENT_STATUS.md、FILE_INDEX.md、WORKLOG.md），或移入 `_archive/`。安装在 `~/.claude/skills/doc-harness/` 的 skill 本身不是每项目一份——没有 Doc Harness 文件的项目里它自然失效。
+
+**Q: 跨项目通讯——收件消息长什么样？**
+一个完整示例（接收方 `inbox/` 中的 `2026-04-19-from-whoami-api-deadline.md`）：
+
+```markdown
+---
+from: whoami
+to: lit-system-api
+date: 2026-04-19
+subject: API 截止日期提前到 5 月 15 日
+status: unread
+in-reply-to: null
+priority: high
+---
+
+提醒——学术个人事务站 2026-05-20 上线，需要你的 citation-marker API
+在 2026-05-15 前可用。契约不变（见 2026-04-10 规范），只是截止提前。
+
+请通过发送回复消息确认收到。
+```
+
+接收方 agent 读取后将 `status: unread` → `read`，执行所需工作（此处：确认 + 计划），然后 → `actioned`。完整协议：spec 第 14 章。通过 init 启用（第一步 y/n 询问）或按 spec §14.7 在已有项目中追溯启用。
+
 **Q: v1.2 新增了什么？**
 - **恢复链现为两层结构**：精简的必读基线（2–3 个文件）加上按任务条件阅读的列表。自含——不依赖 agent 侧的 memory 或外部服务。
 - **WORKLOG 归档**：`WORKLOG.md` 超过约 1000 行时，较早的阶段迁至 `WORKLOG_ARCHIVE_<YYYY-QN>.md`（按季度）。活跃 WORKLOG 保持可读，历史不丢。
 - **两份可选文档**用于长期内容：`PARKING_LOT.md`（带复活前置条件的暂缓事项）和 `PHILOSOPHY.md`（项目实践催生的原则）。均为可选——有内容再创建。
 
 **Q: v1.3 新增了什么？**
-- **跨项目 inbox/outbox** 现为 Doc Harness 的可选功能（spec 第14章）。当项目需要与其他项目协调时，可启用 `inbox/` 和 `outbox/` 目录，使用带 YAML 前置信息的 Markdown 消息协议。完整规范自含于每个项目的 `DOC_HARNESS_SPEC.md` 中，无需外部文档。
+- **跨项目 inbox/outbox** 现为 Doc Harness 的可选功能（spec 第14章）。当项目需要与其他项目协调时，可启用 `inbox/` 和 `outbox/` 目录，使用带 YAML 前置信息的 Markdown 消息协议。完整规范自含于每个项目的 `DOC_HARNESS_SPEC.md` 中，无需外部文档。*（这一决定与 v1.2 "inbox/outbox 不属于 Doc Harness 范围"相反；设计理由见 `spec.md` 附录 E。）*
 - `/doc-harness init` 现在会询问是否启用 inbox/outbox 协议，并自动设置文件夹、铁律块、恢复链条目和 FILE_INDEX 类别（第3.6步）。
 - `/doc-harness check` 现在审计收件箱未读消息数（§1.7），并检查恢复链的两层结构健康状态（§2.5）。
-- 规范中移除了"项目群"框架。一组项目中的每个项目都是自包含的对等体；父级导航文件只是一种轻量级的可选模式，不是 Doc Harness 概念。
+- 规范中移除了**层级化的"portfolio（项目组合）"框架**。项目组内的每个项目都是自包含的对等体；父级导航文件只是一种轻量级的可选模式，不是 Doc Harness 概念。（中性术语"项目群" / §10.2 保留，用于指代这种扁平对等关系。）
 - **上下文感知的更新频率**：操作规则现在指示运行环境暴露 context 使用率的智能体，将剩余 context 偏低（~<20%）视为立即触发 CURRENT_STATUS 更新及可能的阶段切换的信号。压缩等同于非自愿的 session 结束——别等那个可能永远不会到来的"有意义的步骤"。
+
+**Q: v1.4 新增了什么？**
+六轮审查驱动的全面加固：
+- **Mid-transition 检测（§6.3.1）**：三值一致性检查（CLAUDE.md 阶段 / WORKLOG TOC / CURRENT_STATUS 车辙）检测被中断的阶段切换并确定性修复。接入 `/doc-harness check` §1.9。
+- **异常消息处理**：§14.8 规定隔离（`inbox/_malformed/`）、分类和各类异常的严格/宽松策略。
+- **陈旧消息归档触发**：§14.4 规则 3 现已可执行——当 ≥5 条 `actioned` 消息超过 30 天时，`/doc-harness check` §1.7(b) 标记归档。
+- **子索引递归带剪枝**：`/doc-harness check` §1.4 正确处理嵌套 `FILE_INDEX.md`，不在父索引产生虚假幽灵。
+- **版本漂移检测**：`<!-- doc-harness-ops-start/end -->` 哨兵界定嵌入的操作规则区域；check §1.10 读取版本标签并在 skill 升级后标记陈旧嵌入。重新嵌入仅替换该区域，保留用户在其下添加的自定义铁律。
+- **暂停/恢复决策树（§6.4）**：三种路径——有序、紧急（mid-transition）、自动恢复（≤7 天 / 8–30 天 / >30 天 边界）。自动恢复先执行 §6.3.1。
+- **收件箱文件名消歧**：§14.3 为同日冲突加 `HHMMSS` 后缀；亚秒冲突再加 `-<N>` 计数器。
+- **发送前验证**：§14.3.1 要求发送方在写入前确认收件方已采用协议；送达失败记录在发送方 CURRENT_STATUS 中。
+- **驾驶手册审查仪式（§6.2.2）**：对每条阶段原则应用五个问题——提升/保留/改写/移除。
+- **量化 context 感知阈值**：§11.2 第 4 条具体定义"大量未保存工作"。
+- **check.md 语言无关**：锚点兼容 `init` 模板产出的中英两种形式。
+- **skill-creator 结构审查**：SKILL.md 描述更具触发性；spec.md 顶部新增 TOC；allowed-tools 显式包含 `Edit`；§3.1 将汽车比喻以叙事形式完整解释。
 
 ## 许可证
 

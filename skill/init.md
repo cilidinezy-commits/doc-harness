@@ -22,9 +22,20 @@ You need these details. Gather from three sources in priority order:
 - Known sub-projects
 - **Inter-project inbox/outbox**: one y/n question — "Does this project coordinate with other projects (has dependencies in either direction)? If yes, I'll enable the inter-project inbox/outbox protocol (Chapter 14 of the spec)." Default: **yes** if the user mentioned dependencies or sibling projects in context; **no** for standalone projects. If enabled, see Step 3.6 below.
 
-## Step 2: Check Existing Files
+## Step 2: Check Existing Files and Project State
 
-Check if CLAUDE.md or other Doc Harness files exist. If yes, warn user before overwriting.
+Check the target directory for three situations:
+
+**(a) Clean directory** (no files, or only trivial starter files like a blank README/LICENSE) → proceed to Step 3 with blank templates.
+
+**(b) Doc Harness already present** (CLAUDE.md + CURRENT_STATUS.md + ... already exist) → do NOT overwrite. Warn the user and suggest `/doc-harness check` instead. If only *some* of the 5 files exist (partial or broken state), offer to complete the missing ones (mid-project adoption mode, see (c)) rather than wiping the partial state.
+
+**(c) Non-empty directory without Doc Harness** (has code, notes, existing README, accumulated files) → this is **mid-project adoption**. Do NOT treat as a clean init. Before writing any template:
+- Read `spec.md` §10.3 ("Adapting to Existing Projects") for the full procedure.
+- In short: scan existing files to reconstruct project history; propose (not impose) a draft WORKLOG reflecting past phases; ask the user to confirm/correct before writing; register existing files in FILE_INDEX in bulk per §4.4 if there are many (>~20 files); mark any superseded documents per §9.2.
+- The goal is to **describe reality faithfully**, not to pretend the project just started.
+
+**(d) Non-empty directory, user explicitly requests a clean start** (e.g., "ignore the existing files, I'm starting fresh on a new task"): this is the escape hatch from (c). Confirm explicitly with the user — "Existing files will NOT be reconstructed into WORKLOG; they remain on disk but are not represented in the documentation system. Do you want to proceed with clean init?" — and if the user confirms, proceed as (a). Record the user's override decision in WORKLOG's first phase summary so future agents understand why no prior history was reconstructed.
 
 ## Step 3: Create 5 Files
 
@@ -87,7 +98,7 @@ It has two layers.
 [INSERT FULL CONTENT OF operational_rules.md HERE]
 ```
 
-**Important**: Read [operational_rules.md](operational_rules.md) and embed its FULL content into the CLAUDE.md at the location marked above.
+**Important**: Read [operational_rules.md](operational_rules.md) and embed its FULL content (from the `<!-- doc-harness-ops-start -->` comment through the `<!-- doc-harness-ops-end -->` comment, inclusive) into the CLAUDE.md at the location marked above. Preserve **both sentinels and the `<!-- doc-harness-ops-version: N.N -->` version tag** — these delimit the region that future re-embeds (after a skill upgrade) and `/doc-harness check` §1.10 can safely locate and replace. **Re-embed semantics**: a future `init` pass or manual re-embed replaces ONLY the bytes between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->`. Any custom iron rules, project-specific sections, or other content outside the delimited region is preserved untouched.
 
 ### File 2: CURRENT_STATUS.md
 
