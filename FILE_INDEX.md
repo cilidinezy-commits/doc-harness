@@ -30,6 +30,9 @@
 - `README_zh.md` — Chinese project description
 - `LICENSE` — MIT license
 
+## Plugin Marketplace Metadata
+- `.claude-plugin/marketplace.json` — Marketplace definition exposing two plugins (`doc-harness` / `doc-harness-zh`) so users can install via `/plugin marketplace add cilidinezy-commits/doc-harness` + `/plugin install <name>@doc-harness`
+
 ## Inter-Project Communication
 
 Protocol: Doc Harness Chapter 14 (see `DOC_HARNESS_SPEC.md` §14).

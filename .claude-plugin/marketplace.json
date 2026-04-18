@@ -1,0 +1,31 @@
+{
+  "name": "doc-harness",
+  "owner": {
+    "name": "cilidinezy-commits",
+    "email": "cilidine.zy@gmail.com"
+  },
+  "metadata": {
+    "description": "Document-based project control for AI-human collaboration. A Claude Code skill that lets any agent resume work from files alone — no external memory needed.",
+    "version": "1.4"
+  },
+  "plugins": [
+    {
+      "name": "doc-harness",
+      "description": "Document-based project control (English). Tracks progress across sessions, detects interrupted phase transitions, and coordinates multiple projects via file-based inbox/outbox. Commands: /doc-harness init, /doc-harness check.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skill"
+      ]
+    },
+    {
+      "name": "doc-harness-zh",
+      "description": "基于文档的项目控制系统（中文版）。让任何 AI 智能体仅通过读取文件即可恢复项目工作状态。命令：/doc-harness init、/doc-harness check。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skill-zh"
+      ]
+    }
+  ]
+}

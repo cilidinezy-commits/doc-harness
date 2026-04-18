@@ -132,7 +132,24 @@ Each fact lives in exactly **one** document (Single Source of Truth), so there a
 
 ### Install (first time)
 
-The skill is a folder of Markdown files. "Installing" means copying that folder into Claude Code's skills directory so the agent can find it.
+This repo is a Claude Code plugin marketplace. There are two ways to install; pick whichever fits your setup.
+
+#### Option A — Native plugin marketplace (recommended, Claude Code ≥ plugin-support)
+
+Inside Claude Code:
+
+```
+/plugin marketplace add cilidinezy-commits/doc-harness
+/plugin install doc-harness@doc-harness
+```
+
+Replace the second command with `/plugin install doc-harness-zh@doc-harness` if you want the Chinese version — they are separate plugins and only one should be installed at a time (they expose the same `/doc-harness` command).
+
+Verify: type `/doc-harness` — you should see the help output describing `init` and `check`.
+
+#### Option B — Manual copy (works everywhere)
+
+The skill is a folder of Markdown files. "Installing" manually means copying that folder into Claude Code's skills directory.
 
 **Step 1 — clone the repo:**
 ```bash
@@ -166,16 +183,22 @@ If you want a specific project to pin a particular Doc Harness version independe
 
 ### Upgrade an existing install
 
+**If you used Option A (plugin marketplace)**: `/plugin marketplace update doc-harness` — Claude Code pulls the latest and updates the installed plugin in place.
+
+**If you used Option B (manual copy)**:
 1. **Pull the latest**: `cd doc-harness && git pull`
 2. **Re-copy the skill folder** — the same command as Step 3 of first-install. It overwrites in place; no local state lives in the installed skill directory, so nothing is lost.
 3. **Verify the new version**: `head -3 ~/.claude/skills/doc-harness/spec.md`.
-4. **Upgrade your existing projects' CLAUDE.md** (important): the operational rules embedded inside each project's `CLAUDE.md` are a **snapshot** taken at `init` time — they do NOT update automatically when you upgrade the skill. To bring a project up to date, replace the bytes between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->` in that project's `CLAUDE.md` with the new contents of `operational_rules.md`. Anything outside those sentinels (custom iron rules, project-specific sections) is preserved. Run `/doc-harness check` in the project — §1.10 tells you if the embedded version is stale.
+
+**Either way, then upgrade your existing projects' CLAUDE.md** (important): the operational rules embedded inside each project's `CLAUDE.md` are a **snapshot** taken at `init` time — they do NOT update automatically when you upgrade the skill. To bring a project up to date, replace the bytes between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->` in that project's `CLAUDE.md` with the new contents of `operational_rules.md`. Anything outside those sentinels (custom iron rules, project-specific sections) is preserved. Run `/doc-harness check` in the project — §1.10 tells you if the embedded version is stale.
 5. **(If the project has `DOC_HARNESS_SPEC.md`)** overwrite with the new `spec.md`.
 6. **v1.2 → v1.3 / v1.4 specifically**: if the project has cross-project dependencies, follow the retrofit in `spec.md` §14.7 to enable `inbox/outbox`. Skip if the project is standalone.
 
 ### Uninstall
 
-**Remove the skill globally** (stops Doc Harness from being available in any project):
+**If you used Option A (plugin marketplace)**: `/plugin uninstall doc-harness` (or `/plugin uninstall doc-harness-zh`).
+
+**If you used Option B (manual copy)** — remove the skill globally:
 ```bash
 rm -rf ~/.claude/skills/doc-harness
 ```
