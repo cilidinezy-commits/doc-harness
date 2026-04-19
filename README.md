@@ -12,6 +12,14 @@ Works for any project: writing a thesis, building a SaaS feature, analyzing data
 
 ---
 
+## 30-Second Overview
+
+Once installed, the agent maintains 5 status documents for your project: entry point (CLAUDE.md), current status (CURRENT_STATUS.md), file index (FILE_INDEX.md), history log (WORKLOG.md), and specification (DOC_HARNESS_SPEC.md). Context reset, new agent, coming back after a weekend — reading these 5 files is enough to pick up seamlessly.
+
+**Zero dependencies** (plain Markdown, no MCP / database / external service) · **Bilingual** (English / 中文) · **MIT**.
+
+---
+
 ## What Problem Does This Solve?
 
 When you work with AI agents on a project over days or weeks:
@@ -73,7 +81,7 @@ The first thing any agent reads. Contains your project overview, non-negotiable 
 
 *Answers: "What just happened? What's happening now? What's next?"*
 
-The most dynamic document. Structured as a **moving car** with four sections:
+A project in motion is like a **moving car**: there's the road behind (history), the current position (now), the direction ahead (not yet certain), and the rules you follow while driving. All of these need to be tracked and recorded. CURRENT_STATUS.md is organized around that metaphor:
 
 | Section | Plain label | What's in it |
 |---------|------------|-------------|
@@ -134,7 +142,7 @@ Each fact lives in exactly **one** document (Single Source of Truth), so there a
 
 This repo is a Claude Code plugin marketplace. There are two ways to install; pick whichever fits your setup.
 
-#### Option A — Native plugin marketplace (recommended, Claude Code ≥ plugin-support)
+#### Option A — Native plugin marketplace (recommended, for Claude Code with `/plugin` support)
 
 Inside Claude Code:
 
@@ -190,7 +198,7 @@ If you want a specific project to pin a particular Doc Harness version independe
 2. **Re-copy the skill folder** — the same command as Step 3 of first-install. It overwrites in place; no local state lives in the installed skill directory, so nothing is lost.
 3. **Verify the new version**: `head -3 ~/.claude/skills/doc-harness/spec.md`.
 
-**Either way, then upgrade your existing projects' CLAUDE.md** (important): the operational rules embedded inside each project's `CLAUDE.md` are a **snapshot** taken at `init` time — they do NOT update automatically when you upgrade the skill. To bring a project up to date, replace the bytes between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->` in that project's `CLAUDE.md` with the new contents of `operational_rules.md`. Anything outside those sentinels (custom iron rules, project-specific sections) is preserved. Run `/doc-harness check` in the project — §1.10 tells you if the embedded version is stale.
+4. **Then upgrade your existing projects' CLAUDE.md** (important, applies to both Option A and Option B): the operational rules embedded inside each project's `CLAUDE.md` are a **snapshot** taken at `init` time — they do NOT update automatically when you upgrade the skill. To bring a project up to date, replace the bytes between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->` in that project's `CLAUDE.md` with the new contents of `operational_rules.md`. Anything outside those sentinels (custom iron rules, project-specific sections) is preserved. Run `/doc-harness check` in the project — §1.10 tells you if the embedded version is stale.
 5. **(If the project has `DOC_HARNESS_SPEC.md`)** overwrite with the new `spec.md`.
 6. **v1.2 → v1.3 / v1.4 specifically**: if the project has cross-project dependencies, follow the retrofit in `spec.md` §14.7 to enable `inbox/outbox`. Skip if the project is standalone.
 
@@ -386,6 +394,12 @@ Yes. Use sub-headings in the car body to track parallel work threads. Phase tran
 **Q: Does this work with AI tools other than Claude Code?**
 The `/doc-harness` commands are Claude Code specific. But the documentation system itself is universal — any AI that reads markdown can follow the operational rules in CLAUDE.md.
 
+**Q: How is this different from the CLAUDE.md / AGENTS.md conventions I'm already using?**
+A plain CLAUDE.md is a single file; Doc Harness is a collaboration system — CLAUDE.md (stable entry) + CURRENT_STATUS (dynamic state) + FILE_INDEX (findability) + WORKLOG (history) + phase-transition protocol + automated audits. If your CLAUDE.md keeps growing past a few hundred lines, or you find agents re-reading it repeatedly to figure out "what are we actually working on right now," that's the signal to upgrade. Doc Harness separates the "unchanging" from the "changes every session."
+
+**Q: Is there any lock-in? If it doesn't work out, can I fully back out?**
+Yes, completely. Everything is plain Markdown — delete the 4 core documents and you're out; your working files are untouched. No database, no binary format, no proprietary schema. Even if Claude Code stopped updating tomorrow, your Doc Harness files remain ordinary Markdown that any human or tool can read.
+
 **Q: How does this relate to Claude Code's MEMORY.md?**
 They're complementary. MEMORY.md is Claude's personal memory across sessions (maintained automatically). Doc Harness is project-level documentation (maintained explicitly). Doc Harness is designed to work without MEMORY.md — any agent, with or without personal memory, can recover the project state from the files alone.
 
@@ -463,4 +477,4 @@ A comprehensive hardening pass driven by six review cycles. Key additions:
 
 ## Credits
 
-Designed and built through iterative human-AI collaboration, with blind testing by independent agents, architectural review, stress-test simulation, and real-world project validation.
+Designed and built through iterative human-AI collaboration, with multiple rounds of independent review and sustained use on real projects.
