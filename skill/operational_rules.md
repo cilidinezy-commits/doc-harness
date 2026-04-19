@@ -1,7 +1,7 @@
 # Doc Harness — Operational Rules
 
 <!-- doc-harness-ops-start -->
-<!-- doc-harness-ops-version: 1.4 -->
+<!-- doc-harness-ops-version: 1.4.1 -->
 
 > This section is embedded in each project's CLAUDE.md as the complete guide for maintaining status documents.
 > For full design rationale, see `DOC_HARNESS_SPEC.md` (in the project root directory).
@@ -66,13 +66,13 @@ Arranged in this order, each separated by `##`:
 
 **Procedure**:
 1. Keep the most recent 3 phases in `WORKLOG.md`.
-2. Move earlier phases (and their TOC entries) to `WORKLOG_ARCHIVE_<YYYY-QN>.md`. **Assign each phase to the quarter of its end date**; a phase that spans a quarter boundary lives in a single archive file (the one matching its end date) and is not split.
-3. At the top of the **archive file**, add a backlink: `> Part of the WORKLOG series. Current WORKLOG: WORKLOG.md. Other archives: ...`
-4. At the top of `WORKLOG.md`, add a forward pointer: `> Earlier history archived in: WORKLOG_ARCHIVE_2026-Q1.md, ...`
-5. **Cross-quarter scar**: if an archived phase's start date falls in an earlier quarter than the archive file it ended up in, add a one-line TOC entry in the earlier archive pointing forward to the phase's home.
-6. Register each archive file in FILE_INDEX under a `## Archived History` category.
+2. Move earlier phases (and their TOC entries) to `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md` where the date is **the archival event date** (today), not a fixed-period bin. Each archival event produces its own file, keeping any single archive bounded by the ~1000-line trigger. Multiple archive files accumulate chronologically over time.
+3. At the top of the **archive file**, add a backlink: `> Part of the WORKLOG series. Current WORKLOG: WORKLOG.md. Other archives: WORKLOG_ARCHIVE_2025-12-03.md, ...`
+4. At the top of `WORKLOG.md`, add (or update) a forward pointer: `> Earlier history archived in: WORKLOG_ARCHIVE_2025-12-03.md, WORKLOG_ARCHIVE_2026-04-19.md, ...` (chronological order).
+5. Register the new archive file in FILE_INDEX under a `## Archived History` category (create if missing).
+6. Record the archival in CURRENT_STATUS car body as a one-line "Completed Step": `- (YYYY-MM-DD) Archived WORKLOG: moved phases N–M into WORKLOG_ARCHIVE_<YYYY-MM-DD>.md; active WORKLOG keeps most recent 3 phases.`
 
-**Git convention**: make the entire archival move a single atomic commit with message `Archive WORKLOG through YYYY-QN (keep most recent 3 phases)`. Don't mix with unrelated work.
+**Git convention**: make the entire archival move a single atomic commit with message `Archive WORKLOG <YYYY-MM-DD> (keep most recent 3 phases)`. Don't mix with unrelated work.
 
 Archive files are permanent records; never delete. Full details: `DOC_HARNESS_SPEC.md` §5.5.
 

@@ -1,6 +1,6 @@
 # 状态文档体系规范（Status Documentation System Specification）
 
-**版本**: v1.4
+**版本**: v1.4.1
 **日期**: 2026-04-19
 **状态**: 正式版，可用于项目实施
 
@@ -15,7 +15,7 @@
 - 第二章 CLAUDE.md 入口文档（模板、铁律、恢复链）
 - 第三章 CURRENT_STATUS.md 活跃状态（车辙/车身/车灯/驾驶手册——比喻解释）
 - 第四章 FILE_INDEX.md 文件索引（组织规则、子索引、批量注册）
-- 第五章 WORKLOG.md 工作日志（TOC 格式、约 1000 行阈值归档、跨季规则）
+- 第五章 WORKLOG.md 工作日志（TOC 格式、约 1000 行阈值按事件归档）
 
 **第二部分 · 信息流与协议**
 - 第六章 信息流动规则（日常工作流、阶段切换五步、§6.3.1 Mid-transition 检测、暂停/恢复自动恢复树）
@@ -392,20 +392,26 @@ WORKLOG 只增不改，必然增长。一个 2000 行的 WORKLOG 本身就是负
 **归档流程**：
 
 1. 决定切点：`WORKLOG.md` 保留最近 **3 个阶段**，更早的迁出。
-2. 创建 `WORKLOG_ARCHIVE_<YYYY-QN>.md`（按季度粒度，如 `WORKLOG_ARCHIVE_2026-Q1.md`）。**按阶段的结束日期决定归入哪个季度**；跨季阶段**整体进入一个归档文件**（与其结束日期对应的那个），不拆分。归档文件可按时间累积多份。
+2. 创建 `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`，日期为**归档事件发生的日期**（即今天——你执行归档的日期），而非固定周期分箱。每次归档事件生成一个独立文件，使单个归档天然有上限（单次归档最多搬走 ~1000 行阈值触发时的更早部分）。多个归档文件按时间先后累积。*为何采用"按事件"而非"按固定周期"：如果按季度命名，活跃项目一个季度写 5,000 行，整 5,000 行会灌入同一个"季度归档"文件，归档本身就失去意义。按事件命名，每个归档文件的上限天然由触发阈值决定。*
 3. 将更早的阶段章节（含目录表条目）迁入归档文件。归档文件结构与 WORKLOG.md 相同（顶部目录 + 阶段章节）。
 4. 在归档文件顶部（其自身目录表之上）添加**反向指针**：
    ```
-   > 属于 WORKLOG 系列。当前 WORKLOG：`WORKLOG.md`。其他归档：`WORKLOG_ARCHIVE_2025-Q4.md`, ...
+   > 属于 WORKLOG 系列。当前 WORKLOG：`WORKLOG.md`。其他归档：`WORKLOG_ARCHIVE_2025-12-03.md`, `WORKLOG_ARCHIVE_2026-02-14.md`, ...
    ```
-5. 在 `WORKLOG.md` 标题下方紧接着添加**前向指针**：
+   其他归档按归档事件时间先后顺序列出。
+5. 在 `WORKLOG.md` 标题下方紧接着添加（或更新）**前向指针**：
    ```
-   > 更早的历史归档于：`WORKLOG_ARCHIVE_2026-Q1.md`, `WORKLOG_ARCHIVE_2026-Q2.md`, ...
+   > 更早的历史归档于：`WORKLOG_ARCHIVE_2025-12-03.md`, `WORKLOG_ARCHIVE_2026-02-14.md`, `WORKLOG_ARCHIVE_2026-04-19.md`, ...
    ```
-6. **跨季"疤痕"**：若被归档阶段的**起始日期**落在比归档文件所属季度*更早*的季度（因阶段跨季、按结束日期归档），在较早归档文件的 TOC 中加一行前向指针：`| （阶段延续至 YYYY-QN）| YYYY-MM-DD~MM-DD | [→](WORKLOG_ARCHIVE_YYYY-QN.md#anchor) |`。这样读者扫描 Q1 归档查找三月活动时，能找到在 Q2 结束的跨季阶段。若较早归档尚不存在（即首次归档、跨季阶段的开始时间落在仍未归档的时段），跳过本步。
-7. 在 FILE_INDEX 的 `## 历史归档` 类别下注册每个归档文件（如类别缺失则创建）。
+   新归档追加到现有列表末尾，保持时间先后顺序。
+6. 在 FILE_INDEX 的 `## 历史归档` 类别下注册**新的**归档文件（若类别缺失则创建）。已有归档条目保持不动，只需添加本次归档的新条目。
+7. **在 CURRENT_STATUS 中记录归档事件**。在当前阶段"已完成步骤"车身区添加一行：
+   ```
+   - (YYYY-MM-DD) 归档 WORKLOG：阶段 N–M 迁入 `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`；活跃 WORKLOG 现保留最近 3 个阶段。
+   ```
+   这让下一会话的 agent 仅读 CURRENT_STATUS 就能看到历史迁移发生——无需 diff WORKLOG。
 
-**Git 提交规范**：归档动作作为**单次原子提交**，提交信息 `Archive WORKLOG through YYYY-QN (keep most recent 3 phases)`。**不要**将归档动作与无关工作合并——未来 agent 追溯历史时应能干净地识别归档事件。单次提交内的暂存顺序：新增归档文件、修改 WORKLOG、修改 FILE_INDEX——全部一个提交。
+**Git 提交规范**：归档动作作为**单次原子提交**，提交信息 `Archive WORKLOG <YYYY-MM-DD> (keep most recent 3 phases)`。**不要**将归档动作与无关工作合并——未来 agent 追溯历史时应能干净地识别归档事件。单次提交内的暂存顺序：新增归档文件、修改 WORKLOG、修改 FILE_INDEX、修改 CURRENT_STATUS——全部一个提交。
 
 **非目标**：归档不是删除。归档文件是永久记录，除勘误外不再修改，永不删除。
 
@@ -1313,3 +1319,4 @@ Agent打开CLAUDE.md：
 | v1.2 | 2026-04-19 | 恢复链两层结构（必读 + 任务条件读）+ 自含约束；WORKLOG 归档规则（§5.5，约 1000 行阈值，季度归档文件）；新增可选文档 PARKING_LOT.md 和 PHILOSOPHY.md（第十三章）；反模式扩充；附录 E"设计选择" |
 | v1.4 | 2026-04-19 | 综合版本——六轮审查（1 次自查 + 4 次独立场景 agent + 1 次 skill-creator 结构审查）合计发现并闭合 **30 个不同问题**。**内容（16）**：B1 `skill-zh/operational_rules.md` inbox/outbox 一节（铁律 1 同步）；B2 §14.5 outbox 文件名 `from-<source>` 修正；B3 README 升级章节；B4 默认语言矛盾；B5 v1.2→v1.3 反转说明；B6 `README_zh` portfolio 误译；B7 `init.md` 第二步四分支（干净/已有/中途/部分）；B8 SKILL.md 无参派发；P1 §6.3.1 Mid-transition 检测（三值一致性、⏸️ 行、澄清脚注、零进展 Step 1 说明）；P2 §14.3 HHMMSS 消歧 + 亚秒 `-<N>` 回退；P3 §14.8 异常消息处理含隔离与必填字段完整枚举；P4 §14.4 规则 3 归档由 `check.md` §1.7(b) 于 ≥5 条旧消息时触发；P5 §5.5 跨季规则、archive↔WORKLOG 双向指针、跨季疤痕、原子提交规范；P6 `check.md` 语言无关（双锚匹配 + 说明）；P7 `check.md` §1.4 子索引递归审计**并在子索引边界处剪枝**以消除虚假幽灵；P8 `<!-- doc-harness-ops-start/end -->` 哨兵 + 版本标签 + `check.md` §1.10 漂移检测并给出完整安装路径解析顺序（项目 / ~/.claude / XDG / Windows）；P9 §11.2 第 4 条量化"大量"阈值（a≥3 步 / b≥50 行 / c 车身≥100）；P10 §6.4 三路径暂停/恢复（有序 / 紧急 / 自动恢复 ≤7 天 / 8–30 天 / >30 天）并以 §6.3.1 为修复闸门；P11 §6.2.2 驾驶手册审查仪式（5 步）+ "语义意图"未变的判据；P12 §6.2.1 各步骤失败模式表。**额外完整性修复**：§14.3.1 发送前验证（发送方须先确认接收方已采用协议再写入 inbox）；operational_rules.md 归档一节追上 spec §5.5。**结构（skill-creator 审查）**：SKILL.md 描述重写以提升触发准确性（隐式用户语句 + 显式斜杠命令）；spec.md 顶部新增 TOC 便于 1300 行导航；allowed-tools 加入 Edit；§3.1 汽车比喻扩写为叙事（车辙/车身/车灯/驾驶手册——agent 到达时问的四个问题）。**细节**：SKILL.md 浮现 context 感知推论；README 新增完整 inbox 消息示例和批量注册/停用 FAQ。|
 | v1.3 | 2026-04-19 | 新增第十四章：可选跨项目通信（inbox/outbox）——自含、可移植的文件级跨项目消息协议。规范涵盖目录结构、消息格式（YAML frontmatter + Markdown 正文）、生命周期（unread→read→actioned）、与四核心文档的集成、给新手 agent 的 quick start、以及已有项目的追溯启用流程。init 新增一个 y/n 询问启用。附录 E 更新为解释为何机制是可选的以及为何写在 doc-harness 内部而非外部 spec。"项目群"框架从规范中移除——项目间是扁平对等关系。§11.2 新增上下文感知更新规则：如运行环境暴露 context 使用率，剩余不足（~<20%）即为立即触发 CURRENT_STATUS 更新（必要时阶段切换）的信号 |
+| v1.4.1 | 2026-04-19 | **§5.5 WORKLOG 归档修正——现场反馈驱动**：归档文件名从季度分箱 `WORKLOG_ARCHIVE_<YYYY-QN>.md` 改为按事件日期 `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`。季度方案对高密度项目失效（一个季度写 5,000 行的项目，整 5,000 行会落入同一"季度归档"文件，归档本身失去意义）。按事件命名使每个归档文件天然由 ~1000 行触发阈值限上限。跨季疤痕步骤（旧规则 6）删除——不再适用。新增规则 7：归档事件必须记录到 CURRENT_STATUS 车身，使下一会话的 agent 无需 diff WORKLOG 即可看到历史迁移。Git 提交信息改为 `Archive WORKLOG <YYYY-MM-DD>`。operational_rules.md 同步更新。第五章 TOC 描述调整。 |

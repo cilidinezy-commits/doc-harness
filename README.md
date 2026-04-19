@@ -446,7 +446,7 @@ The recipient agent reads this, flips `status: unread` → `read`, performs what
 
 **Q: What's new in v1.2?**
 - **Recovery Chain is now two-layer**: a minimal must-read baseline (2–3 files) plus a task-conditional list for work-specific lookups. Self-contained — no dependency on agent-side memory or external services.
-- **WORKLOG archival**: when `WORKLOG.md` passes ~1000 lines, older phases move to `WORKLOG_ARCHIVE_<YYYY-QN>.md` (quarterly). Keeps the active WORKLOG readable without losing history.
+- **WORKLOG archival**: when `WORKLOG.md` passes ~1000 lines, older phases move to `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md` (one file per archival event; filename is the date you archived). Keeps the active WORKLOG readable without losing history. *Note: earlier v1.2 text described a quarterly filename scheme; v1.4.1 replaced it with the per-event scheme because quarterly bins grow unbounded for high-activity projects.*
 - **Two optional documents** for long-horizon content: `PARKING_LOT.md` (deferred items with revival preconditions) and `PHILOSOPHY.md` (principles forged by project practice). Both opt-in — create only when there's content to put there.
 
 **Q: What's new in v1.3?**

@@ -1,7 +1,7 @@
 # CURRENT_STATUS — Doc Harness
 
-**Last updated**: 2026-04-19
-**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ idle)
+**Last updated**: 2026-04-19 晚
+**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ active — one patch landed)
 
 ---
 
@@ -26,7 +26,20 @@ Full lifecycle in project_reorganization: spec v0.1→v1.0→v1.1, /doc-harness 
 
 ### Completed Steps
 
-(No steps yet — phase just started.)
+#### v1.4.1 patch — §5.5 WORKLOG archival filename correction (2026-04-19)
+
+First field-feedback hit of Phase 4. User (also the author) flagged that the v1.2 quarterly-bin archive filename (`WORKLOG_ARCHIVE_<YYYY-QN>.md`) grows unbounded for high-density projects — a project writing 5,000 lines/quarter puts all 5,000 lines into one "archive," defeating the purpose. Corrected to per-event date naming (`WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`), which keeps each archive bounded by the ~1000-line trigger.
+
+Changes made (7 files):
+- `skill/spec.md` §5.5 (procedure rewritten; step 2 filename change; cross-quarter scar step removed; new step 7 logging archival in CURRENT_STATUS; git commit message updated; version bumped to v1.4.1 + new version-history row); TOC chapter 5 description adjusted.
+- `skill/operational_rules.md` mirror-updated; version tag `<!-- doc-harness-ops-version: 1.4.1 -->`.
+- `skill-zh/spec.md` and `skill-zh/operational_rules.md` — full Chinese mirror.
+- `README.md` and `README_zh.md` — v1.2 FAQ entry amended with v1.4.1 note.
+- `DOC_HARNESS_SPEC.md` re-synced from `skill/spec.md`.
+
+Committed + pushed to GitHub. Plugin marketplace consumers will get v1.4.1 via `/plugin marketplace update doc-harness`.
+
+Side observation (worth keeping as a driving-manual principle, see below): The Phase 4 rule "don't iterate without real user signal" worked — this is exactly the signal pattern it was waiting for. Decision on v1.5 aggregation remains: 1 of ≥3 real-world issues logged. Does not trigger v1.5 on its own.
 
 ### Unresolved Issues
 

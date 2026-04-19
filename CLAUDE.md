@@ -2,7 +2,7 @@
 
 **Last updated**: 2026-04-19
 **Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ idle)
-**One-line status (as of 2026-04-19)**: v1.4 shipped + published. Plugin marketplace live (`/plugin marketplace add cilidinezy-commits/doc-harness`), smoke-tested, submitted to awesome-claude-code + two catalogs. Phase 3 (v1.2→v1.3→v1.4 + publishing) closed cleanly. Project now idle; reactivate on v1.5 triggers (see CURRENT_STATUS driving manual).
+**One-line status (as of 2026-04-19 晚)**: v1.4.1 patched and pushed — first field-feedback fix in Phase 4 maintenance mode. §5.5 WORKLOG archival filename changed from quarterly bin (`<YYYY-QN>`) to per-event date (`<YYYY-MM-DD>`) because the quarterly scheme grew unbounded for high-activity projects; new rule requires the archival event to be logged in CURRENT_STATUS. v1.4 publishing (plugin marketplace + catalogs) remains live.
 
 ---
 

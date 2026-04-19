@@ -1,6 +1,6 @@
 # Doc Harness — Complete Specification
 
-**Version**: v1.4
+**Version**: v1.4.1
 **Date**: 2026-04-19
 **Status**: Production-ready
 
@@ -15,7 +15,7 @@ Use this TOC to jump directly to the chapter relevant to your task; the spec is 
 - Chapter 2: CLAUDE.md — Entry Document (template, iron rules, Recovery Chain)
 - Chapter 3: CURRENT_STATUS.md — Active Status (tire tracks / car body / headlights / driving manual metaphor explained)
 - Chapter 4: FILE_INDEX.md — File Index (organization rules, sub-indexes, bulk registration)
-- Chapter 5: WORKLOG.md — Work Log (TOC format, archival at ~1000 lines, quarter-boundary rule)
+- Chapter 5: WORKLOG.md — Work Log (TOC format, per-event archival at ~1000 lines)
 
 **Part 2 — Information flow and protocols**
 - Chapter 6: Information Flow Rules (daily workflow, 5-step phase transition, mid-transition detection §6.3.1, pause/resume auto-resume tree)
@@ -396,20 +396,26 @@ WORKLOG is append-only, so it inevitably grows. A 2000-line WORKLOG is a liabili
 **Archival procedure**:
 
 1. Decide the cut point: keep the most recent **3 phases** in `WORKLOG.md`; move earlier phases out.
-2. Create `WORKLOG_ARCHIVE_<YYYY-QN>.md` (quarterly granularity, e.g. `WORKLOG_ARCHIVE_2026-Q1.md`). **Assign each archived phase to the quarter of its end date**; a phase that spans a quarter boundary lives in a single archive file — the one matching its end date — and does not get split. Multiple archive files accumulate over time.
+2. Create `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md` where the date is **the archival event date** (i.e., today — the date you are performing the archival), not a fixed-period bin. Each archival event produces its own file, which keeps any single archive bounded (one archival moves at most the older portion of a ~1000-line WORKLOG). Multiple archive files accumulate chronologically over time. *Rationale for per-event vs. fixed-period naming: a project that accumulates 5,000 lines per quarter would otherwise put all 5,000 lines into one "quarterly" archive file, defeating the purpose of archival. Per-event naming makes each archive inherently bounded by the trigger threshold.*
 3. Move the older phase sections (including their entries in the TOC) to the archive file. The archive file has the same structure as WORKLOG.md (TOC at top + phase sections below).
 4. At the top of the archive file (above the archive's TOC), add a **backlink**:
    ```
-   > Part of the WORKLOG series. Current WORKLOG: `WORKLOG.md`. Other archives: `WORKLOG_ARCHIVE_2025-Q4.md`, ...
+   > Part of the WORKLOG series. Current WORKLOG: `WORKLOG.md`. Other archives: `WORKLOG_ARCHIVE_2025-12-03.md`, `WORKLOG_ARCHIVE_2026-02-14.md`, ...
    ```
-5. At the top of `WORKLOG.md`, add a **forward pointer** immediately under the title:
+   List the other archives in chronological order of the archival event.
+5. At the top of `WORKLOG.md`, add (or update) a **forward pointer** immediately under the title:
    ```
-   > Earlier history archived in: `WORKLOG_ARCHIVE_2026-Q1.md`, `WORKLOG_ARCHIVE_2026-Q2.md`, ...
+   > Earlier history archived in: `WORKLOG_ARCHIVE_2025-12-03.md`, `WORKLOG_ARCHIVE_2026-02-14.md`, `WORKLOG_ARCHIVE_2026-04-19.md`, ...
    ```
-6. **Cross-quarter scar**: if an archived phase's start date falls in an *earlier* quarter than the archive file that contains it (because the phase spans a boundary and was filed by its end date per rule 2), add one line to the *earlier* archive file's TOC: `| (phase crosses into YYYY-QN) | YYYY-MM-DD~MM-DD | [→](WORKLOG_ARCHIVE_YYYY-QN.md#anchor) |`. This lets a reader scanning the Q1 archive for March activity find the phase that ended in Q2. If the earlier archive doesn't exist yet (i.e., this is the first archive and the spanning phase's start falls in an unarchived period), skip this step.
-7. Register each archive file in FILE_INDEX under a `## Archived History` category (create if missing).
+   Append the new archive to the existing list; keep chronological order.
+6. Register the new archive file in FILE_INDEX under a `## Archived History` category (create if missing). Existing archive entries stay; add one new entry for this archive.
+7. **Record the archival event in CURRENT_STATUS**. Add a one-line entry to the current phase's "Completed Steps" in the car body:
+   ```
+   - (YYYY-MM-DD) Archived WORKLOG: moved phases N–M into `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`; active WORKLOG now keeps the most recent 3 phases.
+   ```
+   This ensures a next-session agent, reading CURRENT_STATUS alone, sees that historical context has shifted to a new file — without having to diff WORKLOG.
 
-**Git commit convention**: Make the archival move a **single atomic commit** with message `Archive WORKLOG through YYYY-QN (keep most recent 3 phases)`. Do NOT squash the archive-creation commit with unrelated work — a future agent tracing history should be able to identify the archival event cleanly. Staging order inside the single commit: the archive file is added, WORKLOG is edited, FILE_INDEX is edited — all in one commit.
+**Git commit convention**: Make the archival move a **single atomic commit** with message `Archive WORKLOG <YYYY-MM-DD> (keep most recent 3 phases)`. Do NOT squash the archive-creation commit with unrelated work — a future agent tracing history should be able to identify the archival event cleanly. Staging order inside the single commit: the new archive file is added, WORKLOG is edited, FILE_INDEX is edited, CURRENT_STATUS is edited — all in one commit.
 
 **Non-goals**: Archival is not deletion. Archive files are permanent records, never edited after creation except for errata. Never delete an archive file.
 
@@ -1318,3 +1324,4 @@ Phase density varies enormously across projects — from ~20 lines per phase (in
 | v1.2 | 2026-04-19 | Recovery Chain two-layer structure (must-read + task-conditional) with self-contained constraint; WORKLOG archival rule (§5.5, ~1000-line threshold, quarterly archive files); new optional documents PARKING_LOT.md and PHILOSOPHY.md (Chapter 13); anti-pattern additions; Appendix E Design Choices |
 | v1.4 | 2026-04-19 | Comprehensive release — six review cycles (1 self + 4 independent scenario agents + 1 skill-creator structural review) surfaced and closed **30 distinct issues** in total. **Content (16)**: B1 `skill-zh/operational_rules.md` inbox/outbox section (iron rule 1 sync); B2 §14.5 outbox filename `from-<source>` fix; B3 README Upgrade section; B4 default-language contradiction; B5 v1.2→v1.3 reversal note; B6 `README_zh` portfolio mistranslation; B7 `init.md` Step 2 4-way branch (clean / adopted / mid-project / partial); B8 SKILL.md no-args dispatcher; P1 §6.3.1 mid-transition detection (three-way coherence, ⏸️ row, clarifying footnote, zero-progress-Step-1 note); P2 §14.3 HHMMSS disambiguator + sub-second fallback with `-<N>` counter; P3 §14.8 malformed-message handling with quarantine and full required-field enumeration; P4 §14.4 rule-3 archival as `check.md` §1.7(b) trigger at ≥5 stale messages; P5 §5.5 quarter-boundary rule, archive↔WORKLOG backlinks, cross-quarter scar, atomic-commit git convention; P6 `check.md` language-independence (dual-anchor matching + note); P7 `check.md` §1.4 recursive sub-index audit **with prune at sub-index boundaries** to prevent false ghosts; P8 `<!-- doc-harness-ops-start/end -->` sentinels + version tag + `check.md` §1.10 drift detection with full install-path resolution order (project / ~/.claude / XDG / Windows); P9 §11.2 bullet 4 quantified "substantial" threshold (a≥3 steps / b≥50 lines / c car body≥100); P10 §6.4 three-path pause/resume (orderly / emergency / auto-resume ≤7d/8–30d/>30d) with §6.3.1 repair gate; P11 §6.2.2 driving-manual review ritual (5-step) with "semantic intent" unchanged criterion; P12 §6.2.1 stepwise failure table. **Additional integrity fixes**: §14.3.1 pre-send verification (sender must confirm recipient adoption before writing to inbox); operational_rules.md archival section catches up to spec §5.5. **Structural (skill-creator review)**: SKILL.md description rewritten for triggering accuracy (implicit user phrases + explicit slash commands); spec.md gains a TOC for 1300-line navigation; allowed-tools adds Edit; §3.1 car-metaphor explained as narrative (tire tracks / car body / headlights / driving manual — four questions an agent asks on arrival). **Polish**: SKILL.md surfaces context-cadence corollary; README worked inbox-message example + bulk-registration / disable FAQ entries. |
 | v1.3 | 2026-04-19 | New Chapter 14: Optional Inter-Project Communication (inbox/outbox) — self-contained, portable mechanism for file-based cross-project messaging. Spec covers folder structure, message format (YAML frontmatter + Markdown body), lifecycle (unread→read→actioned), integration with all four core documents, quick start for fresh agents, and adopt-on-existing-project procedure. init gains one y/n prompt to enable. Appendix E updated to explain why the mechanism is optional and why it lives inside doc-harness rather than as an external spec. "Portfolio" framing removed throughout — project groups are flat peers. §11.2 gains a context-aware update rule: if the runtime exposes context-window usage, low remaining context (~<20%) is an immediate trigger to flush CURRENT_STATUS and possibly phase-transition. |
+| v1.4.1 | 2026-04-19 | **§5.5 WORKLOG archival correction — field feedback**: archive filename changed from quarterly bin `WORKLOG_ARCHIVE_<YYYY-QN>.md` to per-event date `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`. The quarterly scheme unbounded the archive for high-activity projects (a project writing 5,000 lines/quarter would put all 5,000 lines into one "archive" file, defeating the purpose). Per-event naming keeps each archive inherently bounded by the ~1000-line trigger. Cross-quarter-scar step (old rule 6) removed — no longer applicable. New rule 7: archival event must be recorded in CURRENT_STATUS car body so a next-session agent sees the history shift without diffing WORKLOG. Git commit message updated to `Archive WORKLOG <YYYY-MM-DD>`. Operational_rules.md mirror-updated. TOC chapter-5 description adjusted. |
