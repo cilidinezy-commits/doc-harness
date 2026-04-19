@@ -1,7 +1,7 @@
 # Doc Harness — Entry Document
 
 **Last updated**: 2026-04-19
-**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ idle)
+**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ active — one patch landed)
 **One-line status (as of 2026-04-19 晚)**: v1.4.1 patched and pushed — first field-feedback fix in Phase 4 maintenance mode. §5.5 WORKLOG archival filename changed from quarterly bin (`<YYYY-QN>`) to per-event date (`<YYYY-MM-DD>`) because the quarterly scheme grew unbounded for high-activity projects; new rule requires the archival event to be logged in CURRENT_STATUS. v1.4 publishing (plugin marketplace + catalogs) remains live.
 
 ---
