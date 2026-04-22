@@ -33,88 +33,103 @@ Classify the user's query into one of four types. The type determines which laye
 
 ## The Layered Search Protocol
 
-Search proceeds layer by layer, **top-down**. Stop early when the query is fully answered.
+Search proceeds layer by layer, **top-down**, with strict **token-efficiency rules**. Stop early when the query is fully answered.
+
+**Core constraint**: `recall` must not burn tokens by reading entire documents. Use targeted `Grep` and partial `ReadFile` (first/last N lines, specific sections) instead of full-file reads.
 
 ```
 User query
     ↓
 [Phase 1] Classify query type
     ↓
-[Phase 2] Layered search (priority order)
-    ├── Layer 0: CLAUDE.md (iron rules, overview, recovery chain)
-    ├── Layer 1: CURRENT_STATUS (tire tracks, car body, headlights, driving manual)
-    ├── Layer 2: WORKLOG (historical phase summaries)
-    ├── Layer 3: FILE_INDEX + sub-indexes (catalog scan)
-    └── Layer 4: Individual registered files (full-text when needed)
+[Phase 2] Leverage existing context (zero-token layer)
     ↓
-[Phase 3] Synthesize & output
+[Phase 3] Layered search (priority order, token-budgeted)
+    ├── Layer 0: CLAUDE.md (iron rules, overview) — from context or first 20 lines
+    ├── Layer 1: CURRENT_STATUS (tire tracks, car body, headlights) — from context or grep
+    ├── Layer 2: WORKLOG (TOC + targeted phase sections) — head + grep, never full read
+    ├── Layer 3: FILE_INDEX (grep only, never full read) — grep descriptions, recurse via grep
+    └── Layer 4: Individual files (grep excerpts only, never full read) — grep + -C 3 context
+    ↓
+[Phase 4] Synthesize & output
 ```
+
+### Phase 2: Leverage Existing Context (Zero-Token Layer)
+
+Before reading any file, check if the information is **already in your current context**:
+
+- Did you read CLAUDE.md and CURRENT_STATUS.md at session start (Recovery Chain)?
+- Did you recently work on files related to the query topic?
+- Is the answer already known from previous turns in this conversation?
+
+If yes → use that information directly. Do not re-read files you already know.
+
+**This is the most important token-saving step.** Most recall queries can be answered from context plus a quick grep.
 
 ### Layer 0: CLAUDE.md
 
-**When to read**: Always read first (it is small). Extract iron rules, overview, and relevant Recovery Chain entries.
+**When to read**: If iron rules or recovery chain are relevant and not already in context.
 
-**Stop condition**: If query is about iron rules or recovery chain, answer after this layer.
+**How to read**: Read **only the first 20 lines** (one-line status, current phase, iron rules header). Do not read the full file unless the query is specifically about recovery chain structure.
 
 ### Layer 1: CURRENT_STATUS.md
 
-**When to read**: Always read (~100–200 lines).
+**When to read**: If not already in context, or if the car body has grown since you last read it.
 
-Search these sections in order:
-1. **Headlights** (`## Next Steps`) — for Type A
-2. **Car body** (`## Current Work`) — for Type A and B
-3. **Tire tracks** (`## Recent Completed`) — for Type B
-4. **Driving manual** (`## Current Working Principles`) — for rule-related queries
-
-**Stop condition**: If CURRENT_STATUS fully answers the query, stop here.
+**How to read**: Use `Grep` with the query keywords, or read specific sections by heading (e.g., only `## Next Steps` for Type A). Do not read the full file end-to-end.
 
 ### Layer 2: WORKLOG.md
 
-**When to read**: For Type B and Type D. Skip for pure Type A unless user explicitly asks for historical comparison.
+**When to read**: For Type B (history/decision) and Type D (synthesis). Skip for pure Type A.
 
-**Search strategy**:
-1. Read TOC (first 20 lines) to identify relevant phases
-2. Jump to matching phase sections by anchor link
-3. Extract phase summaries mentioning the query topic
+**How to read (strict rules)**:
+1. **Read only the TOC** (first 20 lines) to identify phase names and anchors
+2. **Grep** the query keywords across the full WORKLOG — this tells you which phases mention the topic
+3. **Read only the matching phase sections** (not the entire WORKLOG). Use grep results to locate the right `##` headings, then read 20–50 lines around that heading.
 
-**Stop condition**: If WORKLOG answers the historical question completely, stop here.
+**Never read the full WORKLOG** — it may be 500+ lines.
 
 ### Layer 3: FILE_INDEX + Sub-indexes
 
-**When to read**: For Type C and Type D. For Type A/B, read only if Layers 1–2 were insufficient.
+**When to read**: For Type C and Type D. For Type A/B, skip unless Layers 1–2 were insufficient.
 
-**Search strategy**:
-1. Read root FILE_INDEX.md
-2. Grep query keywords in entry descriptions per category
-3. Recurse into sub-FILE_INDEX.md when pointed to
-4. Record matching entries with one-line descriptions
+**How to read (strict rules)**:
+1. **Grep only** — use `Grep` on FILE_INDEX.md with query keywords. Do **not** read the full FILE_INDEX.
+2. **Record matching entries** (path + description)
+3. **Sub-index recursion**: If a matching entry points to a sub-FILE_INDEX.md, **grep that sub-index too** — do not read it in full.
 
-**Sub-index recursion**: When FILE_INDEX contains `→ see [sub-FILE_INDEX.md]`, read and search that sub-index too.
-
-**Stop condition**: For Type C, if user only wanted a file list, stop after collecting matches.
+**Why no full reads**: FILE_INDEX can be 100+ lines. Grep gives you exactly the matches in a single tool call.
 
 ### Layer 4: Individual Files
 
-**When to read**: When Layers 1–3 identify relevant files but descriptions are insufficient.
+**When to read**: When Layers 1–3 identify relevant files and descriptions are insufficient.
 
-**Search strategy**:
-1. Prioritize files matched in Layer 3
-2. Read each file's full content (or grep for query keywords)
-3. Extract relevant excerpts with line/section references
+**How to read (strict rules)**:
+1. **Grep first** — run `Grep` on each candidate file with query keywords. Use `-C 3` (3 lines of context) to capture the surrounding paragraph.
+2. **Only if grep finds nothing but the file is strongly suspected** → read the first 30 lines (overview/TOC) to see if the topic is discussed under a different term.
+3. **Never read a file in full** unless it is <50 lines and you have strong evidence it contains the answer.
 
-**Scope limit**: If >20 files match in Layer 3, **do not read all of them**. Present the FILE_INDEX match summary and ask user which categories to deep-read. Or read only top 5 most relevant files and note "Showing top 5 matches — more available."
+**Scope limit**: If >10 files match in Layer 3:
+- Present the top 5 most relevant matches (by description relevance)
+- Tell the user: "5+ files match. Showing top 5. Specify a category or rephrase to narrow."
+- Do not read beyond 5 files in Layer 4 without user confirmation.
 
 ---
 
 ## Search Rules (Normative)
 
 1. **Only search registered files** (in FILE_INDEX or sub-indexes). Unregistered files are invisible to `recall`.
-2. **Respect Recovery Chain priority**: Summaries in CURRENT_STATUS take precedence over raw files.
-3. **Sub-indexes are first-class**: Recurse into sub-FILE_INDEX.md files.
-4. **Cite every claim**: Every fact must carry a citation like `(CURRENT_STATUS.md §Car Body)` or `(notes/design.md#L42)`.
-5. **"Not found" is acceptable**: Say so clearly. Do not hallucinate.
-6. **No file modifications**: `recall` is read-only. If drift is noticed, note it in output but do not fix.
-7. **Stop early**: Do not read Layer 4 if Layers 1–2 already answer the query.
+2. **Context first, files second**: Always check if the answer is already in your conversation context before reading anything.
+3. **Grep before read**: For FILE_INDEX and individual files, use `Grep` as the first tool call. Full-file `Read` is a last resort.
+4. **Never full-read large files**:
+   - WORKLOG >200 lines → grep + read only matching sections
+   - FILE_INDEX >50 lines → grep only
+   - Any individual file >100 lines → grep + -C 3 context only
+5. **Sub-indexes via grep**: Recurse into sub-FILE_INDEX.md using grep, not full reads.
+6. **Cite every claim**: Every fact must carry a citation like `(CURRENT_STATUS.md §Car Body)` or `(notes/design.md#L42)`.
+7. **"Not found" is acceptable**: Say so clearly. Do not hallucinate.
+8. **No file modifications**: `recall` is read-only. Note drift but do not fix.
+9. **Stop early**: Do not proceed to Layer 4 if Layers 1–2 already answer the query.
 
 ---
 
