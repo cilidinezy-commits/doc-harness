@@ -1,6 +1,6 @@
 # FILE_INDEX — Doc Harness
 
-**Last updated**: 2026-04-22 (sync run)
+**Last updated**: 2026-04-22 (flush run)
 
 ---
 
@@ -59,5 +59,6 @@ Protocol: Doc Harness Chapter 14 (see `DOC_HARNESS_SPEC.md` §14).
 
 - `inbox/2026-04-18-from-smss-inbox-protocol-mandate.md` — SMSS inbox protocol mandate
 - `inbox/2026-04-19-from-whoami-skill-improvement-proposals.md` — WhoAMI skill improvement proposals
+- `inbox/2026-04-22-from-whoami-agent-identity-confusion-report.md` — WhoAMI agent identity confusion incident report (INC-2026-04-22-001)
 - `inbox/2026-04-22-from-whoami-github-push-experience-report.md` — WhoAMI GitHub push SSL fix experience
 - `outbox/` — Outgoing messages (drafts and sent-copies; currently empty)
