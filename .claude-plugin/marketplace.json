@@ -6,12 +6,12 @@
   },
   "metadata": {
     "description": "Document-based project control for AI-human collaboration. A Claude Code skill that lets any agent resume work from files alone — no external memory needed.",
-    "version": "1.4"
+    "version": "1.5"
   },
   "plugins": [
     {
       "name": "doc-harness",
-      "description": "Document-based project control (English). Tracks progress across sessions, detects interrupted phase transitions, and coordinates multiple projects via file-based inbox/outbox. Commands: /doc-harness init, /doc-harness check.",
+      "description": "Document-based project control (English). Tracks progress across sessions, detects interrupted phase transitions, coordinates multiple projects via file-based inbox/outbox, and provides emergency context save before compression. Commands: /doc-harness init, /doc-harness check, /doc-harness sync, /doc-harness flush.",
       "source": "./",
       "strict": false,
       "skills": [
@@ -20,7 +20,7 @@
     },
     {
       "name": "doc-harness-zh",
-      "description": "基于文档的项目控制系统（中文版）。让任何 AI 智能体仅通过读取文件即可恢复项目工作状态。命令：/doc-harness init、/doc-harness check。",
+      "description": "基于文档的项目控制系统（中文版）。让任何 AI 智能体仅通过读取文件即可恢复项目工作状态，支持上下文压缩前的紧急保存。命令：/doc-harness init、/doc-harness check、/doc-harness sync、/doc-harness flush。",
       "source": "./",
       "strict": false,
       "skills": [
