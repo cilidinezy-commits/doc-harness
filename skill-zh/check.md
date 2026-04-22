@@ -185,7 +185,7 @@ Grep 查找 CLAUDE.md 中任意位置的 HTML 注释 `<!-- doc-harness-ops-versi
 📝 落笔为安检查：
    → 有没有重要信息目前只存在于 context 中？
    → 有没有未保存的分析结果、决策、洞见？
-   → 如果有 → 现在立刻保存。
+   → 如果有 → 现在立刻保存。若上下文压缩即将来临 → 执行 `/doc-harness flush` 以系统性地将所有重要上下文提取到文档中。
 ```
 
 ### 2.4 阶段一致性检查
@@ -276,3 +276,4 @@ Grep 查找 CLAUDE.md 中任意位置的 HTML 注释 `<!-- doc-harness-ops-versi
 - Context compact 后
 - 感觉偏离原则时
 - 用户要求时
+- 执行 `/doc-harness sync` 或 `/doc-harness flush` 之前（在修复前先了解全貌）

@@ -185,7 +185,7 @@ Read CURRENT_STATUS.md. Find the "Driving Manual" / "驾驶手册" section. For 
 📝 Write It Down check:
    → Any important information ONLY in context right now?
    → Unsaved analysis results, decisions, insights?
-   → If yes → save NOW.
+   → If yes → save NOW. If context compression is imminent → run `/doc-harness flush` to systematically extract all important context into documents.
 ```
 
 ### 2.4 Phase coherence check
@@ -276,3 +276,4 @@ All Part-1 anchors (`## Current Work`, `## Recent Completed`, `## Next Steps`, `
 - After context compact
 - When feeling drift from principles
 - When user requests
+- Before `/doc-harness sync` or `/doc-harness flush` (to understand the full picture before repairing)

@@ -1,7 +1,7 @@
 ---
 name: doc-harness
 description: "Document-based project control that lets any AI agent or human resume work from files alone — no external memory needed. Use this skill whenever the user wants to structure a long-running project, track progress across sessions, recover state after context loss, coordinate multiple agents on the same project, audit project documentation health, or stop forgetting what was done last session. Triggers include: '/doc-harness init' and '/doc-harness check' (explicit slash commands); requests like 'help me set up this project', 'I keep losing track', 'my agent forgets between sessions', 'organize my project docs', 'audit this project', 'check the documentation', 'what did we do last time'; multi-week projects (theses, research, analyses, software modules) that span many sessions; cross-project coordination (inbox/outbox for file-based messages between projects)."
-argument-hint: "init [project-name] [description] | check"
+argument-hint: "init [project-name] [description] | check | sync [--interactive] | flush [--interactive]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
@@ -37,6 +37,24 @@ Audit the current project's documentation health and reflect on working principl
 
 **→ See [check.md](check.md) for full check procedures.**
 
+### `/doc-harness sync [--interactive]`
+
+Synchronize status documents with reality. Repair drift, refresh stale fields, register missing files, and optionally trigger phase transition or WORKLOG archival.
+
+- **`auto`** (default): Execute fixes without asking.
+- **`interactive`**: Ask before phase transitions, archival, or creating new principle documents.
+
+**→ See [sync.md](sync.md) for full sync procedures.**
+
+### `/doc-harness flush [--interactive]`
+
+Emergency save before context compression. Includes everything `sync` does, plus mandatory extraction of important context information into documents.
+
+- **`auto`** (default): Use heuristics to classify and save context information without asking.
+- **`interactive`**: Ask before each significant extraction.
+
+**→ See [flush.md](flush.md) for full flush procedures.**
+
 ### `/doc-harness` (no arguments)
 
 Inspect the current directory and suggest the right next step:
@@ -56,5 +74,7 @@ Information in context will eventually be completely lost. Important information
 
 - [init.md](init.md) — Read when executing `/doc-harness init`. Covers clean init, mid-project adoption, partial-state repair, and optional inter-project inbox/outbox setup.
 - [check.md](check.md) — Read when executing `/doc-harness check`. Audit procedures for file health, recovery-chain soundness, mid-transition detection, and inbox status.
+- [sync.md](sync.md) — Read when executing `/doc-harness sync`. Drift repair, date refresh, file registration, phase-transition and archival triggers.
+- [flush.md](flush.md) — Read when executing `/doc-harness flush`. Emergency save with systematic context-to-document extraction.
 - [operational_rules.md](operational_rules.md) — The operational rules embedded verbatim into every project's CLAUDE.md at `init` time. Carries the `<!-- doc-harness-ops-version -->` version tag so the check command can detect stale embeddings.
 - [spec.md](spec.md) — Complete Doc Harness specification (14 chapters + 5 appendices). Authoritative — all other files derive from it. Has a Table of Contents at the top for navigation without full-read.

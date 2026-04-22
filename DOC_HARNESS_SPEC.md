@@ -1,6 +1,6 @@
 # Doc Harness — Complete Specification
 
-**Version**: v1.4.1
+**Version**: v1.5.0
 **Date**: 2026-04-19
 **Status**: Production-ready
 
@@ -746,6 +746,51 @@ Do not unconditionally read all task-conditional entries at startup. That defeat
 
 Execute the five-step protocol defined in Chapter 6 §6.2.
 
+### 11.5 Status Sync (`/doc-harness sync`)
+
+**Purpose**: Actively repair documentation drift. Unlike `check` (read-only diagnosis), `sync` modifies files to bring them back into alignment with reality.
+
+**Trigger conditions**:
+- User explicitly requests a sync
+- Agent detects significant drift during session-end checklist
+- Before a long project pause
+- After bulk file operations outside normal agent workflow
+
+**Modes**:
+- **`auto`** (default): Execute all safe fixes (file registration, date refresh) without asking. If car body ≥200 lines or WORKLOG ≥1000 lines, auto-executes phase transition or archival per spec §6.2 and §5.5.
+- **`interactive`**: Same fixes, but asks user before phase transitions, archival, or creating new principle documents from context.
+
+**Procedure**: See `sync.md` for the complete step-by-step procedure (drift scan → auto fixes → phase-transition check → archival check → principle extraction).
+
+**Relationship to `check`**: `check` reports; `sync` repairs. Run `check` to understand the full health picture; run `sync` to fix drift. `sync` does NOT perform principle reflection — that remains `check`'s domain.
+
+### 11.6 Context Flush (`/doc-harness flush`)
+
+**Purpose**: Emergency save before context compression or session end. Includes everything `sync` does, plus mandatory extraction of important context information into documents.
+
+**Core guarantee**: After a successful flush, a new agent reading the Recovery Chain should recover project state **as if context had never been compressed** — knowing *what information exists* and *where to find it*.
+
+**Trigger conditions**:
+- User explicitly requests a flush ("save everything," "prepare for compact")
+- Context usage is high and user wants to ensure zero loss
+- Before a known context reset
+- After a long, high-density session with significant context accumulation
+
+**Modes**:
+- **`auto`** (default): Uses heuristics to classify context information by type and route it to appropriate documents (`notes/`, `design/`, `PHILOSOPHY.md`, etc.) without asking.
+- **`interactive`**: Proposes each extraction to the user for approval or path editing.
+
+**Procedure** (five phases):
+1. **Phase A**: Run `sync` in the same mode.
+2. **Phase B**: Context inventory — agent self-scans context, classifies items by type, skips items already durable (in car body or FILE_INDEX).
+3. **Phase C**: Write and register — create or append files, register in FILE_INDEX, record in car body.
+4. **Phase D**: Verification — agent simulates a fresh arrival to confirm all extracted information is discoverable.
+5. **Phase E**: Flush marker — record the flush event in CURRENT_STATUS car body.
+
+**Auto-mode heuristics**: Information is "important" if user-emphasized, a decision/rationale, required significant effort to produce, or would cause confusion if lost. Target paths follow existing project conventions; standard folders (`notes/`, `design/`, `lessons/`, `data/`) are created only when needed.
+
+**Full procedure**: See `flush.md`.
+
 ---
 
 ## Chapter 12: Anti-patterns
@@ -1325,3 +1370,4 @@ Phase density varies enormously across projects — from ~20 lines per phase (in
 | v1.4 | 2026-04-19 | Comprehensive release — six review cycles (1 self + 4 independent scenario agents + 1 skill-creator structural review) surfaced and closed **30 distinct issues** in total. **Content (16)**: B1 `skill-zh/operational_rules.md` inbox/outbox section (iron rule 1 sync); B2 §14.5 outbox filename `from-<source>` fix; B3 README Upgrade section; B4 default-language contradiction; B5 v1.2→v1.3 reversal note; B6 `README_zh` portfolio mistranslation; B7 `init.md` Step 2 4-way branch (clean / adopted / mid-project / partial); B8 SKILL.md no-args dispatcher; P1 §6.3.1 mid-transition detection (three-way coherence, ⏸️ row, clarifying footnote, zero-progress-Step-1 note); P2 §14.3 HHMMSS disambiguator + sub-second fallback with `-<N>` counter; P3 §14.8 malformed-message handling with quarantine and full required-field enumeration; P4 §14.4 rule-3 archival as `check.md` §1.7(b) trigger at ≥5 stale messages; P5 §5.5 quarter-boundary rule, archive↔WORKLOG backlinks, cross-quarter scar, atomic-commit git convention; P6 `check.md` language-independence (dual-anchor matching + note); P7 `check.md` §1.4 recursive sub-index audit **with prune at sub-index boundaries** to prevent false ghosts; P8 `<!-- doc-harness-ops-start/end -->` sentinels + version tag + `check.md` §1.10 drift detection with full install-path resolution order (project / ~/.claude / XDG / Windows); P9 §11.2 bullet 4 quantified "substantial" threshold (a≥3 steps / b≥50 lines / c car body≥100); P10 §6.4 three-path pause/resume (orderly / emergency / auto-resume ≤7d/8–30d/>30d) with §6.3.1 repair gate; P11 §6.2.2 driving-manual review ritual (5-step) with "semantic intent" unchanged criterion; P12 §6.2.1 stepwise failure table. **Additional integrity fixes**: §14.3.1 pre-send verification (sender must confirm recipient adoption before writing to inbox); operational_rules.md archival section catches up to spec §5.5. **Structural (skill-creator review)**: SKILL.md description rewritten for triggering accuracy (implicit user phrases + explicit slash commands); spec.md gains a TOC for 1300-line navigation; allowed-tools adds Edit; §3.1 car-metaphor explained as narrative (tire tracks / car body / headlights / driving manual — four questions an agent asks on arrival). **Polish**: SKILL.md surfaces context-cadence corollary; README worked inbox-message example + bulk-registration / disable FAQ entries. |
 | v1.3 | 2026-04-19 | New Chapter 14: Optional Inter-Project Communication (inbox/outbox) — self-contained, portable mechanism for file-based cross-project messaging. Spec covers folder structure, message format (YAML frontmatter + Markdown body), lifecycle (unread→read→actioned), integration with all four core documents, quick start for fresh agents, and adopt-on-existing-project procedure. init gains one y/n prompt to enable. Appendix E updated to explain why the mechanism is optional and why it lives inside doc-harness rather than as an external spec. "Portfolio" framing removed throughout — project groups are flat peers. §11.2 gains a context-aware update rule: if the runtime exposes context-window usage, low remaining context (~<20%) is an immediate trigger to flush CURRENT_STATUS and possibly phase-transition. |
 | v1.4.1 | 2026-04-19 | **§5.5 WORKLOG archival correction — field feedback**: archive filename changed from quarterly bin `WORKLOG_ARCHIVE_<YYYY-QN>.md` to per-event date `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`. The quarterly scheme unbounded the archive for high-activity projects (a project writing 5,000 lines/quarter would put all 5,000 lines into one "archive" file, defeating the purpose). Per-event naming keeps each archive inherently bounded by the ~1000-line trigger. Cross-quarter-scar step (old rule 6) removed — no longer applicable. New rule 7: archival event must be recorded in CURRENT_STATUS car body so a next-session agent sees the history shift without diffing WORKLOG. Git commit message updated to `Archive WORKLOG <YYYY-MM-DD>`. Operational_rules.md mirror-updated. TOC chapter-5 description adjusted. |
+| v1.5.0 | 2026-04-22 | **Two new commands**: `/doc-harness sync` (status synchronization — drift repair, date refresh, file registration, optional phase transition/archival; auto/interactive modes) and `/doc-harness flush` (emergency context save — includes sync plus mandatory context-to-document extraction with inventory, heuristic classification, verification, and flush marker; auto/interactive modes). New reference documents `sync.md` and `flush.md`. Spec gains §11.5 (sync) and §11.6 (flush). Operational rules updated to reference both commands. SKILL.md command listing and argument-hint expanded. |

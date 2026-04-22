@@ -153,7 +153,7 @@ Inside Claude Code:
 
 Replace the second command with `/plugin install doc-harness-zh@doc-harness` if you want the Chinese version — they are separate plugins and only one should be installed at a time (they expose the same `/doc-harness` command).
 
-Verify: type `/doc-harness` — you should see the help output describing `init` and `check`.
+Verify: type `/doc-harness` — you should see the help output describing `init`, `check`, `sync`, and `flush`.
 
 #### Option B — Manual copy (works everywhere)
 
@@ -327,6 +327,10 @@ Every agent reading these two files can immediately continue your work.
 
 **Session ends** → Quick checklist: status updated? Files registered? Anything unsaved?
 
+**Docs fall behind** → Run `/doc-harness sync` to repair drift (unregistered files, stale dates, optionally trigger phase transition or archival). Auto mode fixes without asking; interactive mode confirms major changes.
+
+**Context about to compress** → Run `/doc-harness flush` to systematically extract all important context information into documents before it is lost. Includes everything `sync` does, plus mandatory context inventory and write-out.
+
 **Context resets or new agent arrives** → Reads CLAUDE.md → CURRENT_STATUS → fully oriented.
 
 ### What You (the Human) Do
@@ -455,6 +459,11 @@ The recipient agent reads this, flips `status: unread` → `read`, performs what
 - `/doc-harness check` now audits inbox unread-message count (§1.7) and checks Recovery Chain health for the two-layer structure (§2.5).
 - **Hierarchical "portfolio" framing removed** from the spec. Projects in a group are self-contained peers; a parent navigation file is a lightweight optional pattern, not a Doc Harness concept. (The neutral term "project group" / §10.2 is retained for this flat-peer arrangement.)
 - **Context-aware update cadence**: operational rules now instruct agents whose runtime exposes context-window usage to treat low remaining context (~<20%) as an immediate trigger for CURRENT_STATUS update and possible phase transition. Compression is involuntary session end — don't wait for a "meaningful step" that may never land.
+
+**Q: What's new in v1.5?**
+Two new commands fill the gap between diagnosis (`check`) and creation (`init`):
+- **`/doc-harness sync`** — Status synchronization. Repairs documentation drift (unregistered files, stale dates), refreshes fields, and optionally triggers phase transition or WORKLOG archival. Auto mode (default) executes without asking; interactive mode confirms before major changes.
+- **`/doc-harness flush`** — Emergency context save. Includes everything `sync` does, plus mandatory extraction of important context information into documents before compression. Core guarantee: after flush, a new agent reading the Recovery Chain recovers state as if context was never compressed. Auto mode uses heuristics to classify and route information; interactive mode asks per item.
 
 **Q: What's new in v1.4?**
 A comprehensive hardening pass driven by six review cycles. Key additions:

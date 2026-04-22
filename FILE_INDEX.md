@@ -1,6 +1,6 @@
 # FILE_INDEX — Doc Harness
 
-**Last updated**: 2026-04-19 晚 (v1.4.1)
+**Last updated**: 2026-04-22 (v1.5.0 in design)
 
 ---
 
@@ -15,6 +15,8 @@
 - `skill/SKILL.md` — Entry point and router
 - `skill/init.md` — `/doc-harness init` instructions and templates
 - `skill/check.md` — `/doc-harness check` audit + reflection procedures
+- `skill/sync.md` — `/doc-harness sync` drift repair and maintenance procedures
+- `skill/flush.md` — `/doc-harness flush` emergency context-save procedures
 - `skill/operational_rules.md` — Rules embedded in each project's CLAUDE.md
 - `skill/spec.md` — Complete Doc Harness specification (authoritative)
 
@@ -22,6 +24,8 @@
 - `skill-zh/SKILL.md` — 主入口和路由
 - `skill-zh/init.md` — `/doc-harness init` 创建指令和模板
 - `skill-zh/check.md` — `/doc-harness check` 审计+反思流程
+- `skill-zh/sync.md` — `/doc-harness sync` 漂移修复与维护流程
+- `skill-zh/flush.md` — `/doc-harness flush` 紧急上下文保存流程
 - `skill-zh/operational_rules.md` — 嵌入项目CLAUDE.md的操作规则
 - `skill-zh/spec.md` — Doc Harness完整规范
 
