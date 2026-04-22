@@ -85,6 +85,12 @@ Created `kimi-skill/` — a Kimi CLI-compatible skill version of Doc Harness, ad
 - Updated CLAUDE.md current phase description
 - Car body: 84 lines (under limit); WORKLOG: 261 lines (under limit); no phase transition or archival needed
 
+#### Context flush (2026-04-22 21:38) — 1 item extracted to file
+- Sync actions: phase transition no; archival no
+- New file created: `notes/kimi-claude-interop.md` — Cross-tool skill discovery behavior (Kimi auto-discovers Claude skills, brand-directory priority rules, dual distribution strategy)
+- Existing files appended: none
+- Context-principle extraction: skipped by user
+
 **Key differences from Claude Code version**:
 - No slash commands (`/doc-harness init`) — all triggers are natural language parsed from SKILL.md `description`
 - No `argument-hint` or `allowed-tools` in frontmatter (Kimi only supports `name` + `description`)

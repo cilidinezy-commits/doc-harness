@@ -29,6 +29,9 @@
 - `skill-zh/operational_rules.md` — 嵌入项目CLAUDE.md的操作规则
 - `skill-zh/spec.md` — Doc Harness完整规范
 
+## Notes
+- `notes/kimi-claude-interop.md` — Cross-tool skill discovery behavior (Kimi CLI vs Claude Code)
+
 ## Project Documentation
 - `README.md` — English project description (installation, usage, FAQ)
 - `README_zh.md` — Chinese project description
