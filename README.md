@@ -153,7 +153,7 @@ Inside Claude Code:
 
 Replace the second command with `/plugin install doc-harness-zh@doc-harness` if you want the Chinese version — they are separate plugins and only one should be installed at a time (they expose the same `/doc-harness` command).
 
-Verify: type `/doc-harness` — you should see the help output describing `init`, `check`, `sync`, and `flush`.
+Verify: type `/doc-harness` — you should see the help output describing `init`, `check`, `sync`, `flush`, and `recall`.
 
 #### Option B — Manual copy (works everywhere)
 
@@ -330,6 +330,8 @@ Every agent reading these two files can immediately continue your work.
 **Docs fall behind** → Run `/doc-harness sync` to repair drift (unregistered files, stale dates, optionally trigger phase transition or archival). Interactive mode (default) confirms major changes; auto mode fixes without asking.
 
 **Context about to compress** → Run `/doc-harness flush` to systematically extract all important context information into documents before it is lost. Includes everything `sync` does, plus mandatory context inventory and write-out.
+
+**Need to find something?** → Run `/doc-harness recall [query]` to search across all registered documents along the Doc Harness hierarchy — from CURRENT_STATUS summaries down to individual files — and get structured, source-cited answers. Example: `/doc-harness recall "Why PostgreSQL?"`.
 
 **Context resets or new agent arrives** → Reads CLAUDE.md → CURRENT_STATUS → fully oriented.
 

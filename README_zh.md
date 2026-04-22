@@ -161,7 +161,7 @@ CURRENT_STATUS 只保留最近的摘要以保持简洁。WORKLOG 是完整历史
 
 若想安装英文版，第二行改为 `/plugin install doc-harness@doc-harness`——两者是独立插件，同时只装其一（它们暴露同一个 `/doc-harness` 命令）。
 
-验证：输入 `/doc-harness`，应能看到 `init`、`check`、`sync`、`flush` 的帮助说明。
+验证：输入 `/doc-harness`，应能看到 `init`、`check`、`sync`、`flush`、`recall` 的帮助说明。
 
 #### 方式 B——手动复制（任何环境都可用）
 
@@ -337,6 +337,8 @@ Windows：`rmdir /S %USERPROFILE%\.claude\skills\doc-harness`。
 
 **上下文即将压缩** → 执行 `/doc-harness flush` 在信息丢失前系统性地将所有重要上下文提取到文档中。包含 `sync` 的一切功能，加上强制性的上下文盘点和写出。
 
+**需要查找信息？** → 执行 `/doc-harness recall [query]` 沿 Doc Harness 文档层次搜索所有已注册文档——从 CURRENT_STATUS 摘要到单个文件——获取结构化、带来源引用的答案。示例：`/doc-harness recall "为什么选 PostgreSQL？"`。
+
 **上下文重置或新智能体到来** → 读 CLAUDE.md → CURRENT_STATUS → 完全了解情况。
 
 ### 你（人类用户）需要做什么
@@ -469,6 +471,7 @@ priority: high
 两个新命令填补了诊断（`check`）与创建（`init`）之间的空白：
 - **`/doc-harness sync`** — 状态同步。修复文档漂移（未注册文件、陈旧日期），刷新字段，并可选择触发阶段切换或 WORKLOG 归档。交互模式（默认）在重大变更前确认；自动模式无需询问即执行。
 - **`/doc-harness flush`** — 紧急上下文保存。包含 `sync` 的一切功能，加上强制性地在压缩前将上下文中的重要信息提取到文档中。核心保证：冲刷后，全新智能体阅读恢复链即可恢复到仿佛上下文从未被压缩的状态。交互模式（默认）逐项询问；自动模式使用启发式规则对信息进行分类和路由，无需询问。
+- **`/doc-harness recall [query]`** — 信息召回。沿 Doc Harness 文档层次系统化搜索所有已注册文档，返回结构化、带来源引用的答案。支持状态/计划查询、历史/决策查询、文件查找和跨文档综合。
 
 **Q: v1.4 新增了什么？**
 六轮审查驱动的全面加固：

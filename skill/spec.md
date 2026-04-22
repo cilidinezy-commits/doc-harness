@@ -791,6 +791,41 @@ Execute the five-step protocol defined in Chapter 6 §6.2.
 
 **Full procedure**: See `flush.md`.
 
+### 11.7 Information Recall (`/doc-harness recall [query]`)
+
+**Purpose**: Retrieve information from the project's Doc Harness document hierarchy. As projects grow, information scatters across dozens of registered files; `recall` provides a systematic retrieval protocol that mirrors the Recovery Chain's hierarchy — from high-level summaries to low-level details.
+
+**Relationship to other commands**: `recall` is **read-only** (like `check`, unlike `sync`/`flush`). It does not modify files. If drift is noticed during recall, it is reported in the output but not fixed — that is `sync`'s domain.
+
+**Query types** (agent classifies the query, then searches appropriate layers):
+
+| Type | Pattern | Primary layers | Example |
+|------|---------|----------------|---------|
+| **A. Status / Plan** | "What next?", "Current status?" | Layer 0–1 (CLAUDE.md → CURRENT_STATUS) | "What's the auth plan?" |
+| **B. History / Decision** | "Why did we...", "When did..." | Layer 1–2 (CURRENT_STATUS → WORKLOG) | "Why PostgreSQL?" |
+| **C. File / Topic lookup** | "Find files about..." | Layer 3–4 (FILE_INDEX → files) | "Find caching docs" |
+| **D. Cross-document synthesis** | "Summarize...", "Everything about..." | Layer 1–4 (all) | "All auth discussions" |
+
+**Layered search protocol** (top-down; stop early when answered):
+
+- **Layer 0**: CLAUDE.md — iron rules, overview, recovery chain
+- **Layer 1**: CURRENT_STATUS.md — tire tracks, car body, headlights, driving manual
+- **Layer 2**: WORKLOG.md — historical phase summaries (TOC → jump to phases)
+- **Layer 3**: FILE_INDEX + sub-indexes — catalog scan, recursive into sub-FILE_INDEX.md
+- **Layer 4**: Individual registered files — full-text when descriptions are insufficient
+
+**Search rules**:
+1. Only search registered files (in FILE_INDEX or sub-indexes). Unregistered files are invisible.
+2. Respect Recovery Chain priority: summaries take precedence over raw files.
+3. Sub-indexes are first-class: recurse into sub-FILE_INDEX.md.
+4. Cite every claim with file and section/line reference.
+5. "Not found" is acceptable — do not hallucinate.
+6. Read-only: never modify files.
+7. Stop early: do not read Layer 4 if Layers 1–2 answer the query.
+8. Scope limit: if >20 files match, summarize FILE_INDEX and ask user which categories to deep-read.
+
+**Full procedure**: See `recall.md`.
+
 ---
 
 ## Chapter 12: Anti-patterns

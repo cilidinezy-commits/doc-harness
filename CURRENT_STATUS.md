@@ -91,6 +91,22 @@ Created `kimi-skill/` — a Kimi CLI-compatible skill version of Doc Harness, ad
 - Existing files appended: none
 - Context-principle extraction: skipped by user
 
+#### v1.5.1 design — recall command (2026-04-22)
+
+User requested a fifth command to fill the retrieval gap: `recall`.
+
+- **`/doc-harness recall [query]`** — Information retrieval. Searches systematically across all registered documents along the Doc Harness hierarchy (CLAUDE.md → CURRENT_STATUS → WORKLOG → FILE_INDEX → individual files) and returns structured, source-cited answers. Four query types: status/plan (Layer 0–1), history/decision (Layer 1–2), file lookup (Layer 3–4), cross-document synthesis (Layer 1–4). Read-only; never modifies files.
+
+**Design artifacts created**:
+- `skill/recall.md` (~270 lines) — English recall procedure with layered search protocol
+- `skill-zh/recall.md` (~260 lines) — Chinese mirror
+- `kimi-skill/references/recall.md` (~230 lines) — Kimi CLI adaptation (natural-language triggers)
+- `skill/SKILL.md`, `skill-zh/SKILL.md`, `kimi-skill/SKILL.md` — Command listings updated
+- `skill/spec.md`, `skill-zh/spec.md` — §11.7 recall normative spec added
+- `README.md`, `README_zh.md` — Feature lists updated
+
+**Completed**: All design artifacts, English + Chinese + Kimi skill files, project root doc updates. Recall.md registered in FILE_INDEX under all three skill categories.
+
 **Key differences from Claude Code version**:
 - No slash commands (`/doc-harness init`) — all triggers are natural language parsed from SKILL.md `description`
 - No `argument-hint` or `allowed-tools` in frontmatter (Kimi only supports `name` + `description`)

@@ -17,6 +17,7 @@
 - `skill/check.md` — `/doc-harness check` audit + reflection procedures
 - `skill/sync.md` — `/doc-harness sync` drift repair and maintenance procedures
 - `skill/flush.md` — `/doc-harness flush` emergency context-save procedures
+- `skill/recall.md` — `/doc-harness recall` information retrieval protocol
 - `skill/operational_rules.md` — Rules embedded in each project's CLAUDE.md
 - `skill/spec.md` — Complete Doc Harness specification (authoritative)
 
@@ -26,6 +27,7 @@
 - `skill-zh/check.md` — `/doc-harness check` 审计+反思流程
 - `skill-zh/sync.md` — `/doc-harness sync` 漂移修复与维护流程
 - `skill-zh/flush.md` — `/doc-harness flush` 紧急上下文保存流程
+- `skill-zh/recall.md` — `/doc-harness recall` 信息召回协议
 - `skill-zh/operational_rules.md` — 嵌入项目CLAUDE.md的操作规则
 - `skill-zh/spec.md` — Doc Harness完整规范
 
@@ -43,6 +45,7 @@
 - `kimi-skill/references/check.md` — Health audit + principle reflection
 - `kimi-skill/references/sync.md` — Drift repair with ask/auto heuristics
 - `kimi-skill/references/flush.md` — Emergency context save before compression
+- `kimi-skill/references/recall.md` — Information retrieval protocol
 - `kimi-skill/references/spec.md` — Normative spec reference for edge cases
 
 ## Plugin Marketplace Metadata

@@ -1,7 +1,7 @@
 ---
 name: doc-harness
 description: "Document-based project control that lets any AI agent or human resume work from files alone — no external memory needed. Use this skill whenever the user wants to structure a long-running project, track progress across sessions, recover state after context loss, coordinate multiple agents on the same project, audit project documentation health, or stop forgetting what was done last session. Triggers include: '/doc-harness init' and '/doc-harness check' (explicit slash commands); requests like 'help me set up this project', 'I keep losing track', 'my agent forgets between sessions', 'organize my project docs', 'audit this project', 'check the documentation', 'what did we do last time'; multi-week projects (theses, research, analyses, software modules) that span many sessions; cross-project coordination (inbox/outbox for file-based messages between projects)."
-argument-hint: "init [project-name] [description] | check | sync [--auto] | flush [--auto]"
+argument-hint: "init [project-name] [description] | check | sync [--auto] | flush [--auto] | recall [query]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
@@ -55,6 +55,18 @@ Emergency save before context compression. Includes everything `sync` does, plus
 
 **→ See [flush.md](flush.md) for full flush procedures.**
 
+### `/doc-harness recall [query]`
+
+Retrieve information from the project's Doc Harness document hierarchy. Search systematically across registered documents and return structured, source-cited results.
+
+**Query types**:
+- **Status/Plan**: "What's the current plan for auth?" → searches CURRENT_STATUS + headlights
+- **History/Decision**: "Why did we choose PostgreSQL?" → searches WORKLOG + tire tracks
+- **File lookup**: "Find all docs about caching" → searches FILE_INDEX
+- **Synthesis**: "All discussions about authentication" → comprehensive search across all layers
+
+**→ See [recall.md](recall.md) for the layered search protocol and output format.**
+
 ### `/doc-harness` (no arguments)
 
 Inspect the current directory and suggest the right next step:
@@ -76,5 +88,6 @@ Information in context will eventually be completely lost. Important information
 - [check.md](check.md) — Read when executing `/doc-harness check`. Audit procedures for file health, recovery-chain soundness, mid-transition detection, and inbox status.
 - [sync.md](sync.md) — Read when executing `/doc-harness sync`. Drift repair, date refresh, file registration, phase-transition and archival triggers.
 - [flush.md](flush.md) — Read when executing `/doc-harness flush`. Emergency save with systematic context-to-document extraction.
+- [recall.md](recall.md) — Read when executing `/doc-harness recall`. Layered search protocol for retrieving information from registered documents.
 - [operational_rules.md](operational_rules.md) — The operational rules embedded verbatim into every project's CLAUDE.md at `init` time. Carries the `<!-- doc-harness-ops-version -->` version tag so the check command can detect stale embeddings.
 - [spec.md](spec.md) — Complete Doc Harness specification (14 chapters + 5 appendices). Authoritative — all other files derive from it. Has a Table of Contents at the top for navigation without full-read.

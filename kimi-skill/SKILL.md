@@ -1,6 +1,6 @@
 ---
 name: doc-harness
-description: "Document-based project control that lets any AI agent or human resume work from files alone — no external memory needed. Use this skill whenever the user wants to structure a long-running project, track progress across sessions, recover state after context loss, coordinate multiple agents on the same project, audit project documentation health, or stop forgetting what was done last session. Triggers include: 'help me set up this project', 'I keep losing track', 'my agent forgets between sessions', 'organize my project docs', 'audit this project', 'check the documentation', 'what did we do last time', 'update the status docs', 'sync the project state', 'save everything before context compresses', 'flush context', 'prepare for compact', 'register this new file', 'init doc-harness'; multi-week projects (theses, research, analyses, software modules) that span many sessions; cross-project coordination (inbox/outbox for file-based messages between projects); requests to create CLAUDE.md, CURRENT_STATUS.md, FILE_INDEX.md, WORKLOG.md, or DOC_HARNESS_SPEC.md."
+description: "Document-based project control that lets any AI agent or human resume work from files alone — no external memory needed. Use this skill whenever the user wants to structure a long-running project, track progress across sessions, recover state after context loss, coordinate multiple agents on the same project, audit project documentation health, or stop forgetting what was done last session. Triggers include: 'help me set up this project', 'I keep losing track', 'my agent forgets between sessions', 'organize my project docs', 'audit this project', 'check the documentation', 'what did we do last time', 'update the status docs', 'sync the project state', 'save everything before context compresses', 'flush context', 'prepare for compact', 'register this new file', 'init doc-harness', 'recall', 'remember', 'find in docs', 'search project docs', 'where did we discuss', 'why did we decide', 'what is the current plan', 'summarize what we know about'; multi-week projects (theses, research, analyses, software modules) that span many sessions; cross-project coordination (inbox/outbox for file-based messages between projects); requests to create CLAUDE.md, CURRENT_STATUS.md, FILE_INDEX.md, WORKLOG.md, or DOC_HARNESS_SPEC.md."
 ---
 
 # Doc Harness — Document-Based Project Control
@@ -39,6 +39,7 @@ Kimi has no slash commands. Use the table below to map user requests to the corr
 | "Check documentation health" / "audit project docs" / "run a health check" | **Check** — audit file health and reflect on principles | [references/check.md](references/check.md) |
 | "Sync project state" / "update status docs" / "catch up documentation" | **Sync** — repair drift, refresh dates, register missing files | [references/sync.md](references/sync.md) |
 | "Save everything" / "flush context" / "prepare for compact" / "ensure nothing is lost" | **Flush** — emergency save: extract all important context into documents | [references/flush.md](references/flush.md) |
+| "Recall" / "remember" / "find in docs" / "search project docs" / "where did we discuss" / "why did we decide" / "what is the current plan" | **Recall** — retrieve information from registered documents along the Doc Harness hierarchy | [references/recall.md](references/recall.md) |
 
 ---
 
@@ -127,6 +128,7 @@ See [references/spec.md](references/spec.md) for full details.
 | [references/check.md](references/check.md) | User asks to audit / check documentation health |
 | [references/sync.md](references/sync.md) | User asks to sync / update status docs |
 | [references/flush.md](references/flush.md) | User asks to save / flush context before compression |
+| [references/recall.md](references/recall.md) | User asks to recall / search / find information in project docs |
 | [references/spec.md](references/spec.md) | Unusual situation, edge case, or understanding design rationale |
 
 **Language note**: All documents are written in English with Chinese annotations where helpful. Kimi should respond in the user's language regardless of document language.
