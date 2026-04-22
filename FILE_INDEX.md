@@ -1,6 +1,6 @@
 # FILE_INDEX — Doc Harness
 
-**Last updated**: 2026-04-22 (v1.5.0 in design)
+**Last updated**: 2026-04-22 (kimi-skill created)
 
 ---
 
@@ -33,6 +33,14 @@
 - `README.md` — English project description (installation, usage, FAQ)
 - `README_zh.md` — Chinese project description
 - `LICENSE` — MIT license
+
+## Kimi CLI Skill Files (kimi-skill/)
+- `kimi-skill/SKILL.md` — Kimi CLI entry point (natural-language triggers)
+- `kimi-skill/references/init.md` — Project setup procedure
+- `kimi-skill/references/check.md` — Health audit + principle reflection
+- `kimi-skill/references/sync.md` — Drift repair with ask/auto heuristics
+- `kimi-skill/references/flush.md` — Emergency context save before compression
+- `kimi-skill/references/spec.md` — Normative spec reference for edge cases
 
 ## Plugin Marketplace Metadata
 - `.claude-plugin/marketplace.json` — Marketplace definition exposing two plugins (`doc-harness` / `doc-harness-zh`) so users can install via `/plugin marketplace add cilidinezy-commits/doc-harness` + `/plugin install <name>@doc-harness`

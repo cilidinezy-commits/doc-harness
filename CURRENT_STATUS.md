@@ -73,6 +73,28 @@ User requested two new commands to fill the gap between `check` (read-only diagn
 
 Push succeeded immediately after configuration. WhoAMI message marked `actioned`.
 
+#### Kimi CLI skill version created (2026-04-22)
+
+Created `kimi-skill/` — a Kimi CLI-compatible skill version of Doc Harness, adapting the v1.5.0 feature set for Kimi's natural-language trigger model.
+
+**Key differences from Claude Code version**:
+- No slash commands (`/doc-harness init`) — all triggers are natural language parsed from SKILL.md `description`
+- No `argument-hint` or `allowed-tools` in frontmatter (Kimi only supports `name` + `description`)
+- No `--auto` / `--interactive` flags — Kimi uses conversation context to decide whether to ask the user
+- Supports `references/` directory for on-demand loaded docs (same mechanism as Claude Code's reference docs)
+
+**Files created**:
+- `kimi-skill/SKILL.md` (132 lines) — entry point with trigger table mapping natural language to procedures
+- `kimi-skill/references/init.md` — project setup, including inter-project inbox/outbox adoption
+- `kimi-skill/references/check.md` — health audit + principle reflection
+- `kimi-skill/references/sync.md` — drift repair with ask/auto heuristics
+- `kimi-skill/references/flush.md` — emergency context save before compression
+- `kimi-skill/references/spec.md` — normative spec reference for edge cases
+
+**Translation approach**: All docs written in English with Chinese annotations where helpful. Chinese mirror (`kimi-skill-zh/`) can follow later per Iron Rule 1.
+
+Committed + pushed to GitHub (`f36a1ae`).
+
 ### Unresolved Issues
 
 (None.)
@@ -83,11 +105,10 @@ Push succeeded immediately after configuration. WhoAMI message marked `actioned`
 
 ### Immediate Actions
 
-1. Git commit all v1.5.0 changes (single atomic commit or logically separated commits)
-2. Push to GitHub
-3. Deploy sync to installed copies (user-level + project-level)
-4. Run smoke test: `/doc-harness sync --interactive` and `/doc-harness flush --interactive` on a real project
-5. Update plugin marketplace if schema requires version bump
+1. Deploy sync to installed copies (user-level + project-level)
+2. Run smoke test: `/doc-harness sync --interactive` and `/doc-harness flush --interactive` on a real project
+3. Update plugin marketplace if schema requires version bump
+4. Create standalone repo `cilidinezy-commits/doc-harness-for-kimi` (optional — decide if separate repo vs monorepo)
 
 ### Future Plans
 
