@@ -46,6 +46,8 @@ Kimi has no slash commands. Use the table below to map user requests to the corr
 ## Daily Workflow
 
 ### Session Start
+0. **Identity anchor**: Read the AGENT IDENTITY LOCK at the top of CLAUDE.md. Confirm:
+   "I am this project's agent. My role is [role from the lock]."
 1. Read project's **CLAUDE.md** → understand overview, iron rules, recovery chain
 2. Read **CURRENT_STATUS.md** → tire tracks (history), car body (current state), headlights (next steps), driving manual (principles)
 3. If user is present → confirm whether next steps have changed

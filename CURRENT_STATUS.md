@@ -1,7 +1,7 @@
 # CURRENT_STATUS — Doc Harness
 
 **Last updated**: 2026-04-22
-**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ active — one patch landed)
+**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ active — v1.6.0 identity lock shipped)
 
 ---
 
@@ -128,6 +128,19 @@ User requested a fifth command to fill the retrieval gap: `recall`.
 **Translation approach**: All docs written in English with Chinese annotations where helpful. Chinese mirror (`kimi-skill-zh/`) can follow later per Iron Rule 1.
 
 Committed + pushed to GitHub (`f36a1ae`).
+
+#### v1.6.0 — AGENT IDENTITY LOCK (2026-04-22)
+
+WhoAMI agent experienced identity confusion (INC-2026-04-22-001): during cross-project investigation of lit-system-api code, the agent incorrectly identified itself as lit's agent, writing to lit's outbox/, modifying lit's internal docs, and sending messages with wrong `from:` field. User required 4 corrections.
+
+**Response — v1.6.0 spec upgrade**:
+- **AGENT IDENTITY LOCK** at top of CLAUDE.md template: cognitive anchor (not rule) — "你是 [PROJECT] 的代理" only, no "你不是谁" per user feedback
+- **Recovery Chain Step 0**: identity anchor ritual before reading any files
+- **Pre-send checklist §14.3.2**: 5-item sender self-defense (from field, outbox path, inbox path, no doc tampering, protocol active)
+- **check §1.11**: identity lock presence verification
+- **Bilingual sync**: all changes mirrored skill/ → skill-zh/
+
+**Files changed**: 17 files across skill/, skill-zh/, project root, kimi-skill/. Version bump v1.5.1 → v1.6.0. Local installs (Claude + Kimi) updated. Git commit `76db4b3`; GitHub push deferred per user request.
 
 ### Unresolved Issues
 
