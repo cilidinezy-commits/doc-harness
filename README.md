@@ -324,13 +324,13 @@ Every agent reading these two files can immediately continue your work.
 
 Doc Harness gives you five commands — each one answers a specific moment in your project's life. You don't need to memorize them; just describe your situation naturally.
 
-| Command | The Moment | What You Say | What It Does |
-|---------|-----------|-------------|--------------|
-| **`init`** | Starting a project (new or mid-flight) | *"Set up project docs for this"* | Creates the 5 core documents tailored to your project |
-| **`check`** | Regular maintenance / things feel messy | *"Check project doc health"* | Audits file health + reflects on whether rules are being followed |
-| **`sync`** | Docs have fallen behind reality | *"Sync the project state"* | Repairs drift: registers missing files, refreshes stale dates, triggers phase transition or archival if thresholds hit |
-| **`flush`** | Context about to compress / session ending | *"Save everything"* | Emergency save: extracts all important context into documents + runs sync |
-| **`recall`** | Can't find something / need decision history | *"Why did we choose PostgreSQL?"* | Searches registered documents hierarchically and returns cited answers |
+| Command | When to use | What it does | Example utterances (to trigger the agent) |
+|---------|------------|--------------|------------------------------------------|
+| `/doc-harness init [project-name] [description]` | Starting a project (new or already underway) | Creates the 5 core documents tailored to your project | *"Set up doc-harness for this project"*, *"I want to organize this project so we don't lose track"*, *"Create status documentation"* |
+| `/doc-harness check` | Regular maintenance; things feel messy; session ending | Audits file health + reflects on whether rules are being followed | *"Check project doc health"*, *"Run a health check on the docs"*, *"Audit the project documentation"* |
+| `/doc-harness sync [--auto]` | Docs have fallen behind reality; after bulk file operations; before a long pause | Repairs drift: registers missing files, refreshes stale dates, triggers phase transition or archival if thresholds hit | *"Sync the project state"*, *"Update the status docs"*, *"Catch up the documentation"* |
+| `/doc-harness flush [--auto]` | Context about to compress; session ending with unsaved work | Emergency save: systematically extracts all important context into documents + runs sync | *"Save everything"*, *"Flush context before compact"*, *"Prepare for context compression"* |
+| `/doc-harness recall [query]` | Can't find a previous discussion; need decision history; want a summary of what's known about X | Searches registered documents hierarchically and returns structured, source-cited answers | *"Recall why we chose PostgreSQL"*, *"Find all docs about caching"*, *"What is the current plan for auth?"*, *"Summarize what we know about billing"* |
 
 ---
 
