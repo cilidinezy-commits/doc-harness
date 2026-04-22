@@ -1,6 +1,6 @@
 # 状态文档体系规范（Status Documentation System Specification）
 
-**版本**: v1.5.0
+**版本**: v1.5.1
 **日期**: 2026-04-19
 **状态**: 正式版，可用于项目实施
 

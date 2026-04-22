@@ -1,7 +1,7 @@
 # Doc Harness — Operational Rules
 
 <!-- doc-harness-ops-start -->
-<!-- doc-harness-ops-version: 1.5.0 -->
+<!-- doc-harness-ops-version: 1.5.1 -->
 
 > This section is embedded in each project's CLAUDE.md as the complete guide for maintaining status documents.
 > For full design rationale, see `DOC_HARNESS_SPEC.md` (in the project root directory).

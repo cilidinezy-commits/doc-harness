@@ -1,7 +1,7 @@
 # 状态文档体系——操作规则
 
 <!-- doc-harness-ops-start -->
-<!-- doc-harness-ops-version: 1.5.0 -->
+<!-- doc-harness-ops-version: 1.5.1 -->
 
 > 本节嵌入项目CLAUDE.md，是Agent维护状态文档的完整操作指南。
 > 完整设计原理见 `DOC_HARNESS_SPEC.md`（项目根目录）。

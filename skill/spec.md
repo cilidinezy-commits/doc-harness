@@ -1,6 +1,6 @@
 # Doc Harness — Complete Specification
 
-**Version**: v1.5.0
+**Version**: v1.5.1
 **Date**: 2026-04-19
 **Status**: Production-ready
 
