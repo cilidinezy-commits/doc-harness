@@ -1,6 +1,6 @@
 # FILE_INDEX — Doc Harness
 
-**Last updated**: 2026-04-22 (kimi-skill created)
+**Last updated**: 2026-04-22 (sync run)
 
 ---
 
@@ -49,5 +49,7 @@
 
 Protocol: Doc Harness Chapter 14 (see `DOC_HARNESS_SPEC.md` §14).
 
-- `inbox/` — Incoming messages from other projects (2 archived messages so far)
+- `inbox/2026-04-18-from-smss-inbox-protocol-mandate.md` — SMSS inbox protocol mandate
+- `inbox/2026-04-19-from-whoami-skill-improvement-proposals.md` — WhoAMI skill improvement proposals
+- `inbox/2026-04-22-from-whoami-github-push-experience-report.md` — WhoAMI GitHub push SSL fix experience
 - `outbox/` — Outgoing messages (drafts and sent-copies; currently empty)

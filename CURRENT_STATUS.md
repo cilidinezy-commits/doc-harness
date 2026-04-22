@@ -77,6 +77,14 @@ Push succeeded immediately after configuration. WhoAMI message marked `actioned`
 
 Created `kimi-skill/` — a Kimi CLI-compatible skill version of Doc Harness, adapting the v1.5.0 feature set for Kimi's natural-language trigger model.
 
+#### Documentation sync run (2026-04-22)
+
+`/doc-harness sync` executed by Kimi CLI. Fixes applied:
+- Registered 3 inbox messages in FILE_INDEX (SMSS mandate, WhoAMI proposals, WhoAMI push experience)
+- Updated CLAUDE.md one-line status to reflect v1.5.0 shipped + kimi-skill created + standalone repo published
+- Updated CLAUDE.md current phase description
+- Car body: 84 lines (under limit); WORKLOG: 261 lines (under limit); no phase transition or archival needed
+
 **Key differences from Claude Code version**:
 - No slash commands (`/doc-harness init`) — all triggers are natural language parsed from SKILL.md `description`
 - No `argument-hint` or `allowed-tools` in frontmatter (Kimi only supports `name` + `description`)

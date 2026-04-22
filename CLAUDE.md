@@ -1,8 +1,8 @@
 # Doc Harness — Entry Document
 
-**Last updated**: 2026-04-19
-**Current phase**: Phase 4 → v1.5.0 development (⏳ active — two new commands in design)
-**One-line status (as of 2026-04-22)**: v1.5.0 in design — adding `/doc-harness sync` (drift repair) and `/doc-harness flush` (emergency context save) commands. Both commands defined with auto/interactive modes; English and Chinese skill files updated. Awaiting completion of spec sync, README updates, and bilingual verification before commit.
+**Last updated**: 2026-04-22
+**Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — kimi-skill created, Claude local install updated)
+**One-line status (as of 2026-04-22)**: v1.5.0 shipped — sync + flush commands added; kimi-skill/ created for Kimi CLI compatibility; standalone repo `doc-harness-for-kimi` published; Claude Code local install updated to v1.5.0. Phase 4 continues in maintenance mode.
 
 ---
 
