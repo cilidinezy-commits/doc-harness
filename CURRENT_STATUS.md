@@ -1,6 +1,6 @@
 # CURRENT_STATUS — Doc Harness
 
-**Last updated**: 2026-04-19 晚
+**Last updated**: 2026-04-22
 **Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ active — one patch landed)
 
 ---
@@ -41,6 +41,26 @@ Committed + pushed to GitHub. Plugin marketplace consumers will get v1.4.1 via `
 
 Side observation (worth keeping as a driving-manual principle, see below): The Phase 4 rule "don't iterate without real user signal" worked — this is exactly the signal pattern it was waiting for. Decision on v1.5 aggregation remains: 1 of ≥3 real-world issues logged. Does not trigger v1.5 on its own.
 
+#### v1.5.0 design — sync + flush commands (2026-04-22)
+
+User requested two new commands to fill the gap between `check` (read-only diagnosis) and `init` (creation).
+
+- **`/doc-harness sync`** — Status synchronization. Repairs drift (unregistered files, stale dates), optionally triggers phase transition or WORKLOG archival. Two modes: `auto` (default, no asking) and `interactive` (asks before major changes). Distinct from `check`: sync modifies files; check only reports.
+- **`/doc-harness flush`** — Emergency context save. Includes everything sync does, PLUS mandatory extraction of important context information into documents before compression. Core guarantee: after flush, a new agent reading Recovery Chain recovers state as if context was never compressed. Two modes: `auto` (heuristic classification) and `interactive` (asks per item).
+
+**Design artifacts created**:
+- `skill/sync.md` (222 lines) — English sync procedure with 5-step workflow
+- `skill/flush.md` (261 lines) — English flush procedure with 5-phase workflow (A: sync, B: inventory, C: write/register, D: verification, E: marker)
+- `skill-zh/sync.md` (211 lines) — Chinese mirror
+- `skill-zh/flush.md` (247 lines) — Chinese mirror
+- `skill/SKILL.md` — Command listing and argument-hint expanded
+- `skill/spec.md` — §11.5 (sync), §11.6 (flush), Version History v1.5.0
+- `skill/operational_rules.md` — Version bumped to 1.5.0; added sync/flush references
+- `skill/check.md` — Updated "Write It Down" check to mention flush; added pre-sync/flush to "When to use"
+- Same 5 files mirrored in `skill-zh/`
+
+**Completed**: All design artifacts, English skill files, Chinese mirrors, project root doc updates, DOC_HARNESS_SPEC.md re-sync, README bilingual updates. Verified: version numbers consistent, new files registered, argument-hints aligned.
+
 ### Unresolved Issues
 
 (None.)
@@ -51,7 +71,11 @@ Side observation (worth keeping as a driving-manual principle, see below): The P
 
 ### Immediate Actions
 
-No active work items. Revisit when any of the v1.5 triggers (see Driving Manual below) fires.
+1. Git commit all v1.5.0 changes (single atomic commit or logically separated commits)
+2. Push to GitHub
+3. Deploy sync to installed copies (user-level + project-level)
+4. Run smoke test: `/doc-harness sync --interactive` and `/doc-harness flush --interactive` on a real project
+5. Update plugin marketplace if schema requires version bump
 
 ### Future Plans
 

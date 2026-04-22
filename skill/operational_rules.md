@@ -1,7 +1,7 @@
 # Doc Harness — Operational Rules
 
 <!-- doc-harness-ops-start -->
-<!-- doc-harness-ops-version: 1.4.1 -->
+<!-- doc-harness-ops-version: 1.5.0 -->
 
 > This section is embedded in each project's CLAUDE.md as the complete guide for maintaining status documents.
 > For full design rationale, see `DOC_HARNESS_SPEC.md` (in the project root directory).
@@ -115,7 +115,7 @@ Recovery Chain is defined in CLAUDE.md and has two layers:
 - Complete a **meaningful step** → update CURRENT_STATUS car body. "Meaningful" = if context is lost now, next agent needs to know this step is done.
 - Create a new file → **do two things simultaneously**: (1) register in FILE_INDEX (2) record in CURRENT_STATUS car body.
 - Important information → **immediately** write to file and register (Write It Down!).
-- **Watch remaining context** (if the runtime exposes it). Compression is involuntary session end. When remaining context drops low (~<20%), update CURRENT_STATUS *before* the next tool call; if the car body holds substantial unsaved work, consider a phase transition now. Don't wait for the next "meaningful step" — it may not land in time.
+- **Watch remaining context** (if the runtime exposes it). Compression is involuntary session end. When remaining context drops low (~<20%), update CURRENT_STATUS *before* the next tool call; if the car body holds substantial unsaved work, consider a phase transition now. Don't wait for the next "meaningful step" — it may not land in time. If the user notices context is running low, they may request `/doc-harness flush` to systematically save all important context information to files before compression.
 
 ## Session End Checklist
 
@@ -128,6 +128,15 @@ Recovery Chain is defined in CLAUDE.md and has two layers:
 - [ ] If a phase transition occurred: WORKLOG under ~1000 lines? (Over → trigger archival.)
 
 > The user may request `/doc-harness check` at any time for a comprehensive health audit and principle reflection. Recommended to run as a background agent to avoid interrupting current work.
+> If significant drift is detected (files unregistered, dates stale, car body over limit), the user may request `/doc-harness sync` to repair it automatically.
+> If context compression is imminent, run `/doc-harness flush` to systematically extract all important context information into documents before it is lost.
+
+## Status Sync and Context Flush
+
+Two commands complement the daily workflow:
+
+- **`/doc-harness sync`** — Repair documentation drift. Scans for unregistered files, stale dates, and length thresholds; executes fixes; optionally triggers phase transition or WORKLOG archival. Auto mode (default) executes without asking; interactive mode asks before major changes.
+- **`/doc-harness flush`** — Emergency save. Includes everything `sync` does, plus mandatory extraction of important context information into documents. Use when context is about to compress or reset. After a successful flush, a new agent reading the Recovery Chain should recover state as if context had never been compressed.
 
 ## Project Pause
 
