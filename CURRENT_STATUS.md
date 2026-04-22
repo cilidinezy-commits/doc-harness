@@ -63,6 +63,16 @@ User requested two new commands to fill the gap between `check` (read-only diagn
 
 **Post-commit design change (2026-04-22)**: User decided default mode for both `sync` and `flush` should be **interactive** (asking), not auto. Auto now requires explicit `--auto` flag. Rationale: phase transitions and context extractions involve judgment; the safe default is to ask. Updated in all 8 skill files + both READMEs.
 
+#### GitHub push SSL fix via WhoAMI inbox (2026-04-22)
+
+`git push` for marketplace.json update (commit `235e19a`) repeatedly failed with `schannel: failed to receive handshake, SSL/TLS connection failed`. Received inbox message from WhoAMI (`2026-04-22-from-whoami-github-push-experience-report.md`) sharing their Windows + Clash Verge push solution. Applied the 4-config combo:
+- `http.sslBackend = schannel`
+- `http.proxy = http://127.0.0.1:7897`
+- `https.proxy = http://127.0.0.1:7897`
+- `http.lowSpeedLimit = 1000` + `http.lowSpeedTime = 60`
+
+Push succeeded immediately after configuration. WhoAMI message marked `actioned`.
+
 ### Unresolved Issues
 
 (None.)
