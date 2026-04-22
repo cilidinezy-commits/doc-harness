@@ -33,6 +33,7 @@
 
 ## Notes
 - `notes/kimi-claude-interop.md` — Cross-tool skill discovery behavior (Kimi CLI vs Claude Code)
+- `PHILOSOPHY.md` — Principles forged by practice (universal-level: zoom-out-before-patching, curse-of-knowledge)
 
 ## Project Documentation
 - `README.md` — English project description (installation, usage, FAQ)
@@ -41,6 +42,7 @@
 
 ## Kimi CLI Skill Files (kimi-skill/)
 - `kimi-skill/SKILL.md` — Kimi CLI entry point (natural-language triggers)
+- `kimi-skill/README.md` — Standalone repo README with install/usage/upgrade instructions
 - `kimi-skill/references/init.md` — Project setup procedure
 - `kimi-skill/references/check.md` — Health audit + principle reflection
 - `kimi-skill/references/sync.md` — Drift repair with ask/auto heuristics

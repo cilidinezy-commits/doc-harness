@@ -2,7 +2,7 @@
 
 **Last updated**: 2026-04-22
 **Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — kimi-skill created, Claude local install updated)
-**One-line status (as of 2026-04-22)**: v1.5.0 shipped — sync + flush commands added; kimi-skill/ created for Kimi CLI compatibility; standalone repo `doc-harness-for-kimi` published; Claude Code local install updated to v1.5.0. Phase 4 continues in maintenance mode.
+**One-line status (as of 2026-04-22)**: v1.5.1 shipped — recall command added; token-efficiency rules enforced in search protocol; version numbers unified across all artifacts; PHILOSOPHY.md elevated to universal principles. Local installs (Claude + Kimi) and both repos synchronized.
 
 ---
 
@@ -19,6 +19,7 @@
 - If looking up a file: read `FILE_INDEX.md`
 - If investigating phase history: read `WORKLOG.md`
 - If editing the spec or operational rules: read `skill/spec.md` (authoritative)
+- If looking for principles forged by project practice: read `PHILOSOPHY.md`
 
 ### Meta-rules
 
@@ -29,7 +30,7 @@
 
 Doc Harness is a Claude Code skill that provides document-based project control for AI-human collaboration. It creates and maintains 5 status documents per project (CLAUDE.md, CURRENT_STATUS.md, FILE_INDEX.md, WORKLOG.md, DOC_HARNESS_SPEC.md) that enable any agent or human to understand and resume project work purely from reading files.
 
-**Two subcommands**: `/doc-harness init` (create docs) and `/doc-harness check` (audit + reflect).
+**Five commands**: `/doc-harness init` (create docs), `/doc-harness check` (audit + reflect), `/doc-harness sync` (repair drift), `/doc-harness flush` (emergency save), `/doc-harness recall` (retrieve information).
 
 **Core principle**: "Write It Down or Lose It" — context info is temporary, files are permanent.
 

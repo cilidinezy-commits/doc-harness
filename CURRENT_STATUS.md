@@ -107,6 +107,10 @@ User requested a fifth command to fill the retrieval gap: `recall`.
 
 **Completed**: All design artifacts, English + Chinese + Kimi skill files, project root doc updates. Recall.md registered in FILE_INDEX under all three skill categories.
 
+#### Context flush (2026-04-22) — auto mode
+
+`/doc-harness flush --auto` executed. Phase A (sync): registered `PHILOSOPHY.md` and `kimi-skill/README.md` in FILE_INDEX; no phase transition or archival triggered. Phase B (inventory): no new context items requiring extraction — all session work already committed. Phase D (verification): gap found — Recovery Chain missing PHILOSOPHY.md reference; fixed by adding task-conditional entry. Also fixed outdated "Two subcommands" text in CLAUDE.md → "Five commands".
+
 **Key differences from Claude Code version**:
 - No slash commands (`/doc-harness init`) — all triggers are natural language parsed from SKILL.md `description`
 - No `argument-hint` or `allowed-tools` in frontmatter (Kimi only supports `name` + `description`)
