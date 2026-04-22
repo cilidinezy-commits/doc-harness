@@ -1,7 +1,7 @@
 # Doc Harness — Complete Specification
 
-**Version**: v1.5.0
-**Date**: 2026-04-19
+**Version**: v1.6.0
+**Date**: 2026-04-22
 **Status**: Production-ready
 
 ---
@@ -100,6 +100,15 @@ CLAUDE.md consists of three parts: project-specific information + embedded opera
 
 ```markdown
 # [PROJECT_NAME] — Entry Document
+
+> 🔒 **AGENT IDENTITY LOCK**
+>
+> **你是 [PROJECT_NAME] 项目的代理。**
+> [One-sentence description of the agent's role in this project.]
+>
+> 如果你对自己的身份有任何怀疑，立即停止操作并重新读取本段落。
+
+---
 
 **Last updated**: YYYY-MM-DD
 **Current phase**: [Phase name] (⏳/⏸️/✅)
@@ -716,6 +725,10 @@ For directories with more than 20 files, create a sub-FILE_INDEX.md. For initial
 
 Follow the project's Recovery Chain (defined in CLAUDE.md §Recovery Chain):
 
+**Step 0 — Identity anchor** (before reading any files):
+Read the AGENT IDENTITY LOCK at the top of CLAUDE.md. Confirm:
+"I am [PROJECT_NAME]'s agent. My role is [role from the lock]."
+
 1. Read the **must-read** layer in order (CLAUDE.md → CURRENT_STATUS.md, typically 2–3 files).
 2. Scan the **task-conditional** layer. Read only the entries whose condition matches the current work.
 3. If user is present → confirm whether next steps have changed.
@@ -757,8 +770,8 @@ Execute the five-step protocol defined in Chapter 6 §6.2.
 - After bulk file operations outside normal agent workflow
 
 **Modes**:
-- **`auto`** (default): Execute all safe fixes (file registration, date refresh) without asking. If car body ≥200 lines or WORKLOG ≥1000 lines, auto-executes phase transition or archival per spec §6.2 and §5.5.
-- **`interactive`**: Same fixes, but asks user before phase transitions, archival, or creating new principle documents from context.
+- **`interactive`** (default): Same fixes, but asks user before phase transitions, archival, or creating new principle documents from context.
+- **`auto`**: Execute all safe fixes (file registration, date refresh) without asking. If car body ≥200 lines or WORKLOG ≥1000 lines, auto-executes phase transition or archival per spec §6.2 and §5.5.
 
 **Procedure**: See `sync.md` for the complete step-by-step procedure (drift scan → auto fixes → phase-transition check → archival check → principle extraction).
 
@@ -777,8 +790,8 @@ Execute the five-step protocol defined in Chapter 6 §6.2.
 - After a long, high-density session with significant context accumulation
 
 **Modes**:
-- **`auto`** (default): Uses heuristics to classify context information by type and route it to appropriate documents (`notes/`, `design/`, `PHILOSOPHY.md`, etc.) without asking.
-- **`interactive`**: Proposes each extraction to the user for approval or path editing.
+- **`interactive`** (default): Proposes each extraction to the user for approval or path editing.
+- **`auto`**: Uses heuristics to classify context information by type and route it to appropriate documents (`notes/`, `design/`, `PHILOSOPHY.md`, etc.) without asking.
 
 **Procedure** (five phases):
 1. **Phase A**: Run `sync` in the same mode.
@@ -790,6 +803,41 @@ Execute the five-step protocol defined in Chapter 6 §6.2.
 **Auto-mode heuristics**: Information is "important" if user-emphasized, a decision/rationale, required significant effort to produce, or would cause confusion if lost. Target paths follow existing project conventions; standard folders (`notes/`, `design/`, `lessons/`, `data/`) are created only when needed.
 
 **Full procedure**: See `flush.md`.
+
+### 11.7 Information Recall (`/doc-harness recall [query]`)
+
+**Purpose**: Retrieve information from the project's Doc Harness document hierarchy. As projects grow, information scatters across dozens of registered files; `recall` provides a systematic retrieval protocol that mirrors the Recovery Chain's hierarchy — from high-level summaries to low-level details.
+
+**Relationship to other commands**: `recall` is **read-only** (like `check`, unlike `sync`/`flush`). It does not modify files. If drift is noticed during recall, it is reported in the output but not fixed — that is `sync`'s domain.
+
+**Query types** (agent classifies the query, then searches appropriate layers):
+
+| Type | Pattern | Primary layers | Example |
+|------|---------|----------------|---------|
+| **A. Status / Plan** | "What next?", "Current status?" | Layer 0–1 (CLAUDE.md → CURRENT_STATUS) | "What's the auth plan?" |
+| **B. History / Decision** | "Why did we...", "When did..." | Layer 1–2 (CURRENT_STATUS → WORKLOG) | "Why PostgreSQL?" |
+| **C. File / Topic lookup** | "Find files about..." | Layer 3–4 (FILE_INDEX → files) | "Find caching docs" |
+| **D. Cross-document synthesis** | "Summarize...", "Everything about..." | Layer 1–4 (all) | "All auth discussions" |
+
+**Layered search protocol** (top-down; stop early when answered):
+
+- **Layer 0**: CLAUDE.md — iron rules, overview, recovery chain
+- **Layer 1**: CURRENT_STATUS.md — tire tracks, car body, headlights, driving manual
+- **Layer 2**: WORKLOG.md — historical phase summaries (TOC → jump to phases)
+- **Layer 3**: FILE_INDEX + sub-indexes — catalog scan, recursive into sub-FILE_INDEX.md
+- **Layer 4**: Individual registered files — full-text when descriptions are insufficient
+
+**Search rules**:
+1. Only search registered files (in FILE_INDEX or sub-indexes). Unregistered files are invisible.
+2. Respect Recovery Chain priority: summaries take precedence over raw files.
+3. Sub-indexes are first-class: recurse into sub-FILE_INDEX.md.
+4. Cite every claim with file and section/line reference.
+5. "Not found" is acceptable — do not hallucinate.
+6. Read-only: never modify files.
+7. Stop early: do not read Layer 4 if Layers 1–2 answer the query.
+8. Scope limit: if >20 files match, summarize FILE_INDEX and ask user which categories to deep-read.
+
+**Full procedure**: See `recall.md`.
 
 ---
 
@@ -938,6 +986,21 @@ Verification steps (in order, stop at first failure):
 - Record the failed delivery in CURRENT_STATUS car body: `#### Attempted to send <topic> to <recipient> on YYYY-MM-DD — recipient has not adopted inbox/outbox protocol. Message held in own outbox only.`
 - Raise the issue with the user at the next opportunity. Do not retry automatically.
 
+### 14.3.2 Pre-send checklist (sender's self-defense)
+
+Before writing a cross-project message, the sender **must** run this 5-item checklist. This prevents the identity-confusion errors that occur when an agent mistakenly treats another project as its own.
+
+```markdown
+- [ ] `from:` field contains THIS project's name (not the recipient's)
+- [ ] Message is written to THIS project's `outbox/` (not the recipient's)
+- [ ] Copy targets recipient's `inbox/` (not their `outbox/`)
+- [ ] I have NOT modified any of the recipient's internal documents
+      (CURRENT_STATUS.md, FILE_INDEX.md, WORKLOG.md, code, config)
+- [ ] Recipient's inbox/outbox protocol is active (§14.3.1 verification passed)
+```
+
+**If any item fails**: stop. Do not send. Fix the error before proceeding.
+
 ### 14.4 Message lifecycle and rules
 
 ```
@@ -1080,6 +1143,7 @@ Run through at session end:
 - [ ] Headlights "next steps" accurate?
 - [ ] Any important information only in context? (Write it down!)
 - [ ] If a phase transition happened: WORKLOG under ~1000 lines? (If over, trigger §5.5 archival.)
+- [ ] AGENT IDENTITY LOCK present at the top of CLAUDE.md?
 
 ---
 
@@ -1371,3 +1435,4 @@ Phase density varies enormously across projects — from ~20 lines per phase (in
 | v1.3 | 2026-04-19 | New Chapter 14: Optional Inter-Project Communication (inbox/outbox) — self-contained, portable mechanism for file-based cross-project messaging. Spec covers folder structure, message format (YAML frontmatter + Markdown body), lifecycle (unread→read→actioned), integration with all four core documents, quick start for fresh agents, and adopt-on-existing-project procedure. init gains one y/n prompt to enable. Appendix E updated to explain why the mechanism is optional and why it lives inside doc-harness rather than as an external spec. "Portfolio" framing removed throughout — project groups are flat peers. §11.2 gains a context-aware update rule: if the runtime exposes context-window usage, low remaining context (~<20%) is an immediate trigger to flush CURRENT_STATUS and possibly phase-transition. |
 | v1.4.1 | 2026-04-19 | **§5.5 WORKLOG archival correction — field feedback**: archive filename changed from quarterly bin `WORKLOG_ARCHIVE_<YYYY-QN>.md` to per-event date `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`. The quarterly scheme unbounded the archive for high-activity projects (a project writing 5,000 lines/quarter would put all 5,000 lines into one "archive" file, defeating the purpose). Per-event naming keeps each archive inherently bounded by the ~1000-line trigger. Cross-quarter-scar step (old rule 6) removed — no longer applicable. New rule 7: archival event must be recorded in CURRENT_STATUS car body so a next-session agent sees the history shift without diffing WORKLOG. Git commit message updated to `Archive WORKLOG <YYYY-MM-DD>`. Operational_rules.md mirror-updated. TOC chapter-5 description adjusted. |
 | v1.5.0 | 2026-04-22 | **Two new commands**: `/doc-harness sync` (status synchronization — drift repair, date refresh, file registration, optional phase transition/archival; auto/interactive modes) and `/doc-harness flush` (emergency context save — includes sync plus mandatory context-to-document extraction with inventory, heuristic classification, verification, and flush marker; auto/interactive modes). New reference documents `sync.md` and `flush.md`. Spec gains §11.5 (sync) and §11.6 (flush). Operational rules updated to reference both commands. SKILL.md command listing and argument-hint expanded. |
+| v1.6.0 | 2026-04-22 | **AGENT IDENTITY LOCK**: mandatory cognitive anchor at the top of every project's CLAUDE.md. Prevents agent identity confusion during cross-project work. Two-tier template (base for all projects, extended for inbox/outbox projects). **Recovery Chain Step 0**: identity-anchor ritual before reading any files. **Pre-send checklist §14.3.2**: 5-item sender self-defense checklist for cross-project messaging. **`/doc-harness check` §1.11**: identity-lock presence verification. Appendix B updated. Operational rules and init templates synchronized. |

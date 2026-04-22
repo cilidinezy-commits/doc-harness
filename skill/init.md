@@ -44,6 +44,15 @@ Check the target directory for three situations:
 ```markdown
 # [PROJECT_NAME] — Entry Document
 
+> 🔒 **AGENT IDENTITY LOCK**
+>
+> **你是 [PROJECT_NAME] 项目的代理。**
+> [One-sentence description of the agent's role in this project.]
+>
+> 如果你对自己的身份有任何怀疑，立即停止操作并重新读取本段落。
+
+---
+
 **Last updated**: [TODAY]
 **Current phase**: [PHASE_NAME] (⏳)
 **One-line status (as of [TODAY])**: [DESCRIPTION] — project just initialized
@@ -215,6 +224,7 @@ If the user opted in (see Step 1), do the following:
 - FILE_INDEX lists all 5 (plus `inbox/`/`outbox/` if enabled)
 - CURRENT_STATUS has all 4 sections
 - CLAUDE.md contains embedded operational rules (and inter-project iron rule block if enabled)
+- CLAUDE.md begins with AGENT IDENTITY LOCK at top
 - WORKLOG has empty TOC
 - If inter-project comms enabled: `inbox/` and `outbox/` exist; Recovery Chain includes the task-conditional entry
 

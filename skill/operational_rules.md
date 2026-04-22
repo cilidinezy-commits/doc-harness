@@ -1,7 +1,7 @@
 # Doc Harness — Operational Rules
 
 <!-- doc-harness-ops-start -->
-<!-- doc-harness-ops-version: 1.5.1 -->
+<!-- doc-harness-ops-version: 1.6.0 -->
 
 > This section is embedded in each project's CLAUDE.md as the complete guide for maintaining status documents.
 > For full design rationale, see `DOC_HARNESS_SPEC.md` (in the project root directory).
@@ -106,6 +106,8 @@ Recovery Chain is defined in CLAUDE.md and has two layers:
 - Recovery Chain is **living**: update it at phase transitions (add entries for new work classes; remove retired ones).
 
 **Applying at session start**:
+0. **Identity anchor**: Read the AGENT IDENTITY LOCK at the top of CLAUDE.md. Confirm:
+   "I am this project's agent. My role is [role from the lock]."
 1. Read must-read layer in order.
 2. Scan task-conditional; read only entries whose condition matches current work.
 3. If user present → confirm whether next steps have changed. Compact recovery without user → continue per headlights.
@@ -126,6 +128,7 @@ Recovery Chain is defined in CLAUDE.md and has two layers:
 - [ ] All files created this session registered in FILE_INDEX?
 - [ ] Any important information only in context? → Write it down!
 - [ ] If a phase transition occurred: WORKLOG under ~1000 lines? (Over → trigger archival.)
+- [ ] AGENT IDENTITY LOCK present at the top of CLAUDE.md?
 
 > The user may request `/doc-harness check` at any time for a comprehensive health audit and principle reflection. Recommended to run as a background agent to avoid interrupting current work.
 > If significant drift is detected (files unregistered, dates stale, car body over limit), the user may request `/doc-harness sync` to repair it automatically.
@@ -181,6 +184,13 @@ Adopted when this project coordinates with other projects (dependencies in eithe
 - Body: free-form Markdown.
 - Write to this project's `outbox/` (sender-side permanent record) AND copy the same file to recipient's `inbox/`.
 - Record the exchange in CURRENT_STATUS car body.
+
+**Pre-send checklist** (run before every cross-project send):
+- [ ] `from:` field contains THIS project's name (not the recipient's)
+- [ ] Message is written to THIS project's `outbox/` (not the recipient's)
+- [ ] Copy targets recipient's `inbox/` (not their `outbox/`)
+- [ ] I have NOT modified any of the recipient's internal documents
+- [ ] Recipient's inbox/outbox protocol is active (recipient's `inbox/` exists and their CLAUDE.md references the protocol)
 
 **Snapshots over pointers**: when communicating numbers/deliverables to another project, put the value in the message body — do NOT point the recipient at your internal files (they churn and break external references).
 

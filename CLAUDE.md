@@ -1,8 +1,17 @@
 # Doc Harness — Entry Document
 
+> 🔒 **AGENT IDENTITY LOCK**
+>
+> **你是 doc-harness 项目的代理。**
+> 你的职责是维护 Doc Harness skill（文档化项目控制框架）——包括规范制定、模板更新、命令实现（init/check/sync/flush/recall）以及双语同步。
+>
+> 如果你对自己的身份有任何怀疑，立即停止操作并重新读取本段落。
+
+---
+
 **Last updated**: 2026-04-22
-**Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — kimi-skill created, Claude local install updated)
-**One-line status (as of 2026-04-22)**: v1.5.1 shipped — recall command added; token-efficiency rules enforced in search protocol; version numbers unified across all artifacts; PHILOSOPHY.md elevated to universal principles. Local installs (Claude + Kimi) and both repos synchronized.
+**Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — v1.6.0 identity lock shipped)
+**One-line status (as of 2026-04-22)**: v1.6.0 shipped — AGENT IDENTITY LOCK added to CLAUDE.md template; Recovery Chain Step 0 identity anchor; pre-send checklist for cross-project messaging; check §1.11 verifies lock presence. Local installs updated. GitHub push deferred per user request.
 
 ---
 

@@ -1,7 +1,7 @@
 # Doc Harness — Complete Specification
 
-**Version**: v1.5.1
-**Date**: 2026-04-19
+**Version**: v1.6.0
+**Date**: 2026-04-22
 **Status**: Production-ready
 
 ---
@@ -100,6 +100,15 @@ CLAUDE.md consists of three parts: project-specific information + embedded opera
 
 ```markdown
 # [PROJECT_NAME] — Entry Document
+
+> 🔒 **AGENT IDENTITY LOCK**
+>
+> **你是 [PROJECT_NAME] 项目的代理。**
+> [One-sentence description of the agent's role in this project.]
+>
+> 如果你对自己的身份有任何怀疑，立即停止操作并重新读取本段落。
+
+---
 
 **Last updated**: YYYY-MM-DD
 **Current phase**: [Phase name] (⏳/⏸️/✅)
@@ -716,6 +725,10 @@ For directories with more than 20 files, create a sub-FILE_INDEX.md. For initial
 
 Follow the project's Recovery Chain (defined in CLAUDE.md §Recovery Chain):
 
+**Step 0 — Identity anchor** (before reading any files):
+Read the AGENT IDENTITY LOCK at the top of CLAUDE.md. Confirm:
+"I am [PROJECT_NAME]'s agent. My role is [role from the lock]."
+
 1. Read the **must-read** layer in order (CLAUDE.md → CURRENT_STATUS.md, typically 2–3 files).
 2. Scan the **task-conditional** layer. Read only the entries whose condition matches the current work.
 3. If user is present → confirm whether next steps have changed.
@@ -973,6 +986,21 @@ Verification steps (in order, stop at first failure):
 - Record the failed delivery in CURRENT_STATUS car body: `#### Attempted to send <topic> to <recipient> on YYYY-MM-DD — recipient has not adopted inbox/outbox protocol. Message held in own outbox only.`
 - Raise the issue with the user at the next opportunity. Do not retry automatically.
 
+### 14.3.2 Pre-send checklist (sender's self-defense)
+
+Before writing a cross-project message, the sender **must** run this 5-item checklist. This prevents the identity-confusion errors that occur when an agent mistakenly treats another project as its own.
+
+```markdown
+- [ ] `from:` field contains THIS project's name (not the recipient's)
+- [ ] Message is written to THIS project's `outbox/` (not the recipient's)
+- [ ] Copy targets recipient's `inbox/` (not their `outbox/`)
+- [ ] I have NOT modified any of the recipient's internal documents
+      (CURRENT_STATUS.md, FILE_INDEX.md, WORKLOG.md, code, config)
+- [ ] Recipient's inbox/outbox protocol is active (§14.3.1 verification passed)
+```
+
+**If any item fails**: stop. Do not send. Fix the error before proceeding.
+
 ### 14.4 Message lifecycle and rules
 
 ```
@@ -1115,6 +1143,7 @@ Run through at session end:
 - [ ] Headlights "next steps" accurate?
 - [ ] Any important information only in context? (Write it down!)
 - [ ] If a phase transition happened: WORKLOG under ~1000 lines? (If over, trigger §5.5 archival.)
+- [ ] AGENT IDENTITY LOCK present at the top of CLAUDE.md?
 
 ---
 
@@ -1406,3 +1435,4 @@ Phase density varies enormously across projects — from ~20 lines per phase (in
 | v1.3 | 2026-04-19 | New Chapter 14: Optional Inter-Project Communication (inbox/outbox) — self-contained, portable mechanism for file-based cross-project messaging. Spec covers folder structure, message format (YAML frontmatter + Markdown body), lifecycle (unread→read→actioned), integration with all four core documents, quick start for fresh agents, and adopt-on-existing-project procedure. init gains one y/n prompt to enable. Appendix E updated to explain why the mechanism is optional and why it lives inside doc-harness rather than as an external spec. "Portfolio" framing removed throughout — project groups are flat peers. §11.2 gains a context-aware update rule: if the runtime exposes context-window usage, low remaining context (~<20%) is an immediate trigger to flush CURRENT_STATUS and possibly phase-transition. |
 | v1.4.1 | 2026-04-19 | **§5.5 WORKLOG archival correction — field feedback**: archive filename changed from quarterly bin `WORKLOG_ARCHIVE_<YYYY-QN>.md` to per-event date `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`. The quarterly scheme unbounded the archive for high-activity projects (a project writing 5,000 lines/quarter would put all 5,000 lines into one "archive" file, defeating the purpose). Per-event naming keeps each archive inherently bounded by the ~1000-line trigger. Cross-quarter-scar step (old rule 6) removed — no longer applicable. New rule 7: archival event must be recorded in CURRENT_STATUS car body so a next-session agent sees the history shift without diffing WORKLOG. Git commit message updated to `Archive WORKLOG <YYYY-MM-DD>`. Operational_rules.md mirror-updated. TOC chapter-5 description adjusted. |
 | v1.5.0 | 2026-04-22 | **Two new commands**: `/doc-harness sync` (status synchronization — drift repair, date refresh, file registration, optional phase transition/archival; auto/interactive modes) and `/doc-harness flush` (emergency context save — includes sync plus mandatory context-to-document extraction with inventory, heuristic classification, verification, and flush marker; auto/interactive modes). New reference documents `sync.md` and `flush.md`. Spec gains §11.5 (sync) and §11.6 (flush). Operational rules updated to reference both commands. SKILL.md command listing and argument-hint expanded. |
+| v1.6.0 | 2026-04-22 | **AGENT IDENTITY LOCK**: mandatory cognitive anchor at the top of every project's CLAUDE.md. Prevents agent identity confusion during cross-project work. Two-tier template (base for all projects, extended for inbox/outbox projects). **Recovery Chain Step 0**: identity-anchor ritual before reading any files. **Pre-send checklist §14.3.2**: 5-item sender self-defense checklist for cross-project messaging. **`/doc-harness check` §1.11**: identity-lock presence verification. Appendix B updated. Operational rules and init templates synchronized. |

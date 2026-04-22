@@ -1,4 +1,4 @@
-# Doc Harness &nbsp;·&nbsp; v1.5.1
+# Doc Harness &nbsp;·&nbsp; v1.6.0
 
 [English README](README.md)
 
@@ -194,7 +194,7 @@ xcopy skill-zh %USERPROFILE%\.claude\skills\doc-harness\ /E /I
 
 **第四步——验证。** 在 Claude Code 任意目录中输入 `/doc-harness`，应能看到 `init` 与 `check` 的帮助说明。若命令未被识别，说明文件未复制到正确路径——检查 `~/.claude/skills/doc-harness/SKILL.md` 是否存在。
 
-**查看已安装版本**：`head -3 ~/.claude/skills/doc-harness/spec.md`——应打印 `**Version**` 行（如 `v1.5.1`）。
+**查看已安装版本**：`head -3 ~/.claude/skills/doc-harness/spec.md`——应打印 `**Version**` 行（如 `v1.6.0`）。
 
 ### 项目级安装（可选）
 
@@ -207,7 +207,7 @@ xcopy skill-zh %USERPROFILE%\.claude\skills\doc-harness\ /E /I
 **如果你用的是方式 B（手动复制）**：
 1. **拉取最新代码**：`cd doc-harness && git pull`
 2. **重新复制 skill 文件夹**——命令与首次安装第三步相同，会原地覆盖；已安装 skill 目录中不保存本地状态，不会丢失任何内容。
-3. **验证新版本**：`head -3 ~/.claude/skills/doc-harness/spec.md`——应显示 `v1.5.1`。
+3. **验证新版本**：`head -3 ~/.claude/skills/doc-harness/spec.md`——应显示 `v1.6.0`。
 
 4. **升级已有项目的 CLAUDE.md**（重要，方式 A 和方式 B 都需要）：每个项目 `CLAUDE.md` 中嵌入的操作规则是 `init` 时的**快照**，**不会**随 skill 升级自动更新。要同步至最新版，请将 `CLAUDE.md` 中 `<!-- doc-harness-ops-start -->` 与 `<!-- doc-harness-ops-end -->` 之间的字节替换为新版 `operational_rules.md` 的内容。哨兵**之外**的内容（自定义铁律、项目特定章节等）保留不动。在项目中运行 `/doc-harness check`——§1.10 会告诉你嵌入版本是否陈旧。
 5. **（若项目存在 `DOC_HARNESS_SPEC.md`）**：用新 `spec.md` 覆盖。
@@ -540,7 +540,7 @@ priority: high
 - 规范中移除了**层级化的"portfolio（项目组合）"框架**。项目组内的每个项目都是自包含的对等体；父级导航文件只是一种轻量级的可选模式，不是 Doc Harness 概念。（中性术语"项目群" / §10.2 保留，用于指代这种扁平对等关系。）
 - **上下文感知的更新频率**：操作规则现在指示运行环境暴露 context 使用率的智能体，将剩余 context 偏低（~<20%）视为立即触发 CURRENT_STATUS 更新及可能的阶段切换的信号。压缩等同于非自愿的 session 结束——别等那个可能永远不会到来的"有意义的步骤"。
 
-**Q: v1.5.1 新增了什么？**
+**Q: v1.6.0 新增了什么？**
 - **`/doc-harness recall [query]`** — 信息召回。沿 Doc Harness 文档层次系统化搜索所有已注册文档，返回结构化、带来源引用的答案。支持状态/计划查询、历史/决策查询、文件查找和跨文档综合。只读，从不修改文件。
 
 **Q: v1.5 新增了什么？**

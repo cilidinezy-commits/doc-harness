@@ -157,6 +157,16 @@ The installed skill's version is the `**Version**` line at the top of the instal
 
 If no install path resolves, report `⚠️ Cannot locate installed skill — run check from a project where skill is deployed, or install at one of the paths above.` Do not treat "installed version not found" as passing.
 
+### 1.11 Identity lock presence
+
+Read the first 30 lines of CLAUDE.md. Check for the AGENT IDENTITY LOCK block:
+
+- Contains `AGENT IDENTITY LOCK` (case-insensitive) → `✅ Present`
+- Contains project name declaration (e.g., "你是 ... 项目的代理") → `✅ Project name declared`
+- Contains self-test prompt (e.g., "如果你对自己的身份有任何怀疑...") → `✅ Self-test present`
+
+If any sub-check fails → `⚠️ Identity lock missing or incomplete`. This is a recommendation, not a failure — existing projects created before v1.6.0 are not invalid. New projects should include it.
+
 ---
 
 ## Part 2: Principle Reflection
@@ -215,6 +225,7 @@ Read the Recovery Chain section from CLAUDE.md.
    → All entries point to project-internal files (no agent-side features like memory / chat history)?
    → Any task-conditional entry consistently read every session? → promote to must-read.
    → Any must-read entry rarely actually needed? → demote to task-conditional.
+   → Does CLAUDE.md begin with an AGENT IDENTITY LOCK?
 ```
 
 ### 2.6 Session-end checklist (if applicable)
@@ -255,6 +266,7 @@ All Part-1 anchors (`## Current Work`, `## Recent Completed`, `## Next Steps`, `
 [1.8] Car body:        ✅ N lines / ⚠️/❌
 [1.9] Mid-transition:  ✅ coherent / ❌ §6.3.1 repair needed
 [1.10] Ops-rules ver.: ✅ vN.N / ⚠️ vX.X (installed: vY.Y) — re-embed
+[1.11] Identity lock:  ✅ Present / ⚠️ Missing or incomplete
 
 ── Part 2: Principle Reflection ──
 

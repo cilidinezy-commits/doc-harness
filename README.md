@@ -1,4 +1,4 @@
-# Doc Harness &nbsp;·&nbsp; v1.5.1
+# Doc Harness &nbsp;·&nbsp; v1.6.0
 
 [中文版 README](README_zh.md)
 
@@ -186,7 +186,7 @@ xcopy skill %USERPROFILE%\.claude\skills\doc-harness\ /E /I
 
 **Step 4 — verify.** Open Claude Code in any directory and type `/doc-harness`. You should see the help output describing `init` and `check`. If the command isn't recognized, the files weren't copied to the right path — check `~/.claude/skills/doc-harness/SKILL.md` exists.
 
-**Check the installed version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should print the `**Version**` line (e.g., `v1.5.1`).
+**Check the installed version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should print the `**Version**` line (e.g., `v1.6.0`).
 
 ### Project-level install (optional)
 
@@ -199,7 +199,7 @@ If you want a specific project to pin a particular Doc Harness version independe
 **If you used Option B (manual copy)**:
 1. **Pull the latest**: `cd doc-harness && git pull`
 2. **Re-copy the skill folder** — the same command as Step 3 of first-install. It overwrites in place; no local state lives in the installed skill directory, so nothing is lost.
-3. **Verify the new version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should show `v1.5.1`.
+3. **Verify the new version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should show `v1.6.0`.
 
 4. **Then upgrade your existing projects' CLAUDE.md** (important, applies to both Option A and Option B): the operational rules embedded inside each project's `CLAUDE.md` are a **snapshot** taken at `init` time — they do NOT update automatically when you upgrade the skill. To bring a project up to date, replace the bytes between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->` in that project's `CLAUDE.md` with the new contents of `operational_rules.md`. Anything outside those sentinels (custom iron rules, project-specific sections) is preserved. Run `/doc-harness check` in the project — §1.10 tells you if the embedded version is stale.
 5. **(If the project has `DOC_HARNESS_SPEC.md`)** overwrite with the new `spec.md`.
@@ -535,7 +535,7 @@ The recipient agent reads this, flips `status: unread` → `read`, performs what
 - **Hierarchical "portfolio" framing removed** from the spec. Projects in a group are self-contained peers; a parent navigation file is a lightweight optional pattern, not a Doc Harness concept. (The neutral term "project group" / §10.2 is retained for this flat-peer arrangement.)
 - **Context-aware update cadence**: operational rules now instruct agents whose runtime exposes context-window usage to treat low remaining context (~<20%) as an immediate trigger for CURRENT_STATUS update and possible phase transition. Compression is involuntary session end — don't wait for a "meaningful step" that may never land.
 
-**Q: What's new in v1.5.1?**
+**Q: What's new in v1.6.0?**
 - **`/doc-harness recall [query]`** — Information retrieval. Searches registered documents along the Doc Harness hierarchy (CLAUDE.md → CURRENT_STATUS → WORKLOG → FILE_INDEX → individual files) and returns structured, source-cited answers. Four query types: status/plan, history/decision, file lookup, cross-document synthesis. Read-only; never modifies files.
 
 **Q: What's new in v1.5?**
