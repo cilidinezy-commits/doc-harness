@@ -757,8 +757,8 @@ Execute the five-step protocol defined in Chapter 6 §6.2.
 - After bulk file operations outside normal agent workflow
 
 **Modes**:
-- **`auto`** (default): Execute all safe fixes (file registration, date refresh) without asking. If car body ≥200 lines or WORKLOG ≥1000 lines, auto-executes phase transition or archival per spec §6.2 and §5.5.
-- **`interactive`**: Same fixes, but asks user before phase transitions, archival, or creating new principle documents from context.
+- **`interactive`** (default): Same fixes, but asks user before phase transitions, archival, or creating new principle documents from context.
+- **`auto`**: Execute all safe fixes (file registration, date refresh) without asking. If car body ≥200 lines or WORKLOG ≥1000 lines, auto-executes phase transition or archival per spec §6.2 and §5.5.
 
 **Procedure**: See `sync.md` for the complete step-by-step procedure (drift scan → auto fixes → phase-transition check → archival check → principle extraction).
 
@@ -777,8 +777,8 @@ Execute the five-step protocol defined in Chapter 6 §6.2.
 - After a long, high-density session with significant context accumulation
 
 **Modes**:
-- **`auto`** (default): Uses heuristics to classify context information by type and route it to appropriate documents (`notes/`, `design/`, `PHILOSOPHY.md`, etc.) without asking.
-- **`interactive`**: Proposes each extraction to the user for approval or path editing.
+- **`interactive`** (default): Proposes each extraction to the user for approval or path editing.
+- **`auto`**: Uses heuristics to classify context information by type and route it to appropriate documents (`notes/`, `design/`, `PHILOSOPHY.md`, etc.) without asking.
 
 **Procedure** (five phases):
 1. **Phase A**: Run `sync` in the same mode.

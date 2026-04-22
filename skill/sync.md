@@ -18,16 +18,7 @@ Synchronize project status documents with reality. Repair drift, refresh stale f
 
 ## Two Modes
 
-### `auto` (default)
-
-Execute all applicable fixes without asking the user. Use this when:
-- The user explicitly says "sync" without qualification
-- The command is invoked as a background task
-- Speed and automation are preferred over human review
-
-**Safety**: Auto mode respects all spec §6.2 trigger conditions literally. If you are uncertain whether a phase transition or archival is truly desired, use interactive mode.
-
-### `interactive` (`--interactive` or `-i`)
+### `interactive` (default)
 
 Ask the user before actions that go beyond routine bookkeeping:
 - Before executing a phase transition (car body ≥200 lines)
@@ -35,10 +26,21 @@ Ask the user before actions that go beyond routine bookkeeping:
 - Before creating new documents for principles/lessons extracted from context
 - Before promoting a driving-manual principle to an iron rule
 
+This is the default because phase transitions and archival are irreversible or significant actions. The user should always be asked before them unless they explicitly opt into automation.
+
 Use this when:
-- The user says "sync, but let me review before big changes"
+- The user says "sync" without qualification
 - This is the first sync on a project with significant drift
 - The project is in a sensitive state and transitions should be human-gated
+
+### `auto` (`--auto` or `-a`)
+
+Execute all applicable fixes without asking the user. Use this when:
+- The user explicitly says "sync auto" or adds `--auto`
+- The command is invoked as a background task
+- Speed and automation are preferred over human review
+
+**Safety**: Auto mode respects all spec §6.2 trigger conditions literally. It will execute phase transitions and archival without confirmation.
 
 ---
 
@@ -81,8 +83,8 @@ Apply all fixes that are unambiguously safe:
 
 If car body ≥200 lines:
 
+- **Interactive mode** (default) → Ask: "Car body is N lines (threshold: 200). Execute phase transition now? (yes/no)" If yes → proceed. If no → record in car body: `#### Phase transition deferred by user on YYYY-MM-DD (car body at N lines)`.
 - **Auto mode** → Execute the five-step phase transition (spec §6.2) immediately. Data protection first: Step 1 (copy car body to WORKLOG) executes before any other write.
-- **Interactive mode** → Ask: "Car body is N lines (threshold: 200). Execute phase transition now? (yes/no)" If yes → proceed. If no → record in car body: `#### Phase transition deferred by user on YYYY-MM-DD (car body at N lines)`.
 
 If car body <200 lines but the steps within it no longer serve the same phase goal (phase coherence failure per `check` §2.4):
 
@@ -93,8 +95,8 @@ If car body <200 lines but the steps within it no longer serve the same phase go
 
 If WORKLOG ≥1000 lines:
 
+- **Interactive mode** (default) → Ask: "WORKLOG is N lines (threshold: 1000). Archive older phases now? (yes/no)"
 - **Auto mode** → Execute archival per spec §5.5 (keep most recent 3 phases, move earlier to `WORKLOG_ARCHIVE_YYYY-MM-DD.md`, register, record in car body, atomic git commit).
-- **Interactive mode** → Ask: "WORKLOG is N lines (threshold: 1000). Archive older phases now? (yes/no)"
 
 ### Step 5: Context-Principle Extraction (interactive only)
 

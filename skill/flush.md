@@ -28,7 +28,21 @@ If a project has no drift (all files registered, dates fresh, car body under lim
 
 ## Two Modes
 
-### `auto` (default)
+### `interactive` (default)
+
+Ask the user before each significant extraction:
+- "I found [X analysis] in context. Save it as [path/xxx.md]? (yes/no/edit path)"
+- "I found [Y decision rationale]. Append to car body or create [design/y.md]?"
+- "I found [Z lesson]. Save to PHILOSOPHY.md?"
+
+This is the default because context extraction involves judgment about what is important and where it belongs. The user should review before documents are created.
+
+Use this when:
+- The user says "flush" without qualification
+- Context contains sensitive or draft information that should NOT be persisted
+- The project has strict folder conventions that heuristics might violate
+
+### `auto` (`--auto` or `-a`)
 
 Execute the full procedure without asking the user, using heuristics to classify and route context information.
 
@@ -43,17 +57,9 @@ Execute the full procedure without asking the user, using heuristics to classify
 - If no convention exists, create standard folders as needed: `notes/`, `design/`, `lessons/`, `data/`, `tmp/`
 - Never overwrite existing files without appending; always prefer "create new" or "append to existing"
 
-### `interactive` (`--interactive` or `-i`)
-
-Ask the user before each significant extraction:
-- "I found [X analysis] in context. Save it as [path/xxx.md]? (yes/no/edit path)"
-- "I found [Y decision rationale]. Append to car body or create [design/y.md]?"
-- "I found [Z lesson]. Save to PHILOSOPHY.md?"
-
 Use this when:
-- The user wants to control exactly what gets saved and where
-- Context contains sensitive or draft information that should NOT be persisted
-- The project has strict folder conventions that heuristics might violate
+- The user explicitly says "flush auto" or adds `--auto`
+- Speed and automation are preferred over human review
 
 ---
 
