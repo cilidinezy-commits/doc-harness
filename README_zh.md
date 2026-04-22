@@ -4,7 +4,10 @@
 
 **基于文档的项目控制系统，服务于 AI 与人类的协作。**
 
-Doc Harness 是一个 [Claude Code](https://claude.ai/code) skill，为你和 AI 智能体提供一套结构化的项目管理方式——就像马具（harness）驾驭马匹的力量，使其方向明确、步调可控。
+Doc Harness 是一个适用于 [Claude Code](https://claude.ai/code) 和 [Kimi CLI](https://github.com/MoonshotAI/kimi-cli) 的 skill，为你和 AI 智能体提供一套结构化的项目管理方式——就像马具（harness）驾驭马匹的力量，使其方向明确、步调可控。
+
+- **Claude Code 用户**：通过 `/plugin marketplace add cilidinezy-commits/doc-harness` 安装，或手动复制（见下文）。
+- **Kimi CLI 用户**：从独立仓库 [`cilidinezy-commits/doc-harness-for-kimi`](https://github.com/cilidinezy-commits/doc-harness-for-kimi) 安装 —— 克隆到 `~/.kimi/skills/doc-harness/` 即可。
 
 它确保项目在不断推进中始终保持有序，让 AI 智能体按照你设定的原则工作，将每一个重要的结果和决策持久化为本地文档（而非让它们随着 AI 上下文的重置而消失），并使任何新到来的智能体（或你自己在休息之后）都能准确地从上次中断的地方继续。
 

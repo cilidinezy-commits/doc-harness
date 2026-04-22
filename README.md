@@ -4,7 +4,10 @@
 
 **Document-based project control for AI-human collaboration.**
 
-Doc Harness is a [Claude Code](https://claude.ai/code) skill that gives you and AI agents a structured way to manage any project — like a harness that keeps a horse's power directed and under control.
+Doc Harness is a skill for [Claude Code](https://claude.ai/code) and [Kimi CLI](https://github.com/MoonshotAI/kimi-cli) that gives you and AI agents a structured way to manage any project — like a harness that keeps a horse's power directed and under control.
+
+- **Claude Code users**: Install via `/plugin marketplace add cilidinezy-commits/doc-harness` or manual copy (see below).
+- **Kimi CLI users**: Install from the standalone repo [`cilidinezy-commits/doc-harness-for-kimi`](https://github.com/cilidinezy-commits/doc-harness-for-kimi) — clone into `~/.kimi/skills/doc-harness/`.
 
 It keeps your project organized as it grows, ensures AI agents follow the principles you establish, captures every important result and decision in persistent documents instead of letting them vanish with AI context, and makes it possible for any new agent — or you, after a break — to pick up exactly where things left off.
 
