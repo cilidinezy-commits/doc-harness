@@ -320,6 +320,20 @@ Every agent reading these two files can immediately continue your work.
 
 ---
 
+## Five Commands, Five Moments
+
+Doc Harness gives you five commands — each one answers a specific moment in your project's life. You don't need to memorize them; just describe your situation naturally.
+
+| Command | The Moment | What You Say | What It Does |
+|---------|-----------|-------------|--------------|
+| **`init`** | Starting a project (new or mid-flight) | *"Set up project docs for this"* | Creates the 5 core documents tailored to your project |
+| **`check`** | Regular maintenance / things feel messy | *"Check project doc health"* | Audits file health + reflects on whether rules are being followed |
+| **`sync`** | Docs have fallen behind reality | *"Sync the project state"* | Repairs drift: registers missing files, refreshes stale dates, triggers phase transition or archival if thresholds hit |
+| **`flush`** | Context about to compress / session ending | *"Save everything"* | Emergency save: extracts all important context into documents + runs sync |
+| **`recall`** | Can't find something / need decision history | *"Why did we choose PostgreSQL?"* | Searches registered documents hierarchically and returns cited answers |
+
+---
+
 ## Day-to-Day Usage
 
 **Session starts** → Agent reads CLAUDE.md (overview + rules) → CURRENT_STATUS (current state) → continues working.
@@ -330,11 +344,11 @@ Every agent reading these two files can immediately continue your work.
 
 **Session ends** → Quick checklist: status updated? Files registered? Anything unsaved?
 
-**Docs fall behind** → Run `/doc-harness sync` to repair drift (unregistered files, stale dates, optionally trigger phase transition or archival). Interactive mode (default) confirms major changes; auto mode fixes without asking.
+**Docs fall behind** → Run `/doc-harness sync` to repair drift. Interactive mode (default) confirms major changes; auto mode fixes without asking.
 
-**Context about to compress** → Run `/doc-harness flush` to systematically extract all important context information into documents before it is lost. Includes everything `sync` does, plus mandatory context inventory and write-out.
+**Context about to compress** → Run `/doc-harness flush` to systematically extract all important context information into documents before it is lost.
 
-**Need to find something?** → Run `/doc-harness recall [query]` to search across all registered documents along the Doc Harness hierarchy — from CURRENT_STATUS summaries down to individual files — and get structured, source-cited answers. Example: `/doc-harness recall "Why PostgreSQL?"`.
+**Need to find something?** → Run `/doc-harness recall [query]` to search across all registered documents and get structured, source-cited answers.
 
 **Context resets or new agent arrives** → Reads CLAUDE.md → CURRENT_STATUS → fully oriented.
 
@@ -350,6 +364,54 @@ Not all projects proceed in neat sequential phases. You might work on data analy
 - Use the car body to track **all** active work threads with sub-headings
 - A "phase transition" happens when the *overall focus* shifts, not every time you switch tasks
 - When in doubt, don't trigger a phase transition — just organize within the car body
+
+---
+
+## Optional Documents (Create When Needed)
+
+Doc Harness has two optional documents that you create only when your project actually accumulates the kind of content they hold. Don't create them on day one.
+
+### PARKING_LOT.md — Deferred Items (Not Visions)
+
+**When to create**: When you have work that needs to happen *soon*, but is *blocked* by a precondition.
+
+**What goes in it**:
+- The item to do
+- What's blocking it
+- The condition that will unblock it
+- When to review it
+
+**Example**:
+```
+- Deploy to production
+  Blocked by: AWS account not yet provisioned
+  Unblock when: Ops team confirms account ready
+  Review: 2026-04-25
+```
+
+**Not a vision board**: PARKING_LOT is for *near-term* work that is *temporarily* blocked. If something is a long-term dream ("rewrite in Rust"), it doesn't belong here — put it in headlights' "Future Plans" instead.
+
+**How to use**: Review during `sync`/`check`. When the unblock condition is met, move the item back to CURRENT_STATUS headlights and start working.
+
+### PHILOSOPHY.md — Principles From Practice
+
+**When to create**: When you notice recurring patterns, lessons from mistakes, or principles that generalize beyond the current phase.
+
+**What goes in it**:
+- Principles forged by this project's specific practice
+- "We tried X three times and Y always works better"
+- Rules that started in the driving manual but survived 3+ phases
+
+**Example**:
+```
+- "Never trust CSV encoding headers" — discovered 2026-03-15
+  Context: Three data imports failed because we assumed UTF-8.
+  Rule: Always sniff encoding with chardet before parsing.
+```
+
+**Not iron rules**: Iron rules are mandatory constraints ("Never commit API keys"). Philosophy is empirical wisdom ("Every time we skip tests, a bug returns in 3 days"). Iron rules live in CLAUDE.md; philosophy lives here until it proves universal enough to promote.
+
+**How to use**: Review at phase transitions. Principles that survive 3+ phases can be promoted to CLAUDE.md iron rules.
 
 ---
 
