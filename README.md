@@ -327,7 +327,7 @@ Every agent reading these two files can immediately continue your work.
 
 **Session ends** → Quick checklist: status updated? Files registered? Anything unsaved?
 
-**Docs fall behind** → Run `/doc-harness sync` to repair drift (unregistered files, stale dates, optionally trigger phase transition or archival). Auto mode fixes without asking; interactive mode confirms major changes.
+**Docs fall behind** → Run `/doc-harness sync` to repair drift (unregistered files, stale dates, optionally trigger phase transition or archival). Interactive mode (default) confirms major changes; auto mode fixes without asking.
 
 **Context about to compress** → Run `/doc-harness flush` to systematically extract all important context information into documents before it is lost. Includes everything `sync` does, plus mandatory context inventory and write-out.
 
@@ -462,8 +462,8 @@ The recipient agent reads this, flips `status: unread` → `read`, performs what
 
 **Q: What's new in v1.5?**
 Two new commands fill the gap between diagnosis (`check`) and creation (`init`):
-- **`/doc-harness sync`** — Status synchronization. Repairs documentation drift (unregistered files, stale dates), refreshes fields, and optionally triggers phase transition or WORKLOG archival. Auto mode (default) executes without asking; interactive mode confirms before major changes.
-- **`/doc-harness flush`** — Emergency context save. Includes everything `sync` does, plus mandatory extraction of important context information into documents before compression. Core guarantee: after flush, a new agent reading the Recovery Chain recovers state as if context was never compressed. Auto mode uses heuristics to classify and route information; interactive mode asks per item.
+- **`/doc-harness sync`** — Status synchronization. Repairs documentation drift (unregistered files, stale dates), refreshes fields, and optionally triggers phase transition or WORKLOG archival. Interactive mode (default) confirms before major changes; auto mode executes without asking.
+- **`/doc-harness flush`** — Emergency context save. Includes everything `sync` does, plus mandatory extraction of important context information into documents before compression. Core guarantee: after flush, a new agent reading the Recovery Chain recovers state as if context was never compressed. Interactive mode (default) asks per item; auto mode uses heuristics to classify and route information without asking.
 
 **Q: What's new in v1.4?**
 A comprehensive hardening pass driven by six review cycles. Key additions:

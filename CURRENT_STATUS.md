@@ -61,6 +61,8 @@ User requested two new commands to fill the gap between `check` (read-only diagn
 
 **Completed**: All design artifacts, English skill files, Chinese mirrors, project root doc updates, DOC_HARNESS_SPEC.md re-sync, README bilingual updates. Verified: version numbers consistent, new files registered, argument-hints aligned.
 
+**Post-commit design change (2026-04-22)**: User decided default mode for both `sync` and `flush` should be **interactive** (asking), not auto. Auto now requires explicit `--auto` flag. Rationale: phase transitions and context extractions involve judgment; the safe default is to ask. Updated in all 8 skill files + both READMEs.
+
 ### Unresolved Issues
 
 (None.)

@@ -1,7 +1,7 @@
 ---
 name: doc-harness
 description: "Document-based project control that lets any AI agent or human resume work from files alone — no external memory needed. Use this skill whenever the user wants to structure a long-running project, track progress across sessions, recover state after context loss, coordinate multiple agents on the same project, audit project documentation health, or stop forgetting what was done last session. Triggers include: '/doc-harness init' and '/doc-harness check' (explicit slash commands); requests like 'help me set up this project', 'I keep losing track', 'my agent forgets between sessions', 'organize my project docs', 'audit this project', 'check the documentation', 'what did we do last time'; multi-week projects (theses, research, analyses, software modules) that span many sessions; cross-project coordination (inbox/outbox for file-based messages between projects)."
-argument-hint: "init [project-name] [description] | check | sync [--interactive] | flush [--interactive]"
+argument-hint: "init [project-name] [description] | check | sync [--auto] | flush [--auto]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
@@ -37,21 +37,21 @@ Audit the current project's documentation health and reflect on working principl
 
 **→ See [check.md](check.md) for full check procedures.**
 
-### `/doc-harness sync [--interactive]`
+### `/doc-harness sync [--auto]`
 
 Synchronize status documents with reality. Repair drift, refresh stale fields, register missing files, and optionally trigger phase transition or WORKLOG archival.
 
-- **`auto`** (default): Execute fixes without asking.
-- **`interactive`**: Ask before phase transitions, archival, or creating new principle documents.
+- **`interactive`** (default): Ask before phase transitions, archival, or creating new principle documents.
+- **`auto`**: Execute fixes without asking.
 
 **→ See [sync.md](sync.md) for full sync procedures.**
 
-### `/doc-harness flush [--interactive]`
+### `/doc-harness flush [--auto]`
 
 Emergency save before context compression. Includes everything `sync` does, plus mandatory extraction of important context information into documents.
 
-- **`auto`** (default): Use heuristics to classify and save context information without asking.
-- **`interactive`**: Ask before each significant extraction.
+- **`interactive`** (default): Ask before each significant extraction.
+- **`auto`**: Use heuristics to classify and save context information without asking.
 
 **→ See [flush.md](flush.md) for full flush procedures.**
 
