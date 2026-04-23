@@ -39,6 +39,7 @@ Kimi has no slash commands. Use the table below to map user requests to the corr
 | "Check documentation health" / "audit project docs" / "run a health check" | **Check** — audit file health and reflect on principles | [references/check.md](references/check.md) |
 | "Sync project state" / "update status docs" / "catch up documentation" | **Sync** — repair drift, refresh dates, register missing files | [references/sync.md](references/sync.md) |
 | "Save everything" / "flush context" / "prepare for compact" / "ensure nothing is lost" | **Flush** — emergency save: extract all important context into documents. Runs five phases: (A) sync, (B) context inventory, (C) write and register, (D) verification, (E) flush marker. **Phases B and C are the defining feature** — they scan context for information that exists only in memory and write it to files. Without Phase B and C, flush has failed and is indistinguishable from sync. | [references/flush.md](references/flush.md) |
+| "Resume this project" / "continue work" / "where were we" / "back to project" / "pick up where we left off" / "what's the current status" | **Resume** — structured state recovery. Execute Recovery Chain, produce Recovery Report, verify understanding before continuing. Four phases: (A) Recovery Chain, (B) Recovery Report synthesis, (C) Understanding Verification, (D) Resume decision. | [references/resume.md](references/resume.md) |
 | "Recall" / "remember" / "find in docs" / "search project docs" / "where did we discuss" / "why did we decide" / "what is the current plan" | **Recall** — retrieve information from registered documents along the Doc Harness hierarchy | [references/recall.md](references/recall.md) |
 
 ---
@@ -130,6 +131,7 @@ See [references/spec.md](references/spec.md) for full details.
 | [references/check.md](references/check.md) | User asks to audit / check documentation health |
 | [references/sync.md](references/sync.md) | User asks to sync / update status docs |
 | [references/flush.md](references/flush.md) | User asks to save / flush context before compression |
+| [references/resume.md](references/resume.md) | User asks to resume / continue project work after context loss or on arrival |
 | [references/recall.md](references/recall.md) | User asks to recall / search / find information in project docs |
 | [references/spec.md](references/spec.md) | Unusual situation, edge case, or understanding design rationale |
 

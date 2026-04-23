@@ -806,7 +806,39 @@ Execute the five-step protocol defined in Chapter 6 §6.2.
 
 **Full procedure**: See `flush.md`.
 
-### 11.7 Information Recall (`/doc-harness recall [query]`)
+### 11.7 State Resume (`/doc-harness resume [--auto]`)
+
+**Purpose**: When an agent returns to a project with empty context, systematically execute the Recovery Chain, verify understanding, and produce a structured recovery report before continuing. `resume` makes implicit Session Start **explicit and verifiable**.
+
+**Core guarantee**: After a successful resume, the agent can articulate: (1) its project identity and role, (2) the current phase goal, (3) the active work state, (4) the #1 next step and its blockers, and (5) whether it is safe to proceed or user confirmation is needed.
+
+**Relationship to Session Start (§11.1)**: `resume` **codifies and extends** the Session Start protocol. It follows Recovery Chain exactly (must-read → task-conditional), then adds mandatory Recovery Report synthesis and Understanding Verification. An agent that runs `resume` has fulfilled its Session Start obligation and proven its comprehension.
+
+**Trigger conditions**:
+- User explicitly requests resumption ("resume this project", "continue work", "where were we", "pick up where we left off")
+- Agent detects empty context + all 4 core files present → auto-trigger before any other action
+- After compact recovery (context compressed, user absent) — mandatory first step before acting on headlights
+
+**Modes**:
+- **`interactive`** (default): Produces Recovery Report, answers verification questions, presents to user for confirmation before proceeding.
+- **`auto`**: Performs full procedure without user interaction, writes condensed report to car body, applies auto-resume decision tree (≤7d fresh + no edge conditions = proceed; otherwise = wait for user).
+
+**Procedure** (four phases):
+1. **Phase A**: Execute Recovery Chain per §11.1 (identity anchor → must-read → task-conditional). Includes edge-condition scan: mid-transition detection (§6.3.1), pause check (§6.4), inbox unread, freshness check.
+2. **Phase B**: Produce Recovery Report — 7-section structured synthesis: Identity Confirmation, Current Phase & Goal, Active Work Summary, Next Steps (with freshness check), Unread Signals, Edge Conditions, Agent Readiness Self-Assessment.
+3. **Phase C**: Understanding Verification — agent answers 5 forced questions in its own words to prove comprehension (not just reading): phase goal, #1 next step + blocker, last completed step, unread signals, safety-to-proceed check.
+4. **Phase D**: Resume decision — interactive: user confirmation; auto: decision tree + car body entry.
+
+**Phase B and Phase C are non-skippable**. An agent that reads files but does not produce a Recovery Report or answer verification questions has not executed `resume` — it has only performed Session Start.
+
+**Auto-resume decision tree** (applied in Phase D auto mode):
+- CURRENT_STATUS updated today, headlights ≤7 days old, no edge conditions, not paused → proceed per headlights
+- Headlights 8–30 days old OR any edge condition → write "waiting for user confirmation" to car body, do NOT proceed
+- Headlights >30 days OR explicitly paused → always wait for explicit user direction
+
+**Full procedure**: See `resume.md`.
+
+### 11.8 Information Recall (`/doc-harness recall [query]`)
 
 **Purpose**: Retrieve information from the project's Doc Harness document hierarchy. As projects grow, information scatters across dozens of registered files; `recall` provides a systematic retrieval protocol that mirrors the Recovery Chain's hierarchy — from high-level summaries to low-level details.
 

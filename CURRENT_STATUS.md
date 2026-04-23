@@ -175,6 +175,33 @@ User reported that `/doc-harness flush` in practice frequently skipped Phase B (
 
 **Files changed**: 11 skill files + 3 project root docs. Version bump v1.6.0 → v1.6.1. No new files created.
 
+#### v1.7.0 — `/doc-harness resume` 结构化状态恢复命令 (2026-04-24)
+
+User reported that when returning to a project with empty context and all status documents present, there was no explicit command to guide the agent through systematic recovery of project state. The existing Recovery Chain and Session Start protocol were implicit — agents could skip them silently, and there was no proof that understanding was actually recovered.
+
+**Response — v1.7.0 spec upgrade**:
+- **New sixth command**: `/doc-harness resume [--auto]` — structured state recovery
+- **4-phase procedure**:
+  - Phase A: Execute Recovery Chain (identity anchor → must-read → task-conditional) + edge-condition scan (mid-transition §6.3.1, pause §6.4, inbox unread, freshness)
+  - Phase B: Produce Recovery Report — 7-section structured synthesis (Identity Confirmation, Current Phase & Goal, Active Work Summary, Next Steps with freshness check, Unread Signals, Edge Conditions, Agent Readiness Self-Assessment)
+  - Phase C: Understanding Verification — 5 forced questions answered in agent's own words to prove comprehension (not just reading): phase goal, #1 next step + blocker, last completed step, unread signals, safety-to-proceed check
+  - Phase D: Resume decision — interactive (user confirmation) or auto (decision tree: ≤7d fresh + no edge conditions = proceed; otherwise = wait)
+- **Auto-resume decision tree**: ≤7 days → proceed; 8–30 days or edge conditions → wait; >30 days or paused → always wait
+- **Relationship to existing commands**: resume fills the gap between `init` (no docs) and `check/sync/flush/recall` (docs present, agent already oriented). It is the mandatory first step when context is empty.
+
+**Design artifacts created**:
+- `skill/resume.md` (~260 lines) — English resume procedure with 4-phase workflow
+- `skill-zh/resume.md` (~240 lines) — Chinese mirror
+- `kimi-skill/references/resume.md` (~180 lines) — Kimi CLI adaptation
+- `skill/spec.md` — §11.7 resume normative spec (recall shifted to §11.8)
+- `skill/SKILL.md`, `skill-zh/SKILL.md`, `kimi-skill/SKILL.md` — Command listings updated (5 → 6 commands)
+- `skill/operational_rules.md`, `skill-zh/operational_rules.md` — Session Start step 4: auto-trigger resume on empty context
+- `DOC_HARNESS_SPEC.md` — Re-synced
+- `CLAUDE.md` — Command count 5 → 6, one-line status updated
+- `CURRENT_STATUS.md` — This entry
+
+**Version rationale**: v1.7.0 (not v1.6.2) because this is a **new command** — a feature-level addition, not a patch. The flush hardening (v1.6.1) and resume command (v1.7.0) are separate logical increments.
+
 ### Unresolved Issues
 
 (None.)

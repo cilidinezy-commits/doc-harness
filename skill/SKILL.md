@@ -1,7 +1,7 @@
 ---
 name: doc-harness
 description: "Document-based project control that lets any AI agent or human resume work from files alone — no external memory needed. Use this skill whenever the user wants to structure a long-running project, track progress across sessions, recover state after context loss, coordinate multiple agents on the same project, audit project documentation health, or stop forgetting what was done last session. Triggers include: '/doc-harness init' and '/doc-harness check' (explicit slash commands); requests like 'help me set up this project', 'I keep losing track', 'my agent forgets between sessions', 'organize my project docs', 'audit this project', 'check the documentation', 'what did we do last time'; multi-week projects (theses, research, analyses, software modules) that span many sessions; cross-project coordination (inbox/outbox for file-based messages between projects)."
-argument-hint: "init [project-name] [description] | check | sync [--auto] | flush [--auto] | recall [query]"
+argument-hint: "init [project-name] [description] | check | sync [--auto] | flush [--auto] | recall [query] | resume [--auto]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
@@ -57,6 +57,17 @@ Emergency save before context compression. Includes everything `sync` does, **pl
 
 **→ See [flush.md](flush.md) for full flush procedures. Includes empty-scan reporting requirements when no extractable items are found.**
 
+### `/doc-harness resume [--auto]`
+
+Structured state recovery: when context is empty or the user wants to resume work, systematically read status documents, verify understanding, and produce a recovery report before continuing.
+
+`resume` runs in **four phases**: (A) execute Recovery Chain (identity anchor → must-read → task-conditional), (B) produce Recovery Report (7-section structured synthesis), (C) Understanding Verification (5 forced questions proving comprehension), (D) resume decision.
+
+- **`interactive`** (default): Present Recovery Report to user for confirmation before proceeding.
+- **`auto`**: Perform full procedure without user interaction, apply auto-resume decision tree (≤7 days fresh + no edge conditions = proceed; otherwise = wait for user).
+
+**→ See [resume.md](resume.md) for full resume procedures.**
+
 ### `/doc-harness recall [query]`
 
 Retrieve information from the project's Doc Harness document hierarchy. Search systematically across registered documents and return structured, source-cited results.
@@ -91,5 +102,6 @@ Information in context will eventually be completely lost. Important information
 - [sync.md](sync.md) — Read when executing `/doc-harness sync`. Drift repair, date refresh, file registration, phase-transition and archival triggers.
 - [flush.md](flush.md) — Read when executing `/doc-harness flush`. Emergency save with systematic context-to-document extraction.
 - [recall.md](recall.md) — Read when executing `/doc-harness recall`. Layered search protocol for retrieving information from registered documents.
+- [resume.md](resume.md) — Read when executing `/doc-harness resume`. Structured state recovery with Recovery Chain execution, Recovery Report synthesis, and Understanding Verification.
 - [operational_rules.md](operational_rules.md) — The operational rules embedded verbatim into every project's CLAUDE.md at `init` time. Carries the `<!-- doc-harness-ops-version -->` version tag so the check command can detect stale embeddings.
 - [spec.md](spec.md) — Complete Doc Harness specification (14 chapters + 5 appendices). Authoritative — all other files derive from it. Has a Table of Contents at the top for navigation without full-read.
