@@ -1,4 +1,4 @@
-# Doc Harness &nbsp;·&nbsp; v1.6.0
+# Doc Harness &nbsp;·&nbsp; v1.7.0
 
 [中文版 README](README_zh.md)
 
@@ -156,7 +156,7 @@ Inside Claude Code:
 
 Replace the second command with `/plugin install doc-harness-zh@doc-harness` if you want the Chinese version — they are separate plugins and only one should be installed at a time (they expose the same `/doc-harness` command).
 
-Verify: type `/doc-harness` — you should see the help output describing `init`, `check`, `sync`, `flush`, and `recall`.
+Verify: type `/doc-harness` — you should see the help output describing `init`, `check`, `sync`, `flush`, `recall`, and `resume`.
 
 #### Option B — Manual copy (works everywhere)
 
@@ -186,7 +186,7 @@ xcopy skill %USERPROFILE%\.claude\skills\doc-harness\ /E /I
 
 **Step 4 — verify.** Open Claude Code in any directory and type `/doc-harness`. You should see the help output describing `init` and `check`. If the command isn't recognized, the files weren't copied to the right path — check `~/.claude/skills/doc-harness/SKILL.md` exists.
 
-**Check the installed version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should print the `**Version**` line (e.g., `v1.6.0`).
+**Check the installed version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should print the `**Version**` line (e.g., `v1.7.0`).
 
 ### Project-level install (optional)
 
@@ -199,7 +199,7 @@ If you want a specific project to pin a particular Doc Harness version independe
 **If you used Option B (manual copy)**:
 1. **Pull the latest**: `cd doc-harness && git pull`
 2. **Re-copy the skill folder** — the same command as Step 3 of first-install. It overwrites in place; no local state lives in the installed skill directory, so nothing is lost.
-3. **Verify the new version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should show `v1.6.0`.
+3. **Verify the new version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should show `v1.7.0`.
 
 4. **Then upgrade your existing projects' CLAUDE.md** (important, applies to both Option A and Option B): the operational rules embedded inside each project's `CLAUDE.md` are a **snapshot** taken at `init` time — they do NOT update automatically when you upgrade the skill. To bring a project up to date, replace the bytes between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->` in that project's `CLAUDE.md` with the new contents of `operational_rules.md`. Anything outside those sentinels (custom iron rules, project-specific sections) is preserved. Run `/doc-harness check` in the project — §1.10 tells you if the embedded version is stale.
 5. **(If the project has `DOC_HARNESS_SPEC.md`)** overwrite with the new `spec.md`.
@@ -322,7 +322,7 @@ Every agent reading these two files can immediately continue your work.
 
 ## Five Commands, Five Moments
 
-Doc Harness gives you five commands — each one answers a specific moment in your project's life. You don't need to memorize them; just describe your situation naturally.
+Doc Harness gives you **six commands** — each one answers a specific moment in your project's life. You don't need to memorize them; just describe your situation naturally.
 
 | Command | When to use | What it does | Example utterances (to trigger the agent) |
 |---------|------------|--------------|------------------------------------------|
@@ -330,6 +330,7 @@ Doc Harness gives you five commands — each one answers a specific moment in yo
 | `/doc-harness check` | Regular maintenance; things feel messy; session ending | Audits file health + reflects on whether rules are being followed | *"Check project doc health"*, *"Run a health check on the docs"*, *"Audit the project documentation"* |
 | `/doc-harness sync [--auto]` | Docs have fallen behind reality; after bulk file operations; before a long pause | Repairs drift: registers missing files, refreshes stale dates, triggers phase transition or archival if thresholds hit | *"Sync the project state"*, *"Update the status docs"*, *"Catch up the documentation"* |
 | `/doc-harness flush [--auto]` | Context about to compress; session ending with unsaved work | Emergency save: systematically extracts all important context into documents + runs sync | *"Save everything"*, *"Flush context before compact"*, *"Prepare for context compression"* |
+| `/doc-harness resume [--auto]` | Context is empty; returning after a break; new agent arriving; "where were we?" | Executes Recovery Chain, produces Recovery Report (7 sections), verifies understanding, and confirms readiness before continuing | *"Resume this project"*, *"Where were we?"*, *"Continue work"*, *"Pick up where we left off"* |
 | `/doc-harness recall [query]` | Can't find a previous discussion; need decision history; want a summary of what's known about X | Searches registered documents hierarchically and returns structured, source-cited answers | *"Recall why we chose PostgreSQL"*, *"Find all docs about caching"*, *"What is the current plan for auth?"*, *"Summarize what we know about billing"* |
 
 ---
@@ -350,7 +351,7 @@ Doc Harness gives you five commands — each one answers a specific moment in yo
 
 **Need to find something?** → Run `/doc-harness recall [query]` to search across all registered documents and get structured, source-cited answers.
 
-**Context resets or new agent arrives** → Reads CLAUDE.md → CURRENT_STATUS → fully oriented.
+**Context resets or new agent arrives** → Run `/doc-harness resume` to systematically execute Recovery Chain, produce a Recovery Report, and verify understanding before proceeding.
 
 ### What You (the Human) Do
 
@@ -534,6 +535,12 @@ The recipient agent reads this, flips `status: unread` → `read`, performs what
 - `/doc-harness check` now audits inbox unread-message count (§1.7) and checks Recovery Chain health for the two-layer structure (§2.5).
 - **Hierarchical "portfolio" framing removed** from the spec. Projects in a group are self-contained peers; a parent navigation file is a lightweight optional pattern, not a Doc Harness concept. (The neutral term "project group" / §10.2 is retained for this flat-peer arrangement.)
 - **Context-aware update cadence**: operational rules now instruct agents whose runtime exposes context-window usage to treat low remaining context (~<20%) as an immediate trigger for CURRENT_STATUS update and possible phase transition. Compression is involuntary session end — don't wait for a "meaningful step" that may never land.
+
+**Q: What's new in v1.7.0?**
+- **`/doc-harness resume [--auto]`** — Structured state recovery. When context is empty or the user wants to resume work, systematically executes Recovery Chain, produces a 7-section Recovery Report (Identity, Phase Goal, Active Work, Next Steps, Unread Signals, Edge Conditions, Readiness), and answers 5 Understanding Verification questions to prove comprehension before continuing. Interactive mode (default) presents the report to the user for confirmation; auto mode applies a ≤7d / 8–30d / >30d decision tree for compact recovery.
+
+**Q: What's new in v1.6.1?**
+- **Flush Phase B/C hardening**: full-chain reinforcement across every layer where agents receive flush instructions (SKILL.md, flush.md, spec.md, operational_rules.md, Kimi skill). Phase B (Context Inventory) and Phase C (Write & Register) are now structurally unskippable. Added "Common Failure Mode" callout, Phase A→B completion gate, mandatory Empty Scan Report (when zero extractable items found), and completion checklists for Phases B/C/D.
 
 **Q: What's new in v1.6.0?**
 - **`/doc-harness recall [query]`** — Information retrieval. Searches registered documents along the Doc Harness hierarchy (CLAUDE.md → CURRENT_STATUS → WORKLOG → FILE_INDEX → individual files) and returns structured, source-cited answers. Four query types: status/plan, history/decision, file lookup, cross-document synthesis. Read-only; never modifies files.
