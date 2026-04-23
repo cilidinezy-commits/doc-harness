@@ -34,6 +34,7 @@
 ## Notes
 - `notes/kimi-claude-interop.md` — Cross-tool skill discovery behavior (Kimi CLI vs Claude Code)
 - `notes/reddit-v160-announcement.md` — Reddit announcement post for v1.6.0
+- `notes/wechat-promo-v160.md` — WeChat group promotion copy for v1.6.0
 - `PHILOSOPHY.md` — Principles forged by practice (universal-level: zoom-out-before-patching, curse-of-knowledge)
 
 ## Project Documentation

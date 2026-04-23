@@ -140,7 +140,20 @@ WhoAMI agent experienced identity confusion (INC-2026-04-22-001): during cross-p
 - **check §1.11**: identity lock presence verification
 - **Bilingual sync**: all changes mirrored skill/ → skill-zh/
 
-**Files changed**: 17 files across skill/, skill-zh/, project root, kimi-skill/. Version bump v1.5.1 → v1.6.0. Local installs (Claude + Kimi) updated. Git commit `76db4b3`; GitHub push deferred per user request.
+**Files changed**: 17 files across skill/, skill-zh/, project root, kimi-skill/. Version bump v1.5.1 → v1.6.0. Local installs (Claude + Kimi) updated. Git commit `76db4b3`; GitHub push done.
+
+#### Marketing materials + final sync (2026-04-23)
+
+- Created `notes/reddit-v160-announcement.md` — Reddit-style announcement post focusing on the five commands (init/check/sync/flush/recall)
+- Created `notes/wechat-promo-v160.md` — WeChat group promotion copy in Chinese, using conversational tone with pain-point hooks
+- Sync: registered both marketing files in FILE_INDEX; dates already current (2026-04-23)
+- Cleanup: removed accidental kimi-export files from repo, added `.gitignore` rule
+- Push: all commits synced to GitHub
+
+#### Context flush (2026-04-23) — auto mode
+- Sync: registered `notes/wechat-promo-v160.md`
+- No phase transition or archival triggered
+- Verification: all checks passed
 
 ### Unresolved Issues
 
