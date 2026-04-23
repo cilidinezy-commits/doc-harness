@@ -202,6 +202,19 @@ User reported that when returning to a project with empty context and all status
 
 **Version rationale**: v1.7.0 (not v1.6.2) because this is a **new command** — a feature-level addition, not a patch. The flush hardening (v1.6.1) and resume command (v1.7.0) are separate logical increments.
 
+#### README synced to v1.7.0 (2026-04-24)
+- Updated version badge v1.6.0 → v1.7.0, command count 5 → 6 throughout both READMEs
+- Added `/doc-harness resume` to command table with triggers and description
+- Updated Day-to-Day Usage: context resets / new agent arrival now use `resume`
+- Added FAQ entries for v1.7.0 (resume) and v1.6.1 (flush hardening)
+- Bilingual sync: EN + ZH per Iron Rule 1
+- Committed + pushed: `ff67704`
+
+#### Context flushed (2026-04-24) — 1 item extracted to files
+- Sync actions: phase transition no; archival no
+- New files created: none
+- Existing files appended: `CURRENT_STATUS.md` — README sync record added to car body
+
 ### Unresolved Issues
 
 (None.)
