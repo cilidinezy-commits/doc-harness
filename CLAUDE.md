@@ -9,9 +9,9 @@
 
 ---
 
-**Last updated**: 2026-04-22
+**Last updated**: 2026-04-23
 **Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — v1.6.0 identity lock shipped)
-**One-line status (as of 2026-04-22)**: v1.6.0 shipped — AGENT IDENTITY LOCK closes WhoAMI INC-2026-04-22-001. Recovery Chain Step 0 + pre-send checklist + check §1.11. Bilingual sync complete. Local installs (Claude + Kimi) updated. GitHub push pending user go-ahead.
+**One-line status (as of 2026-04-23)**: v1.6.0 shipped — AGENT IDENTITY LOCK closes WhoAMI INC-2026-04-22-001. Recovery Chain Step 0 + pre-send checklist + check §1.11. Bilingual sync complete. Local installs (Claude + Kimi) updated. GitHub push pending user go-ahead.
 
 ---
 

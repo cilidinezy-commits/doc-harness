@@ -1,6 +1,6 @@
 # CURRENT_STATUS — Doc Harness
 
-**Last updated**: 2026-04-22
+**Last updated**: 2026-04-23
 **Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ active — v1.6.0 identity lock shipped)
 
 ---
