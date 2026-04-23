@@ -48,12 +48,14 @@ Synchronize status documents with reality. Repair drift, refresh stale fields, r
 
 ### `/doc-harness flush [--auto]`
 
-Emergency save before context compression. Includes everything `sync` does, plus mandatory extraction of important context information into documents.
+Emergency save before context compression. Includes everything `sync` does, **plus mandatory extraction of important context information into documents**.
+
+`flush` runs in **five phases**: (A) sync, (B) context inventory, (C) write and register, (D) verification, (E) flush marker. **Phases B and C are the distinguishing feature** — they scan the agent's current context for information that exists only in memory, classify it, and write it to files. Without Phase B and C, `flush` is indistinguishable from `sync` and has failed.
 
 - **`interactive`** (default): Ask before each significant extraction.
 - **`auto`**: Use heuristics to classify and save context information without asking.
 
-**→ See [flush.md](flush.md) for full flush procedures.**
+**→ See [flush.md](flush.md) for full flush procedures. Includes empty-scan reporting requirements when no extractable items are found.**
 
 ### `/doc-harness recall [query]`
 

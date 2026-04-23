@@ -800,6 +800,8 @@ Execute the five-step protocol defined in Chapter 6 §6.2.
 4. **Phase D**: Verification — agent simulates a fresh arrival to confirm all extracted information is discoverable.
 5. **Phase E**: Flush marker — record the flush event in CURRENT_STATUS car body.
 
+**Phase B and Phase C are non-skippable**. If the inventory yields zero extractable items, the agent must still produce an explicit **empty-scan report** documenting the scan scope and exclusion rationale. Silently omitting Phase B is a flush failure — the output is indistinguishable from `sync` and must be corrected.
+
 **Auto-mode heuristics**: Information is "important" if user-emphasized, a decision/rationale, required significant effort to produce, or would cause confusion if lost. Target paths follow existing project conventions; standard folders (`notes/`, `design/`, `lessons/`, `data/`) are created only when needed.
 
 **Full procedure**: See `flush.md`.

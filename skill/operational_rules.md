@@ -139,7 +139,9 @@ Recovery Chain is defined in CLAUDE.md and has two layers:
 Two commands complement the daily workflow:
 
 - **`/doc-harness sync`** — Repair documentation drift. Scans for unregistered files, stale dates, and length thresholds; executes fixes; optionally triggers phase transition or WORKLOG archival. Auto mode (default) executes without asking; interactive mode asks before major changes.
-- **`/doc-harness flush`** — Emergency save. Includes everything `sync` does, plus mandatory extraction of important context information into documents. Use when context is about to compress or reset. After a successful flush, a new agent reading the Recovery Chain should recover state as if context had never been compressed.
+- **`/doc-harness flush`** — Emergency save. Includes everything `sync` does, plus **mandatory extraction of important context information into documents**. Use when context is about to compress or reset. After a successful flush, a new agent reading the Recovery Chain should recover state as if context had never been compressed.
+
+**Critical distinction**: `sync` repairs existing documents; `flush` **must perform a context inventory and create or append new documents** from that inventory. If a flush produces no Phase B (inventory) and no Phase C (new files), it has failed — the agent performed sync, not flush. Even when no extractable items are found, flush must produce an explicit empty-scan report proving Phase B was executed.
 
 ## Project Pause
 

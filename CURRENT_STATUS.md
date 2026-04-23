@@ -1,7 +1,7 @@
 # CURRENT_STATUS — Doc Harness
 
-**Last updated**: 2026-04-23
-**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ active — v1.6.0 identity lock shipped)
+**Last updated**: 2026-04-24
+**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ active — v1.6.1 flush hardening shipped)
 
 ---
 
@@ -154,6 +154,26 @@ WhoAMI agent experienced identity confusion (INC-2026-04-22-001): during cross-p
 - Sync: registered `notes/wechat-promo-v160.md`
 - No phase transition or archival triggered
 - Verification: all checks passed
+
+#### v1.6.1 — flush Phase B/C hardening (2026-04-24)
+
+User reported that `/doc-harness flush` in practice frequently skipped Phase B (Context Inventory) and Phase C (Write & Register), producing output indistinguishable from `sync`. This patch makes Phase B/C structurally unskippable through full-chain reinforcement.
+
+**Root cause**: Agents either (a) relied on SKILL.md's one-sentence flush description without opening `flush.md`, or (b) treated Phase B's descriptive language as optional guidance.
+
+**Fix applied across all instruction layers**:
+- `skill/flush.md` (EN): Added "Common Failure Mode" callout at top; Phase B/C headers marked **MANDATORY — non-skippable**; Phase A→B completion gate with explicit agent declaration; Empty Scan Report format (mandatory when zero extractable items found); Phase B/C/D completion checklists; output format template enforces Phase B presence even when empty.
+- `skill/spec.md` §11.6 (EN): Added normative sentence: "Phase B and Phase C are non-skippable... silently omitting Phase B is a flush failure."
+- `skill/SKILL.md` (EN): Expanded flush from one sentence to a paragraph naming all five phases; added anti-failure warning.
+- `skill/operational_rules.md` (EN): Added "Critical distinction" paragraph and "flush failure mode" bullet in sync-vs-flush section.
+- `skill-zh/flush.md`, `skill-zh/spec.md`, `skill-zh/SKILL.md`, `skill-zh/operational_rules.md` (ZH): Full bilingual mirror per Iron Rule 1.
+- `kimi-skill/SKILL.md` (EN): Expanded flush description in natural-language trigger table.
+- `kimi-skill/references/flush.md` (EN): Core rewrite with all mandatory Phase B/C hardening.
+- `DOC_HARNESS_SPEC.md`: Re-synced from `skill/spec.md`.
+- `CLAUDE.md`: Updated operational rules section with sync-vs-flush distinction; refreshed dates and one-line status.
+- `CURRENT_STATUS.md`: This entry.
+
+**Files changed**: 11 skill files + 3 project root docs. Version bump v1.6.0 → v1.6.1. No new files created.
 
 ### Unresolved Issues
 

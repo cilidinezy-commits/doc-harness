@@ -9,9 +9,9 @@
 
 ---
 
-**Last updated**: 2026-04-23
-**Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — v1.6.0 identity lock shipped)
-**One-line status (as of 2026-04-23)**: v1.6.0 shipped — AGENT IDENTITY LOCK closes WhoAMI INC-2026-04-22-001. Recovery Chain Step 0 + pre-send checklist + check §1.11. Bilingual sync complete. Local installs (Claude + Kimi) updated. GitHub push pending user go-ahead.
+**Last updated**: 2026-04-24
+**Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — v1.6.1 flush hardening shipped)
+**One-line status (as of 2026-04-24)**: v1.6.1 shipped — flush Phase B/C made structurally unskippable via full-chain reinforcement (SKILL.md + flush.md + spec.md + operational_rules.md + Kimi skill). Empty-scan report mandatory. Bilingual sync complete.
 
 ---
 
@@ -93,6 +93,7 @@ doc-harness/
 ## Doc Harness — Operational Rules
 
 > Complete specification: see `DOC_HARNESS_SPEC.md` in this directory.
+> This section was last refreshed from `skill/operational_rules.md` at v1.6.1.
 
 ### Core Principle: "Write It Down or Lose It"
 
@@ -106,6 +107,11 @@ Important information must be **written to a file** and **registered in FILE_IND
 | **CURRENT_STATUS.md** | Active status | Every session |
 | **FILE_INDEX.md** | File catalog by category | When files created/deleted |
 | **WORKLOG.md** | Complete history (append-only) | Phase transitions |
+
+### Sync vs. Flush — Critical Distinction
+
+- **`sync`** repairs existing documents (drift fix, date refresh, file registration).
+- **`flush`** **must perform a context inventory and create or append new documents** from that inventory. If a flush produces no Phase B (inventory) and no Phase C (new files), it has failed — the agent performed sync, not flush. Even when no extractable items are found, flush must produce an explicit empty-scan report proving Phase B was executed.
 
 ### Session End Checklist
 

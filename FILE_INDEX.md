@@ -1,6 +1,6 @@
 # FILE_INDEX — Doc Harness
 
-**Last updated**: 2026-04-23 (sync run)
+**Last updated**: 2026-04-24 (v1.6.1 flush hardening)
 
 ---
 
