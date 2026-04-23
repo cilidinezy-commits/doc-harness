@@ -10,8 +10,8 @@
 ---
 
 **Last updated**: 2026-04-24
-**Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — v1.6.1 flush hardening shipped)
-**One-line status (as of 2026-04-24)**: v1.6.1 shipped — flush Phase B/C made structurally unskippable via full-chain reinforcement (SKILL.md + flush.md + spec.md + operational_rules.md + Kimi skill). Empty-scan report mandatory. Bilingual sync complete.
+**Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — v1.6.1 flush + v1.7.0 resume shipped)
+**One-line status (as of 2026-04-24)**: v1.7.0 shipped — sixth command `/doc-harness resume` adds structured state recovery with Recovery Report (7 sections) + Understanding Verification (5 questions). v1.6.1 flush hardening also included. Bilingual sync complete. 6 commands: init/check/sync/flush/recall/resume.
 
 ---
 
@@ -39,7 +39,7 @@
 
 Doc Harness is a Claude Code skill that provides document-based project control for AI-human collaboration. It creates and maintains 5 status documents per project (CLAUDE.md, CURRENT_STATUS.md, FILE_INDEX.md, WORKLOG.md, DOC_HARNESS_SPEC.md) that enable any agent or human to understand and resume project work purely from reading files.
 
-**Five commands**: `/doc-harness init` (create docs), `/doc-harness check` (audit + reflect), `/doc-harness sync` (repair drift), `/doc-harness flush` (emergency save), `/doc-harness recall` (retrieve information).
+**Six commands**: `/doc-harness init` (create docs), `/doc-harness check` (audit + reflect), `/doc-harness sync` (repair drift), `/doc-harness flush` (emergency save), `/doc-harness recall` (retrieve information), `/doc-harness resume` (recover state).
 
 **Core principle**: "Write It Down or Lose It" — context info is temporary, files are permanent.
 

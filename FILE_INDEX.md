@@ -1,6 +1,6 @@
 # FILE_INDEX — Doc Harness
 
-**Last updated**: 2026-04-24 (v1.6.1 flush hardening)
+**Last updated**: 2026-04-24 (v1.7.0 resume command + v1.6.1 flush hardening)
 
 ---
 
@@ -18,6 +18,7 @@
 - `skill/sync.md` — `/doc-harness sync` drift repair and maintenance procedures
 - `skill/flush.md` — `/doc-harness flush` emergency context-save procedures
 - `skill/recall.md` — `/doc-harness recall` information retrieval protocol
+- `skill/resume.md` — `/doc-harness resume` structured state recovery procedure
 - `skill/operational_rules.md` — Rules embedded in each project's CLAUDE.md
 - `skill/spec.md` — Complete Doc Harness specification (authoritative)
 
@@ -28,6 +29,7 @@
 - `skill-zh/sync.md` — `/doc-harness sync` 漂移修复与维护流程
 - `skill-zh/flush.md` — `/doc-harness flush` 紧急上下文保存流程
 - `skill-zh/recall.md` — `/doc-harness recall` 信息召回协议
+- `skill-zh/resume.md` — `/doc-harness resume` 结构化状态恢复流程
 - `skill-zh/operational_rules.md` — 嵌入项目CLAUDE.md的操作规则
 - `skill-zh/spec.md` — Doc Harness完整规范
 
@@ -50,6 +52,7 @@
 - `kimi-skill/references/sync.md` — Drift repair with ask/auto heuristics
 - `kimi-skill/references/flush.md` — Emergency context save before compression
 - `kimi-skill/references/recall.md` — Information retrieval protocol
+- `kimi-skill/references/resume.md` — Structured state recovery after context loss
 - `kimi-skill/references/spec.md` — Normative spec reference for edge cases
 
 ## Plugin Marketplace Metadata

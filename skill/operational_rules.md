@@ -111,6 +111,7 @@ Recovery Chain is defined in CLAUDE.md and has two layers:
 1. Read must-read layer in order.
 2. Scan task-conditional; read only entries whose condition matches current work.
 3. If user present → confirm whether next steps have changed. Compact recovery without user → continue per headlights.
+4. **If context is empty or user explicitly says "resume"**: Run `/doc-harness resume` to systematically execute Recovery Chain, produce a Recovery Report, and verify understanding before proceeding. This ensures the agent does not silently skip the orientation phase.
 
 ## During Work
 
