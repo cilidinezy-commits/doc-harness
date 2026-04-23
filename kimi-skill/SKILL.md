@@ -38,7 +38,7 @@ Kimi has no slash commands. Use the table below to map user requests to the corr
 | "Set up doc-harness" / "init project docs" / "create status documentation" | **Init** — create the five documents for a new or existing project | [references/init.md](references/init.md) |
 | "Check documentation health" / "audit project docs" / "run a health check" | **Check** — audit file health and reflect on principles | [references/check.md](references/check.md) |
 | "Sync project state" / "update status docs" / "catch up documentation" | **Sync** — repair drift, refresh dates, register missing files | [references/sync.md](references/sync.md) |
-| "Save everything" / "flush context" / "prepare for compact" / "ensure nothing is lost" | **Flush** — emergency save: extract all important context into documents | [references/flush.md](references/flush.md) |
+| "Save everything" / "flush context" / "prepare for compact" / "ensure nothing is lost" | **Flush** — emergency save: extract all important context into documents. Runs five phases: (A) sync, (B) context inventory, (C) write and register, (D) verification, (E) flush marker. **Phases B and C are the defining feature** — they scan context for information that exists only in memory and write it to files. Without Phase B and C, flush has failed and is indistinguishable from sync. | [references/flush.md](references/flush.md) |
 | "Recall" / "remember" / "find in docs" / "search project docs" / "where did we discuss" / "why did we decide" / "what is the current plan" | **Recall** — retrieve information from registered documents along the Doc Harness hierarchy | [references/recall.md](references/recall.md) |
 
 ---
