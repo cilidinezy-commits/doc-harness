@@ -210,10 +210,18 @@ User reported that when returning to a project with empty context and all status
 - Bilingual sync: EN + ZH per Iron Rule 1
 - Committed + pushed: `ff67704`
 
-#### Context flushed (2026-04-24) — 1 item extracted to files
+#### Local skill deployment verified and redeployed (2026-04-24)
+- User requested verification that local Claude Code and Kimi CLI skills were fully updated to v1.7.0
+- Performed SHA256 hash comparison across all 9 files in both install locations
+- Result: all files matched dev source perfectly on first check
+- Re-deployed full copy from dev source to both locations as extra safeguard
+- Claude Code (`~/.claude/skills/doc-harness/`): 9 files — init/check/sync/flush/recall/resume/operational_rules/SKILL/spec
+- Kimi CLI (`~/.kimi/skills/doc-harness/`): 9 files — SKILL/README + references/init/check/sync/flush/recall/resume/spec
+
+#### Context flushed (2026-04-24) — 2 items extracted to files
 - Sync actions: phase transition no; archival no
 - New files created: none
-- Existing files appended: `CURRENT_STATUS.md` — README sync record added to car body
+- Existing files appended: `CURRENT_STATUS.md` — README sync record + deployment verification record
 
 ### Unresolved Issues
 
