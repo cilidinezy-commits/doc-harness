@@ -36,11 +36,12 @@ Field-feedback-triggered patch release (the "breaking change in Claude Code's pl
 - Refreshed Codex-side `~/.agents/skills/doc-harness/` (from `skill-zh/`).
 - Claude plugin cache + marketplace clone zh SKILL.md already repaired 2026-09-01; full refresh happens via `/plugin marketplace update doc-harness` after the upstream push.
 
-### Known follow-ups (not in this release)
+### Follow-ups resolved before push
 
-- `skill/spec.md` and `skill-zh/spec.md` Version History tables have no rows for v1.6.1 or v1.7.0 (pre-existing gap; header had been stuck at v1.6.0).
-- No git tags exist for v1.5–v1.7.0; v1.7.1 tag created locally with this release (push pending).
-- Kimi-side deployment (`~/.kimi/skills/doc-harness/`) untouched — `kimi-skill/` files were not changed by this release.
+- Spec Version History backfilled: v1.6.1 and v1.7.0 rows added to `skill/spec.md`, `skill-zh/spec.md`, `DOC_HARNESS_SPEC.md` (row text derived from the actual git diffs of commits 8dabd29 / 2b688ca). v1.5.1 was folded into the published v1.6.0 story per the README FAQ, so no v1.5.1 row was added.
+- Historical git tags created: v1.4.1 (391f548), v1.5.0 (235e19a), v1.5.1 (1cd1538), v1.6.0 (76db4b3), v1.6.1 (8dabd29), v1.7.0 (2b688ca). Tag set v1.1–v1.7.1 now complete.
+- Codex marketplace manifest: determined unnecessary — Codex reads `.claude-plugin/marketplace.json` via interop (evidence: existing install snapshot + isolated-CODEX_HOME end-to-end test). No `.codex-plugin` file was added to the repo.
+- Kimi-side deployment (`~/.kimi/skills/doc-harness/`) verified file-for-file in sync with `kimi-skill/`; no changes needed.
 
 ## Phase 3: v1.2 development (2026-04-19)
 
