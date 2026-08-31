@@ -43,6 +43,13 @@ Field-feedback-triggered patch release (the "breaking change in Claude Code's pl
 - Codex marketplace manifest: determined unnecessary — Codex reads `.claude-plugin/marketplace.json` via interop (evidence: existing install snapshot + isolated-CODEX_HOME end-to-end test). No `.codex-plugin` file was added to the repo.
 - Kimi-side deployment (`~/.kimi/skills/doc-harness/`) verified file-for-file in sync with `kimi-skill/`; no changes needed.
 
+### Post-push verification (2026-09-01)
+
+- Pushed `master` (42f6aba) plus tags v1.4.1, v1.5.0, v1.5.1, v1.6.0, v1.6.1, v1.7.0, v1.7.1 to GitHub; `git ls-remote` confirms HEAD and the full tag set.
+- Claude Code: `claude plugin marketplace update doc-harness` re-cloned the marketplace (now at 42f6aba); `claude plugin update doc-harness-zh@doc-harness` upgraded the installed plugin 29a16ae888bb → 1.7.1 (new cache `…/doc-harness-zh/1.7.1/`, SKILL.md content verified equal to dev source modulo CRLF; restart required to apply).
+- Codex: `codex plugin marketplace upgrade doc-harness` refreshed the Git snapshot to 42f6aba; `codex plugin list` shows `doc-harness-zh` installed/enabled at version 1.7.1. An isolated-CODEX_HOME end-to-end test confirmed Codex discovers both plugins from the modernized `.claude-plugin/marketplace.json` (`source` → `./skill` / `./skill-zh`) and installs the fixed SKILL.md byte-identically.
+- Deployed copies all verified in sync: `~/.claude/skills/doc-harness/` (restored), `F:\ObsVault_Tools\.claude\skills\doc-harness\` (refreshed), `~/.agents/skills/doc-harness/` (refreshed), `~/.kimi/skills/doc-harness/` (already in sync, untouched).
+
 ## Phase 3: v1.2 development (2026-04-19)
 
 ### Summary
