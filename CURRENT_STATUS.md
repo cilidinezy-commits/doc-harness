@@ -1,11 +1,14 @@
 # CURRENT_STATUS — Doc Harness
 
-**Last updated**: 2026-04-24
-**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ active — v1.6.1 flush hardening shipped)
+**Last updated**: 2026-09-01
+**Current phase**: Phase 4 — Maintenance & field-feedback watch (⏳ active — v1.7.1 packaging fix + plugin-manifest modernization shipped)
 
 ---
 
 ## Recent Completed (Tire Tracks)
+
+### Phase 4: v1.7.1 packaging fix + plugin-manifest modernization (2026-09-01)
+Field-feedback-triggered patch release (the "breaking change in Claude Code's plugin system" trigger from the driving manual). Symptom: Claude Code 2.1.251 no longer discovered the `doc-harness-zh` plugin skill. Root cause: `skill-zh/SKILL.md` frontmatter had six pairs of unescaped ASCII double quotes inside its YAML `description` scalar (parse failure at line 2, column 208). Fixed the YAML; added per-plugin `.claude-plugin/plugin.json`; rewrote `.claude-plugin/marketplace.json` to the current schema; bumped version to v1.7.1 across manifests, spec headers, and READMEs. All three manifests pass `claude plugin validate --strict`. Deployment sync: restored `~/.claude/skills/doc-harness/`, refreshed ObsVault_Tools project-level copy and Codex-side `~/.agents/skills/doc-harness/`. Detailed record in WORKLOG.md § Phase 4.
 
 ### Phase 3: v1.2 → v1.3 → v1.4 + publishing (2026-04-19)
 v1.2 (Recovery Chain two-layer, WORKLOG archival, optional PARKING_LOT/PHILOSOPHY) → v1.3 (reversed v1.2's inbox/outbox exclusion; Chapter 14 self-contained cross-project messaging; portfolio language purged) → v1.4 (six-review audit, 30 issues closed; mid-transition detection §6.3.1, malformed-message quarantine §14.8, auto-resume tree §6.4, quantified thresholds, sentinels for safe re-embed, language-independent check.md). Shipped as Claude Code plugin marketplace (`/plugin marketplace add cilidinezy-commits/doc-harness`); smoke-tested; submitted to awesome-claude-code + two catalog sites. Detailed record in WORKLOG.md § Phase 3.

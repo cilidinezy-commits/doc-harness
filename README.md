@@ -1,4 +1,4 @@
-# Doc Harness &nbsp;·&nbsp; v1.7.0
+# Doc Harness &nbsp;·&nbsp; v1.7.1
 
 [中文版 README](README_zh.md)
 
@@ -186,7 +186,7 @@ xcopy skill %USERPROFILE%\.claude\skills\doc-harness\ /E /I
 
 **Step 4 — verify.** Open Claude Code in any directory and type `/doc-harness`. You should see the help output describing `init` and `check`. If the command isn't recognized, the files weren't copied to the right path — check `~/.claude/skills/doc-harness/SKILL.md` exists.
 
-**Check the installed version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should print the `**Version**` line (e.g., `v1.7.0`).
+**Check the installed version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should print the `**Version**` line (e.g., `v1.7.1`).
 
 ### Project-level install (optional)
 
@@ -199,7 +199,7 @@ If you want a specific project to pin a particular Doc Harness version independe
 **If you used Option B (manual copy)**:
 1. **Pull the latest**: `cd doc-harness && git pull`
 2. **Re-copy the skill folder** — the same command as Step 3 of first-install. It overwrites in place; no local state lives in the installed skill directory, so nothing is lost.
-3. **Verify the new version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should show `v1.7.0`.
+3. **Verify the new version**: `head -3 ~/.claude/skills/doc-harness/spec.md` — should show `v1.7.1`.
 
 4. **Then upgrade your existing projects' CLAUDE.md** (important, applies to both Option A and Option B): the operational rules embedded inside each project's `CLAUDE.md` are a **snapshot** taken at `init` time — they do NOT update automatically when you upgrade the skill. To bring a project up to date, replace the bytes between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->` in that project's `CLAUDE.md` with the new contents of `operational_rules.md`. Anything outside those sentinels (custom iron rules, project-specific sections) is preserved. Run `/doc-harness check` in the project — §1.10 tells you if the embedded version is stale.
 5. **(If the project has `DOC_HARNESS_SPEC.md`)** overwrite with the new `spec.md`.
@@ -538,6 +538,9 @@ The recipient agent reads this, flips `status: unread` → `read`, performs what
 
 **Q: What's new in v1.7.0?**
 - **`/doc-harness resume [--auto]`** — Structured state recovery. When context is empty or the user wants to resume work, systematically executes Recovery Chain, produces a 7-section Recovery Report (Identity, Phase Goal, Active Work, Next Steps, Unread Signals, Edge Conditions, Readiness), and answers 5 Understanding Verification questions to prove comprehension before continuing. Interactive mode (default) presents the report to the user for confirmation; auto mode applies a ≤7d / 8–30d / >30d decision tree for compact recovery.
+
+**Q: What's new in v1.7.1?**
+- **Packaging fix + plugin-manifest modernization** (no spec change). Repaired the Chinese skill's YAML frontmatter — unescaped double quotes had stopped Claude Code from discovering `skill-zh`; added per-plugin `.claude-plugin/plugin.json` and pointed marketplace `source` fields at the plugin directories, matching the current plugin schema.
 
 **Q: What's new in v1.6.1?**
 - **Flush Phase B/C hardening**: full-chain reinforcement across every layer where agents receive flush instructions (SKILL.md, flush.md, spec.md, operational_rules.md, Kimi skill). Phase B (Context Inventory) and Phase C (Write & Register) are now structurally unskippable. Added "Common Failure Mode" callout, Phase A→B completion gate, mandatory Empty Scan Report (when zero extractable items found), and completion checklists for Phases B/C/D.

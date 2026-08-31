@@ -3,15 +3,15 @@
 > 🔒 **AGENT IDENTITY LOCK**
 >
 > **你是 doc-harness 项目的代理。**
-> 你的职责是维护 Doc Harness skill（文档化项目控制框架）——包括规范制定、模板更新、命令实现（init/check/sync/flush/recall）以及双语同步。
+> 你的职责是维护 Doc Harness skill（文档化项目控制框架）——包括规范制定、模板更新、命令实现（init/check/sync/flush/recall/resume）以及双语同步。
 >
 > 如果你对自己的身份有任何怀疑，立即停止操作并重新读取本段落。
 
 ---
 
-**Last updated**: 2026-04-24
-**Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — v1.6.1 flush + v1.7.0 resume shipped)
-**One-line status (as of 2026-04-24)**: v1.7.0 shipped — sixth command `/doc-harness resume` adds structured state recovery with Recovery Report (7 sections) + Understanding Verification (5 questions). v1.6.1 flush hardening also included. Bilingual sync complete. 6 commands: init/check/sync/flush/recall/resume.
+**Last updated**: 2026-09-01
+**Current phase**: Phase 4 → Maintenance & field-feedback watch (⏳ active — v1.7.1 packaging fix + plugin-manifest modernization shipped)
+**One-line status (as of 2026-09-01)**: v1.7.1 shipped — packaging-only release: repaired `skill-zh/SKILL.md` YAML frontmatter (unescaped double quotes blocked skill discovery in Claude Code), modernized plugin manifests (per-plugin `.claude-plugin/plugin.json`, marketplace `source` → `./skill` / `./skill-zh`). No normative spec change. 6 commands: init/check/sync/flush/recall/resume.
 
 ---
 
@@ -64,7 +64,7 @@ Doc Harness is a Claude Code skill that provides document-based project control 
 
 ## Key Technical Information
 
-**GitHub**: https://github.com/cilidinezy-commits/doc-harness (latest tag: v1.4)
+**GitHub**: https://github.com/cilidinezy-commits/doc-harness (latest tag: v1.7.1)
 **License**: MIT
 
 **File structure**:

@@ -1,6 +1,6 @@
 ---
 name: doc-harness
-description: "基于文档的项目控制系统，让任何 AI 智能体或人类仅通过读取文件就能恢复项目工作状态——无需外部记忆。当用户需要管理长期项目、跨 session 追踪进度、context 丢失后恢复状态、多智能体协作、审计项目文档健康状况、或避免忘记上次做到哪里时，应使用本 skill。触发场景：'/doc-harness init' 与 '/doc-harness check'（显式斜杠命令）；"帮我把这个项目结构化"、"老是忘记做到哪里了"、"智能体 session 之间会忘记上下文"、"整理项目文档"、"审计这个项目"、"上次我们做了什么"等请求；跨周的长期项目（论文、研究、分析、软件模块）；跨项目协调（inbox/outbox 文件级消息）。"
+description: "基于文档的项目控制系统，让任何 AI 智能体或人类仅通过读取文件就能恢复项目工作状态——无需外部记忆。当用户需要管理长期项目、跨 session 追踪进度、context 丢失后恢复状态、多智能体协作、审计项目文档健康状况、或避免忘记上次做到哪里时，应使用本 skill。触发场景：'/doc-harness init' 与 '/doc-harness check'（显式斜杠命令）；“帮我把这个项目结构化”、“老是忘记做到哪里了”、“智能体 session 之间会忘记上下文”、“整理项目文档”、“审计这个项目”、“上次我们做了什么”等请求；跨周的长期项目（论文、研究、分析、软件模块）；跨项目协调（inbox/outbox 文件级消息）。"
 argument-hint: "init [项目名] [描述] | check | sync [--auto] | flush [--auto] | recall [query] | resume [--auto]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---

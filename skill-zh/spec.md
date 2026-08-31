@@ -1,6 +1,6 @@
 # 状态文档体系规范（Status Documentation System Specification）
 
-**版本**: v1.6.0
+**版本**: v1.7.1
 **日期**: 2026-04-22
 **状态**: 正式版，可用于项目实施
 
@@ -1465,3 +1465,4 @@ Agent打开CLAUDE.md：
 | v1.4.1 | 2026-04-19 | **§5.5 WORKLOG 归档修正——现场反馈驱动**：归档文件名从季度分箱 `WORKLOG_ARCHIVE_<YYYY-QN>.md` 改为按事件日期 `WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`。季度方案对高密度项目失效（一个季度写 5,000 行的项目，整 5,000 行会落入同一"季度归档"文件，归档本身失去意义）。按事件命名使每个归档文件天然由 ~1000 行触发阈值限上限。跨季疤痕步骤（旧规则 6）删除——不再适用。新增规则 7：归档事件必须记录到 CURRENT_STATUS 车身，使下一会话的 agent 无需 diff WORKLOG 即可看到历史迁移。Git 提交信息改为 `Archive WORKLOG <YYYY-MM-DD>`。operational_rules.md 同步更新。第五章 TOC 描述调整。 |
 | v1.5.0 | 2026-04-22 | **两个新命令**：`/doc-harness sync`（状态同步——漂移修复、日期刷新、文件注册、可选阶段切换/归档；auto/interactive 模式）和 `/doc-harness flush`（紧急上下文保存——包含 sync 加上强制性上下文到文档提取，含盘点、启发式分类、验证和冲刷标记；auto/interactive 模式）。新增参考文档 `sync.md` 和 `flush.md`。规范新增 §11.5（sync）和 §11.6（flush）。操作规则更新以引用两个命令。SKILL.md 命令列表和 argument-hint 扩展。 |
 | v1.6.0 | 2026-04-22 | **AGENT IDENTITY LOCK**：每个项目的 CLAUDE.md 顶部强制添加认知锚定，防止跨项目工作时 agent 身份混淆。双层模板（基础版所有项目通用，扩展版 inbox/outbox 项目）。**恢复链第 0 步**：在读任何文件前先做身份锚定仪式。**§14.3.2 发送前自检清单**：5 项跨项目消息发送方自我保护检查。**`/doc-harness check` §1.11**：身份锁存在性验证。附录 B 更新。操作规则与 init 模板同步。 |
+| v1.7.1 | 2026-09-01 | **纯打包发布（无规范性变更）。** 修复 `skill-zh/SKILL.md` 的 YAML 前置信息（未转义双引号导致 Claude Code 无法发现该技能）。现代化插件清单：每个插件新增 `.claude-plugin/plugin.json`，marketplace 的 `source` 指向各插件目录（旧内联格式早于现行插件规范）。 |
