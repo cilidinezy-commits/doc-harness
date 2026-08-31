@@ -3,12 +3,44 @@
 ## Table of Contents
 | Phase | Period | Anchor |
 |-------|--------|--------|
-| Phase 4: Maintenance & field-feedback watch | 2026-04-19~ | (in CURRENT_STATUS; no WORKLOG entry yet) |
+| Phase 4: Maintenance & field-feedback watch (v1.7.1 packaging fix) | 2026-04-19 ~ 2026-09-01 | [→](#phase-4-v171-packaging-fix--plugin-manifest-modernization-2026-09-01) |
 | Phase 3: v1.2 → v1.3 → v1.4 + publishing | 2026-04-19 | [→](#phase-3-v12-development-2026-04-19) |
 | Phase 2: Independent project | 2026-04-03 | [→](#phase-2-independent-project-setup-2026-04-03) |
 | Phase 1: Design → publish (in project_reorganization) | 2026-04-01 ~ 04-03 | [→](#phase-1-design-development-and-publishing-2026-04-01--2026-04-03) |
 
 ---
+
+## Phase 4: v1.7.1 packaging fix + plugin-manifest modernization (2026-09-01)
+
+### Summary
+
+Field-feedback-triggered patch release (the "breaking change in Claude Code's plugin system" trigger from the v1.5 driving manual). Symptom: Claude Code 2.1.251 no longer discovered the `doc-harness-zh` plugin skill. Root cause: `skill-zh/SKILL.md` frontmatter had six pairs of unescaped ASCII double quotes inside its YAML `description` scalar (parse failure at line 2, column 208) — present since the file's creation and latent until the loader became stricter. Secondary hardening: the marketplace still used the April 2026 inline plugin format; modernized to the current schema.
+
+### Changes
+
+- `skill-zh/SKILL.md` — replaced embedded straight double quotes with Chinese curly quotes; strict YAML parse now passes.
+- `skill/.claude-plugin/plugin.json`, `skill-zh/.claude-plugin/plugin.json` — new per-plugin manifests (name/description/version 1.7.1/author/license).
+- `.claude-plugin/marketplace.json` — rewritten to current schema: `$schema`, top-level `description` + `version`, plugin `source` → `./skill` / `./skill-zh`; dropped legacy `source: "./"` + inline `skills` + `strict: false`.
+- `skill/spec.md`, `skill-zh/spec.md`, `DOC_HARNESS_SPEC.md` — header version bumped to v1.7.1; v1.7.1 row added to Version History (noting no normative spec change).
+- `README.md` / `README_zh.md` — version bumped to v1.7.1; new FAQ entry; install-verification snippets updated.
+
+### Validation
+
+- Strict YAML/JSON parse of all changed files (PyYAML/JSON): pass.
+- `claude plugin validate --strict` on `skill/`, `skill-zh/`, and the marketplace: all pass (Claude Code 2.1.251).
+
+### Deployment sync
+
+- Restored user-level `~/.claude/skills/doc-harness/` (from `skill/`, 9 files).
+- Refreshed project-level `F:\ObsVault_Tools\.claude\skills\doc-harness\` (from `skill/`).
+- Refreshed Codex-side `~/.agents/skills/doc-harness/` (from `skill-zh/`).
+- Claude plugin cache + marketplace clone zh SKILL.md already repaired 2026-09-01; full refresh happens via `/plugin marketplace update doc-harness` after the upstream push.
+
+### Known follow-ups (not in this release)
+
+- `skill/spec.md` and `skill-zh/spec.md` Version History tables have no rows for v1.6.1 or v1.7.0 (pre-existing gap; header had been stuck at v1.6.0).
+- No git tags exist for v1.5–v1.7.0; v1.7.1 tag created locally with this release (push pending).
+- Kimi-side deployment (`~/.kimi/skills/doc-harness/`) untouched — `kimi-skill/` files were not changed by this release.
 
 ## Phase 3: v1.2 development (2026-04-19)
 

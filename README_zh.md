@@ -1,4 +1,4 @@
-# Doc Harness &nbsp;·&nbsp; v1.7.0
+# Doc Harness &nbsp;·&nbsp; v1.7.1
 
 [English README](README.md)
 
@@ -194,7 +194,7 @@ xcopy skill-zh %USERPROFILE%\.claude\skills\doc-harness\ /E /I
 
 **第四步——验证。** 在 Claude Code 任意目录中输入 `/doc-harness`，应能看到 `init` 与 `check` 的帮助说明。若命令未被识别，说明文件未复制到正确路径——检查 `~/.claude/skills/doc-harness/SKILL.md` 是否存在。
 
-**查看已安装版本**：`head -3 ~/.claude/skills/doc-harness/spec.md`——应打印 `**Version**` 行（如 `v1.7.0`）。
+**查看已安装版本**：`head -3 ~/.claude/skills/doc-harness/spec.md`——应打印 `**Version**` 行（如 `v1.7.1`）。
 
 ### 项目级安装（可选）
 
@@ -207,7 +207,7 @@ xcopy skill-zh %USERPROFILE%\.claude\skills\doc-harness\ /E /I
 **如果你用的是方式 B（手动复制）**：
 1. **拉取最新代码**：`cd doc-harness && git pull`
 2. **重新复制 skill 文件夹**——命令与首次安装第三步相同，会原地覆盖；已安装 skill 目录中不保存本地状态，不会丢失任何内容。
-3. **验证新版本**：`head -3 ~/.claude/skills/doc-harness/spec.md`——应显示 `v1.7.0`。
+3. **验证新版本**：`head -3 ~/.claude/skills/doc-harness/spec.md`——应显示 `v1.7.1`。
 
 4. **升级已有项目的 CLAUDE.md**（重要，方式 A 和方式 B 都需要）：每个项目 `CLAUDE.md` 中嵌入的操作规则是 `init` 时的**快照**，**不会**随 skill 升级自动更新。要同步至最新版，请将 `CLAUDE.md` 中 `<!-- doc-harness-ops-start -->` 与 `<!-- doc-harness-ops-end -->` 之间的字节替换为新版 `operational_rules.md` 的内容。哨兵**之外**的内容（自定义铁律、项目特定章节等）保留不动。在项目中运行 `/doc-harness check`——§1.10 会告诉你嵌入版本是否陈旧。
 5. **（若项目存在 `DOC_HARNESS_SPEC.md`）**：用新 `spec.md` 覆盖。
@@ -543,6 +543,9 @@ priority: high
 
 **Q: v1.7.0 新增了什么？**
 - **`/doc-harness resume [--auto]`** — 结构化状态恢复。当上下文为空或用户希望继续工作时，系统性地执行恢复链、产出 7 节恢复报告（身份确认、阶段目标、活跃工作、下一步、未读信号、边缘条件、就绪自评），并回答 5 道理解验证问题以证明理解后再继续。交互模式（默认）将报告呈现给用户确认；自动模式应用 ≤7天 / 8–30天 / >30天 决策树处理 compact recovery。
+
+**Q: v1.7.1 新增了什么？**
+- **打包修复 + 插件清单现代化**（无规范变更）。修复了中文版技能的 YAML 前置信息——其中未转义的双引号曾导致 Claude Code 无法发现 `skill-zh`；为每个插件新增 `.claude-plugin/plugin.json`，并把 marketplace 的 `source` 指向各插件目录，与现行插件规范一致。
 
 **Q: v1.6.1 新增了什么？**
 - **Flush 阶段 B/C 硬化**：在智能体接收冲刷指令的每个层级全链路强化（SKILL.md、flush.md、spec.md、operational_rules.md、Kimi skill）。阶段 B（上下文盘点）和阶段 C（写入与注册）现在结构上不可跳过。新增"常见失败模式"警告框、阶段 A→B 完成门控、强制空扫描报告（当无可提取条目时）、以及 B/C/D 完成检查清单。

@@ -1,0 +1,10 @@
+{
+  "name": "doc-harness-zh",
+  "description": "基于文档的项目控制系统（中文版）。让任何 AI 智能体仅通过读取文件即可恢复项目工作状态，支持上下文压缩前的紧急保存。命令：/doc-harness init、/doc-harness check、/doc-harness sync、/doc-harness flush、/doc-harness recall、/doc-harness resume。",
+  "version": "1.7.1",
+  "author": {
+    "name": "cilidinezy-commits",
+    "email": "cilidine.zy@gmail.com"
+  },
+  "license": "MIT"
+}

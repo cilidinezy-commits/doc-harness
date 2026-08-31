@@ -1,0 +1,10 @@
+{
+  "name": "doc-harness",
+  "description": "Document-based project control (English). Tracks progress across sessions, detects interrupted phase transitions, coordinates multiple projects via file-based inbox/outbox, and provides emergency context save before compression. Commands: /doc-harness init, /doc-harness check, /doc-harness sync, /doc-harness flush, /doc-harness recall, /doc-harness resume.",
+  "version": "1.7.1",
+  "author": {
+    "name": "cilidinezy-commits",
+    "email": "cilidine.zy@gmail.com"
+  },
+  "license": "MIT"
+}

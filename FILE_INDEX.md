@@ -1,6 +1,6 @@
 # FILE_INDEX — Doc Harness
 
-**Last updated**: 2026-04-24 (v1.7.0 resume command + v1.6.1 flush hardening)
+**Last updated**: 2026-09-01 (v1.7.1 packaging fix + plugin-manifest modernization)
 
 ---
 
@@ -56,7 +56,9 @@
 - `kimi-skill/references/spec.md` — Normative spec reference for edge cases
 
 ## Plugin Marketplace Metadata
-- `.claude-plugin/marketplace.json` — Marketplace definition exposing two plugins (`doc-harness` / `doc-harness-zh`) so users can install via `/plugin marketplace add cilidinezy-commits/doc-harness` + `/plugin install <name>@doc-harness`
+- `.claude-plugin/marketplace.json` — Marketplace definition (current schema, v1.7.1) exposing two plugins (`doc-harness` / `doc-harness-zh`); install via `/plugin marketplace add cilidinezy-commits/doc-harness` + `/plugin install <name>@doc-harness`
+- `skill/.claude-plugin/plugin.json` — English plugin manifest (v1.7.1)
+- `skill-zh/.claude-plugin/plugin.json` — Chinese plugin manifest (v1.7.1)
 
 ## Inter-Project Communication
 
