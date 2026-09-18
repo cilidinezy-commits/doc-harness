@@ -3,6 +3,7 @@ name: doc-harness
 description: "基于文档的项目控制：让任何 AI 智能体或人仅凭文件即可恢复工作状态——无需外部记忆。当用户需要管理长期项目、跨 session 追踪进度、context 丢失后恢复状态、多智能体协作、审计文档健康、或避免忘记上次做到哪里时使用。触发词包括 '/doc-harness init'、'/doc-harness check' 等斜杠命令，以及『帮我搭建这个项目』『我总是忘』『智能体在 session 之间会忘记』『整理项目文档』『审计这个项目』『上次我们做了什么』等。"
 argument-hint: "init [项目名] [描述] | check | sync [--auto] | flush [--auto] | recall [查询] | resume [--auto]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+license: MIT
 ---
 
 # Doc Harness — 基于文档的项目控制
@@ -21,6 +22,18 @@ Doc Harness 让项目仅凭文件即可恢复：任何新 agent 在上下文断�
 可选：`PHILOSOPHY.md`（底层原则）、`PARKING_LOT.md`、`RUNBOOK.md`，以及跨项目 `inbox/`/`outbox/`（可另配 `MAIL_LEDGER.md`）。
 
 核心原则：**接手优先于记录**——新 agent 必须能仅凭文件正确接手。状态变化是一条 `record` 命令；确定性工具带（`tools/`）负责验证文档体系的完整性。
+
+## 如何调用（与 agent 无关）
+
+下面这些命令描述的是**结果**，不是某个平台的专有功能。具体怎么触发，取决于你用的 agent：
+
+| Agent | 怎么调用 |
+|-------|---------|
+| Claude Code | `/doc-harness check`（插件斜杠命令） |
+| Kimi CLI | `/skill:doc-harness` 载入本 skill，然后用自然语言说「检查这个项目的文档健康」 |
+| 其它 agent | 自然语言即可——「恢复这个项目」「把文档状态冲刷一下」「当初为什么选 X？」 |
+
+本 skill 不依赖任何 agent 的专有功能：它就是 Markdown，外加一套可选的 PowerShell 工具带。
 
 ## 命令
 
@@ -61,6 +74,8 @@ Doc Harness 让项目仅凭文件即可恢复：任何新 agent 在上下文断�
 ## 确定性工具带（`tools/`）
 
 纯 PowerShell、工具无关。关键入口是 `record.ps1`（一步状态变更：追加事件 + 重新投影 + conformance）。其余：`project.ps1`、`search.ps1`、`conformance.ps1`、`now-verify`、`encoding-guard`、`unregistered`、`dead-pointer`、`cite-check`、`stale-check`、`recurrence`、`nested-git-guard`、`stale-writer-guard`、`batch-register`、`telemetry`，以及邮件族（`mail-daemon`、`mail-send`、`mail-poll`、`mail-ledger`）。
+
+**它在哪里**：工具带随本仓库发布，位置在 skill 目录**旁边**（`tools/`，不在 skill 目录内），且是**可选**的。没有它，上面的一切照样成立——但有两件事会变弱，值得知道是哪两件：(a) 把漂移变成红灯的守卫没有了；(b) 投影只能手写而不是生成——而那恰恰是 v2 想避免的那件事。要用它，就从克隆里跑（或把仓库的 `tools/` 复制进项目），并传 `-ProjectRoot <你的项目>`。
 
 ## 参考文档
 

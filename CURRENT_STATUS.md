@@ -47,8 +47,6 @@ read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 - [done] `对外口径快照` evidence=README.md class=root
 
 ## Notes (housekeeping)
-- 2026-09-18 发布树复审：从 GitHub 全新 clone 后跑完整闸门 PASS；并把 now-verify 的「未记录的工作」判定从文件 mtime 改为 git 状态（否则任何 clone 都会因 mtime=克隆当天而自判红），因此在任何人依赖 v2.0.0 之前修正了发布提交
-- 2026-09-18 新增 zh-sync-check：铁律 1「中英同步」从人眼核对变成机器判据（文件集合/标题层级序列/围栏数/表格行数一致），并做空转检验（删一个中文小节即红）；已接入 conformance
 - 2026-09-18 审计发现并补齐：flush.md 两版都补上 events.log 指名（此前 9 个 skill 文档中唯一没点名原语的）；新增 entry-check（身份锁 + AGENTS.md 薄指针，含空转检验）；handoff-test 夹具因缺身份锁被新守卫抓出并修正
 - 2026-09-18 隐私修正：发布记录与状态事件里泄露的私人语境/兄弟项目名已从 notes/validation.md、events.log、CURRENT_STATUS.md 改写（原日志归档到 _archive/events-pre-redaction-2026-09-18.log，不发布）
 - 2026-09-18 新增发布机制：.publish-exclude.txt（不发布的路径）与 .publish-terms.txt（禁止词表）两个本地数据文件 + tools/publish-scan.ps1；RELEASING.md 要求发布前在发布树上跑扫描——排除清单与禁止词表从此由数据枚举，不再靠当场回忆
@@ -57,7 +55,9 @@ read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 - 2026-09-18 本地禁止词表加入私人邮箱、并把会话导出列入不发布清单；三个 plugin manifest 的联系邮箱改指 GitHub noreply，避免下一次发布把私人信息带回去
 - 2026-09-18 toolbelt portability: child processes re-run the same PowerShell host; Windows-only path separators and regexes removed for Linux/macOS (CI pending)
 - 2026-09-18 Kimi 线重新评估（用户投了 Kimi）：仓库里的 v1.6 专用分叉 kimi-skill/ 已删除（它教的是已淘汰的五文档/车身模型，对 Kimi 岗位是负资产）；README（中英）改为「同一个 skill 目录即装即可」并写明官方发现规则与出处；本地 ~/.kimi/skills/doc-harness 由 v1.6.0 换成 v2.0.0（中文版），旧版备份到 ~/.kimi/backup-doc-harness-v1.6-live-20260918/
-- (+3 older in events.log)
+- 2026-09-18 已发信给下游项目：把「支持 Kimi CLI」写回对外材料（附官方发现规则出处、复制式安装命令、以及「尚未做会话级验证」的诚实边界）；并已在全新 clone 上复核：kimi-skill/ 已不在树中、README 中英均含 Kimi 安装行、闸门 PASS
+- 2026-09-18 完成度审计（用户提问）发现并修掉两处真缺口：①文档把命令写成 Claude Code 专有形式——SKILL.md 与 spec §8 现在写明「命令名是约定不是功能」并给出 Kimi（/skill:doc-harness）与其它 agent（自然语言）的调用方式；②文档默认工具带就在项目里——SKILL.md 现在写明工具带在仓库的 tools/（不在 skill 目录内）且可选，并点明缺它时变弱的两件事；另给两版 SKILL.md 补 license: MIT 前置字段（Kimi 官方字段表）
+- (+5 older in events.log)
 
 ## Dead ends (negative ledger)
 - 可用性收口: 试过把投影做成不落盘、用时现算，但人类可读快照更有价值，故保留落盘+conformance校验

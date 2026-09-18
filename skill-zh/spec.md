@@ -179,6 +179,8 @@ read_first: ["path/to/a.md", "path/to/b.md"]
 
 ## 8. 命令
 
+下面这些命令名是一种**约定，不是 agent 的功能**：`/doc-harness <命令>` 是 Claude Code 插件暴露它们的方式；Kimi CLI 用 `/skill:doc-harness` 载入同一个 skill；其它 agent 用自然语言驱动。每个命令由**结果**定义——所以「恢复这个项目」与 `/doc-harness resume` 必须产生同样的行为。
+
 ### 8.1 `/doc-harness init`
 
 创建文档（见 `init.md`）：CLAUDE.md（身份 + 锚 + 恢复链 + 嵌入规则）、AGENTS.md 薄指针、CURRENT_STATUS（由 `events.log` 生成）、FILE_INDEX、`events.log`。`DOC_HARNESS_SPEC.md` 为可选参考，非状态。中途采纳忠实重建现实。

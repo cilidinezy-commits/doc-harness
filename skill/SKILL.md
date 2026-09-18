@@ -3,6 +3,7 @@ name: doc-harness
 description: "Document-based project control that lets any AI agent or human resume work from files alone — no external memory needed. Use whenever the user wants to structure a long-running project, track progress across sessions, recover state after context loss, coordinate multiple agents, audit documentation health, or stop forgetting what was done last session. Triggers include '/doc-harness init' and '/doc-harness check' (slash commands) and phrases like 'help me set up this project', 'I keep losing track', 'my agent forgets between sessions', 'organize my project docs', 'audit this project', 'what did we do last time'."
 argument-hint: "init [project-name] [description] | check | sync [--auto] | flush [--auto] | recall [query] | resume [--auto]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+license: MIT
 ---
 
 # Doc Harness — Document-Based Project Control
@@ -21,6 +22,18 @@ It maintains, per project:
 Optional: `PHILOSOPHY.md` (bottom-line principles), `PARKING_LOT.md`, `RUNBOOK.md`, and inter-project `inbox/`/`outbox/` (plus an optional `MAIL_LEDGER.md`).
 
 Core principle: **handoff over writing** — a new agent must be able to take over correctly from files alone. State changes are one `record` command; the deterministic toolbelt (`tools/`) verifies the document system's integrity.
+
+## Invoking it (agent-agnostic)
+
+The commands below describe **outcomes**, not a proprietary feature. How you invoke them depends on the agent you are using:
+
+| Agent | How to invoke |
+|-------|---------------|
+| Claude Code | `/doc-harness check` (plugin slash command) |
+| Kimi CLI | `/skill:doc-harness` loads this skill; then ask in natural language ("check this project's doc health") |
+| Any other agent | natural language — "resume this project", "flush the doc state", "why did we choose X?" |
+
+Nothing in this skill depends on an agent-specific feature: it is Markdown, plus an optional PowerShell toolbelt.
 
 ## Commands
 
@@ -61,6 +74,8 @@ Inspect the directory: all core files → suggest `check`; none → suggest `ini
 ## Deterministic Toolbelt (`tools/`)
 
 Plain PowerShell, tool-agnostic. The key entry is `record.ps1` (one-step state change: append event + re-project + conformance). Others: `project.ps1`, `search.ps1`, `conformance.ps1`, `now-verify`, `encoding-guard`, `unregistered`, `dead-pointer`, `cite-check`, `stale-check`, `recurrence`, `nested-git-guard`, `stale-writer-guard`, `batch-register`, `telemetry`, and the mail family (`mail-daemon`, `mail-send`, `mail-poll`, `mail-ledger`).
+
+**Where it lives**: the toolbelt ships in this repository next to the skill folder (`tools/`, not inside it) and is **optional**. Everything above still works without it — but two things get weaker, and it is worth knowing which: (a) the guards that turn drift into a red signal are gone, and (b) the projection has to be written by hand instead of generated — the one thing v2 exists to avoid. To use it, run it from a clone (or copy the repository's `tools/` into your project) and pass `-ProjectRoot <your project>`.
 
 ## Reference Documents
 

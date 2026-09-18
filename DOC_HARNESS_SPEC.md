@@ -179,6 +179,8 @@ Placement rule — before writing a discipline, ask **"can a machine SEE this?"*
 
 ## 8. Commands
 
+The command names below are a **convention, not an agent feature**: `/doc-harness <command>` is how a Claude Code plugin exposes them; Kimi CLI loads the same skill with `/skill:doc-harness`; any other agent is driven by natural language. Each command is defined by its outcome, so "resume this project" and `/doc-harness resume` must produce the same behaviour.
+
 ### 8.1 `/doc-harness init`
 
 Create the documents (see `init.md`): CLAUDE.md (identity + anchor + recovery chain + embedded rules), AGENTS.md thin pointer, CURRENT_STATUS (generated from `events.log`), FILE_INDEX, `events.log`. `DOC_HARNESS_SPEC.md` is an optional reference copy, not state. Mid-project adoption reconstructs reality faithfully.
