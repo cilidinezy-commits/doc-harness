@@ -63,8 +63,8 @@ v1.6.0 在 CLAUDE.md 顶部加了一个 🔒 **AGENT IDENTITY LOCK**：
 /plugin install doc-harness
 ```
 
-**Kimi CLI 用户**：
-把 `kimi-skill/` 目录的内容丢进 `~/.kimi/skills/doc-harness/`
+**Kimi CLI 用户**（v1.6 时代写法；现行方式见 README）：
+把 `skill/`（或 `skill-zh/`）的内容放进 `~/.kimi/skills/doc-harness/` —— 同一个 skill 目录即可，无需专用分支
 
 **手动安装**：
 https://github.com/cilidinezy-commits/doc-harness

@@ -147,8 +147,14 @@ git clone https://github.com/cilidinezy-commits/doc-harness.git
 | Agent | 把 `skill/`（或 `skill-zh/`）复制到 |
 |-------|-----------------------------------|
 | Claude Code | `~/.claude/skills/doc-harness/` |
+| Kimi CLI | `~/.kimi/skills/doc-harness/` |
 | Codex | `~/.agents/skills/doc-harness/`（或项目的 `.agents/skills/`） |
 | 其他 | 它发现 skill 的地方——或者干脆让 agent 去读 `skill/SKILL.md` |
+
+**同一个 skill 目录服务全部 agent，不存在需要分别维护的分支。** Kimi CLI 的发现规则（官方文档）
+会看 `~/.kimi/skills/`、`~/.claude/skills/`、`~/.codex/skills/`，默认**合并**，同名 skill 按
+`kimi > claude > codex` 取优先级——装进任意一个即可，已有的 Claude Code 安装会被自动发现。
+细节与出处见 [`notes/kimi-claude-interop.md`](notes/kimi-claude-interop.md)。
 
 想让某个项目锁定自己的版本，就装到那个项目里。
 
@@ -213,6 +219,22 @@ powershell -File tools/record.ps1 -ProjectRoot . -Verb close -Text "C/出口对�
 ---
 
 ## 仓库结构
+
+```
+skill/                英文 skill：SKILL.md + init/check/sync/flush/recall/resume + 规范 + 操作规则
+skill-zh/             中文版（与 skill/ 一一对应）
+tools/                可选的确定性工具带（PowerShell）——见 tools/README.md
+CLAUDE.md             本项目自己的入口（Doc Harness 管理它自己）
+CURRENT_STATUS.md     生成的投影——不要手改
+events.log            本项目的事件日志
+FILE_INDEX.md         本仓库每个文件的索引
+_validation/          回归测试用的夹具项目（demo / trial / adversarial）
+notes/                设计笔记、分析与验证记录
+PHILOSOPHY.md         原则，以及锻造出每条原则的实践
+DOC_HARNESS_SPEC.md   完整规范（规范性）
+```
+
+同一个 skill 目录服务全部 agent（Claude Code、Kimi CLI、Codex），不存在分别维护的分支。
 
 ```
 skill/                英文 skill：SKILL.md + init/check/sync/flush/recall/resume + 规范 + 操作规则

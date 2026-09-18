@@ -94,17 +94,12 @@
 - `_validation/adversarial-project/` — Deliberately broken fixture (four defects) proving the guards go red
 - `_validation/mail-daemon-test/`, `_validation/mail-test-recipient/`, `_validation/bad-events/` — Mail daemon and malformed-log probes
 
-## Kimi CLI Skill Files (kimi-skill/)
-- ⚠️ `kimi-skill/` 已**废弃**（2026-09-07，放弃维护，仅历史留存）；见 `kimi-skill/README.md`。
-- `kimi-skill/SKILL.md` — Kimi CLI entry point (natural-language triggers)
-- `kimi-skill/README.md` — Standalone repo README with install/usage/upgrade instructions
-- `kimi-skill/references/init.md` — Project setup procedure
-- `kimi-skill/references/check.md` — Health audit + principle reflection
-- `kimi-skill/references/sync.md` — Drift repair with ask/auto heuristics
-- `kimi-skill/references/flush.md` — Emergency context save before compression
-- `kimi-skill/references/recall.md` — Information retrieval protocol
-- `kimi-skill/references/resume.md` — Structured state recovery after context loss
-- `kimi-skill/references/spec.md` — Normative spec reference for edge cases
+## Retired: the Kimi CLI fork (removed from the tree; v1.6 history stays in git)
+
+`kimi-skill/` was a v1.6-era fork that taught the retired model (five documents / WORKLOG / the car
+metaphor). It was removed on 2026-09-18 for two reasons: it was stale, and it was unnecessary —
+Kimi CLI reads the same `SKILL.md` layout as every other agent, so one skill folder serves Claude
+Code, Kimi CLI and Codex alike. The discovery rules are recorded in `notes/kimi-claude-interop.md`.
 
 ## Plugin Marketplace Metadata
 - `.claude-plugin/marketplace.json` — Marketplace definition (current schema, v1.7.1) exposing two plugins (`doc-harness` / `doc-harness-zh`); install via `/plugin marketplace add cilidinezy-commits/doc-harness` + `/plugin install <name>@doc-harness`

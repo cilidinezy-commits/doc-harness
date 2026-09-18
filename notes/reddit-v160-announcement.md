@@ -78,7 +78,7 @@ Claude Code:
 
 Kimi CLI:
 ```bash
-# Drop into ~/.kimi/skills/doc-harness/
+# Copy skill/ (or skill-zh/) into ~/.kimi/skills/doc-harness/ - the same folder serves every agent
 ```
 
 Or manual: clone [github.com/cilidinezy-commits/doc-harness](https://github.com/cilidinezy-commits/doc-harness), copy `skill/` to `~/.claude/skills/doc-harness/`.

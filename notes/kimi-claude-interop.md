@@ -1,54 +1,65 @@
-# Kimi CLI — Claude Code Skill Interoperability
+# Kimi CLI — how it discovers skills (and why doc-harness needs no Kimi fork)
 
-> Extracted from context on 2026-04-22 during flush
+> **Re-verified 2026-09-18** against the official docs (Kimi Code CLI v1.37.0,
+> <https://moonshotai.github.io/kimi-cli/en/customization/skills.html>). The April 2026 findings
+> below are kept because they explain how the current behaviour was discovered.
 
-## Discovery 1: Kimi Auto-Discovers Claude Skills
+## Current rules (2026-09-18)
 
-Kimi CLI's skill discovery mechanism searches `~/.claude/skills/` as a **brand-group fallback**.
+User-level skill directories, in two groups:
 
-From [Kimi CLI documentation](https://moonshotai.github.io/kimi-cli/en/customization/skills.md):
+| Group | Directories |
+|-------|-------------|
+| Brand group | `~/.kimi/skills/`, `~/.claude/skills/`, `~/.codex/skills/` |
+| Generic group | `~/.config/agents/skills/` |
 
-> **Brand group** (mutually exclusive):
-> 1. `~/.kimi/skills/`
-> 2. `~/.claude/skills/`
-> 3. `~/.codex/skills/`
+- `merge_all_available_skills` (config) **defaults to `true`**: every brand directory that exists is
+  merged, and skills with the same name are resolved by priority **`kimi > claude > codex`**.
+  Setting it to `false` restores the older first-match-only behaviour (only the highest-priority
+  brand directory is used).
+- Project-level skills use the same names inside the project: `.kimi/skills/`, `.claude/skills/`,
+  `.codex/skills/`, plus the generic `.agents/skills/`.
+- Extra directories can be added with `--skills-dir`.
+- Layout: `<skill-name>/SKILL.md` (required), optionally `references/` and `assets/`. `SKILL.md`
+  needs YAML frontmatter with at least `name` and `description`.
 
-This means a skill installed for Claude Code (e.g., `~/.claude/skills/doc-harness/`) **automatically appears** in Kimi CLI with no extra installation step.
+## Consequence for doc-harness
 
-**Practical implication**: A user who installed doc-harness for Claude Code will see it in Kimi immediately — but Kimi will load the Claude Code version (with `argument-hint`, `/doc-harness` slash commands) rather than the Kimi-native version.
+**One skill folder serves every agent.** doc-harness v2 is plain Markdown plus an optional
+PowerShell toolbelt, and its folder already has the required shape (`SKILL.md` + flat command
+documents + `tools/`), so installing it for Kimi CLI is a copy — not a port:
 
----
-
-## Discovery 2: Brand-Directory Priority Is Deterministic
-
-When a skill with the **same name** exists in multiple brand directories, Kimi resolves by priority:
-
+```bash
+cp -r skill ~/.kimi/skills/doc-harness            # English
+# or: cp -r skill-zh ~/.kimi/skills/doc-harness   (中文)
 ```
-~/.kimi/skills/doc-harness/     ← HIGHEST (Kimi native)
-~/.claude/skills/doc-harness/   ← MIDDLE (Claude fallback)
-~/.codex/skills/doc-harness/    ← LOWEST (Codex fallback)
-```
 
-**Practical implication**: To ensure Kimi loads the Kimi-native version of doc-harness, it must be installed in `~/.kimi/skills/doc-harness/`. The Claude Code version in `~/.claude/skills/doc-harness/` is shadowed and will not be loaded.
+There is no Kimi-specific fork. The `kimi-skill/` directory that existed until 2026-09-18 was a
+v1.6-era fork; it was removed because it was both stale (it taught the retired document model) and
+unnecessary.
 
----
+⚠️ **The trap this note exists to prevent**: because same-name skills prefer the *kimi* directory,
+a stale copy in `~/.kimi/skills/doc-harness/` **silently shadows** newer installs in the other
+directories. If Kimi behaves like an older version, check that directory first.
 
-## Decision: Dual Distribution Strategy
+## Local state (this machine, 2026-09-18)
 
-For doc-harness (a cross-tool skill), we maintain two distribution paths:
+- Kimi Code CLI v1.37.0 installed (`kimi`, `kimi-cli`).
+- `~/.kimi/skills/doc-harness/` was **v1.6.0** (stale, and shadowing everything else). It has been
+  replaced with **v2.0.0 (中文版)**; the old copy is backed up at
+  `~/.kimi/backup-doc-harness-v1.6-live-20260918/`.
+- `~/.claude/skills/doc-harness/` is v1.7.1 (the stable line used by other projects — deliberately
+  untouched).
+- **Session-level verification is currently blocked**: `kimi --print` returns
+  `401 invalid_authentication_error`, i.e. the local Kimi credential has expired. Run `kimi login`
+  and then re-check with a prompt that discriminates the models, e.g.
+  *"doc-harness 里项目状态的唯一来源是哪个文件？"* → v2 answers `events.log`; v1 answers the
+  five-document set.
 
-| Path | Audience | Content |
-|------|----------|---------|
-| `doc-harness/kimi-skill/` (in main repo) | Developers | Source of truth for Kimi version; synced with main development |
-| `cilidinezy-commits/doc-harness-for-kimi` | Kimi users | Standalone repo for `git clone` installation |
-| `cilidinezy-commits/doc-harness` | Claude users | Main repo with `skill/` directory; installable via marketplace |
+## History (April 2026, v1 era)
 
-**Why two repos?** The main repo contains bilingual skill files (`skill/`, `skill-zh/`), spec documents, and project infrastructure. A Kimi-only user does not need the Claude-specific marketplace metadata or Chinese mirror files. The standalone repo provides a clean install target.
-
----
-
-## Verification Log
-
-- **2026-04-22**: Confirmed `~/.claude/skills/doc-harness/` (v1.4.1) appeared in Kimi CLI before any Kimi-specific installation.
-- **2026-04-22**: Installed `~/.kimi/skills/doc-harness/` (v1.5.0 Kimi version). Verified it shadowed the Claude version.
-- **2026-04-22**: Updated `~/.claude/skills/doc-harness/` to v1.5.0 (Claude version). Confirmed Kimi still loads the `~/.kimi/` version due to priority.
+- **2026-04-22**: `~/.claude/skills/doc-harness/` (v1.4.1) appeared in Kimi CLI with no
+  Kimi-specific installation — the brand-group fallback was how cross-tool discovery was found.
+- **2026-04-22**: installing `~/.kimi/skills/doc-harness/` (v1.5.0) shadowed the Claude version;
+  updating the Claude copy to v1.5.0 did not change which one Kimi loaded. That is the same
+  priority rule that is still documented today.

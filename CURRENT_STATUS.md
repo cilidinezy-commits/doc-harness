@@ -9,9 +9,9 @@ read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 ## NOW
 
 - **Active**: 真实项目试用
-- **Next**: 等该下游项目回《引用清单》逐句核对；把发布流程固化为脚本，避免手抄排除清单再次漂移 blocker=无
+- **Next**: 待用户 kimi login 后做一次会话级验证（判别题：状态原语是 events.log 还是五文档），并把「支持 Kimi CLI」用精确说法写回对外材料 blocker=需要用户重新登录 Kimi CLI（当前 kimi --print 返回 401）
 - **Read-first**: README.md, RELEASING.md, notes/validation.md
-- **Key-judgment**: 公开物是「工作树 + 全部可达历史 + tag」三件套：只清工作树等于没清；复核必须只看真实 ref，别把 filter-branch 的备份 ref 算进去（否则会误判重写失败） source=notes/validation.md class=root
+- **Key-judgment**: 专用分支在模型换代后会变成负资产：v1.6 的 Kimi 分叉既过时又会（按同名优先规则）遮蔽新版；跨 agent 的正确形态是同一份 skill + 说清各家发现规则 source=notes/kimi-claude-interop.md class=root
 - **Refreshed**: 2026-09-18
 
 ## Work Surface
@@ -47,7 +47,6 @@ read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 - [done] `对外口径快照` evidence=README.md class=root
 
 ## Notes (housekeeping)
-- 2026-09-18 v2.0.0 已发布（tag v2.0.0）：README 中英重写、manifest 升 2.0.0、仓库描述与 topics 更新；下游项目来信已处理并回信
 - 2026-09-18 发布树复审：从 GitHub 全新 clone 后跑完整闸门 PASS；并把 now-verify 的「未记录的工作」判定从文件 mtime 改为 git 状态（否则任何 clone 都会因 mtime=克隆当天而自判红），因此在任何人依赖 v2.0.0 之前修正了发布提交
 - 2026-09-18 新增 zh-sync-check：铁律 1「中英同步」从人眼核对变成机器判据（文件集合/标题层级序列/围栏数/表格行数一致），并做空转检验（删一个中文小节即红）；已接入 conformance
 - 2026-09-18 审计发现并补齐：flush.md 两版都补上 events.log 指名（此前 9 个 skill 文档中唯一没点名原语的）；新增 entry-check（身份锁 + AGENTS.md 薄指针，含空转检验）；handoff-test 夹具因缺身份锁被新守卫抓出并修正
@@ -57,7 +56,8 @@ read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 - 2026-09-18 隐私复查（用户要求）：整个公开历史被重写——从每个提交里删除两份会话导出与那份事故报告，私人邮箱替换为 GitHub noreply，残余个人语境词改泛称；11 个 tag 与 master 全部强推并用全新 clone 复核（个人信息 0 命中、旧提交不可达、闸门 PASS）
 - 2026-09-18 本地禁止词表加入私人邮箱、并把会话导出列入不发布清单；三个 plugin manifest 的联系邮箱改指 GitHub noreply，避免下一次发布把私人信息带回去
 - 2026-09-18 toolbelt portability: child processes re-run the same PowerShell host; Windows-only path separators and regexes removed for Linux/macOS (CI pending)
-- (+2 older in events.log)
+- 2026-09-18 Kimi 线重新评估（用户投了 Kimi）：仓库里的 v1.6 专用分叉 kimi-skill/ 已删除（它教的是已淘汰的五文档/车身模型，对 Kimi 岗位是负资产）；README（中英）改为「同一个 skill 目录即装即可」并写明官方发现规则与出处；本地 ~/.kimi/skills/doc-harness 由 v1.6.0 换成 v2.0.0（中文版），旧版备份到 ~/.kimi/backup-doc-harness-v1.6-live-20260918/
+- (+3 older in events.log)
 
 ## Dead ends (negative ledger)
 - 可用性收口: 试过把投影做成不落盘、用时现算，但人类可读快照更有价值，故保留落盘+conformance校验

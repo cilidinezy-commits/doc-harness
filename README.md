@@ -147,8 +147,15 @@ Then copy the skill folder into your agent's skills directory:
 | Agent | Copy `skill/` (or `skill-zh/`) to |
 |-------|-----------------------------------|
 | Claude Code | `~/.claude/skills/doc-harness/` |
+| Kimi CLI | `~/.kimi/skills/doc-harness/` |
 | Codex | `~/.agents/skills/doc-harness/` (or a project's `.agents/skills/`) |
 | Anything else | wherever it discovers skills — or simply tell the agent to read `skill/SKILL.md` |
+
+One skill folder serves all of them: there is no per-agent fork to maintain. Kimi CLI's documented
+discovery looks in `~/.kimi/skills/`, `~/.claude/skills/` and `~/.codex/skills/` (merging them by
+default, with same-name skills resolved `kimi > claude > codex`), so installing into any one of them
+is enough, and an existing Claude Code install is picked up automatically. Details and sources:
+[`notes/kimi-claude-interop.md`](notes/kimi-claude-interop.md).
 
 Install inside a single project instead if you want to pin a version per project.
 
@@ -226,8 +233,10 @@ _validation/          Fixture projects used by the regression test (demo / trial
 notes/                Design notes, analyses, and the verification log
 PHILOSOPHY.md         Principles, with the practice that forged each one
 DOC_HARNESS_SPEC.md   Complete specification (normative)
-kimi-skill/           Legacy Kimi CLI variant, archived (not maintained)
 ```
+
+The one skill folder serves every agent (Claude Code, Kimi CLI, Codex); no per-agent fork exists.
+
 
 Two documents deserve a look if you want to judge the engineering rather than the pitch: [`notes/state-model.md`](notes/state-model.md) (why state must be a projection) and [`notes/validation.md`](notes/validation.md) (what has been verified, what failed, and what is still unverified).
 
