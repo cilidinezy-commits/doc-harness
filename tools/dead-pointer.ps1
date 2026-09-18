@@ -21,7 +21,7 @@ if (Test-Path -LiteralPath $idx) {
         if ($line -match '^\s*-\s*`([^`]+)`') {
             $ref = ($Matches[1] -split '#')[0].Trim()
             if ($ref -match '^[A-Za-z0-9_./\\-]+$' -and $ref -match '\.[A-Za-z0-9]+$') {
-                if (-not (Test-Path -LiteralPath (Join-Path $s.Root ($ref.Replace('/','\'))))) { $dead += "FILE_INDEX: $ref" }
+                if (-not (Test-Path -LiteralPath (Join-Path $s.Root $ref))) { $dead += "FILE_INDEX: $ref" }
             }
         }
     }

@@ -4,8 +4,9 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath $ProjectRoot).Path
+$skip = '(^|/)(\.git|\.venv|node_modules|inbox|outbox|__pycache__|\.claude|_archive|_runtime|_validation|_[^/]*)(/|$)'
 $files = Get-ChildItem -LiteralPath $root -Recurse -File | Where-Object {
-    $_.Extension -eq '.md' -and $_.FullName -notmatch '\\(\.git|\.venv|node_modules|inbox|outbox|__pycache__|\.claude|_archive|_runtime|_validation|_[^\\]*)\\'
+    $_.Extension -eq '.md' -and ($_.FullName.Substring($root.Length + 1).Replace('\','/') -notmatch $skip)
 }
 $overdue = @()
 foreach ($f in $files) {

@@ -11,7 +11,7 @@ read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 - **Active**: 真实项目试用
 - **Next**: 等该下游项目回《引用清单》逐句核对；把发布流程固化为脚本，避免手抄排除清单再次漂移 blocker=无
 - **Read-first**: README.md, RELEASING.md, notes/validation.md
-- **Key-judgment**: 「会红」的判据必须覆盖到规则本身：语言一致、入口唯一、单解析器、不得教回旧模型——这些过去都靠人眼评审，现在都有机器判据 source=notes/validation.md class=root
+- **Key-judgment**: 公开物是「工作树 + 全部可达历史 + tag」三件套：只清工作树等于没清；复核必须只看真实 ref，别把 filter-branch 的备份 ref 算进去（否则会误判重写失败） source=notes/validation.md class=root
 - **Refreshed**: 2026-09-18
 
 ## Work Surface
@@ -47,14 +47,17 @@ read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 - [done] `对外口径快照` evidence=README.md class=root
 
 ## Notes (housekeeping)
-- 2026-09-14 新增 note:set 动词（改状态文档但非单元/判断/计划的杂务可记录）；渲染器去除非 ASCII 字面量；record.ps1 区分「记录失败」与「其它守卫变红」；ops 块重新嵌入
-- 2026-09-18 v2 skill+工具带已部署到 Misc（项目内英文版）与 agent 级（中文版）；Misc 的 ops 块重新嵌入、CURRENT_STATUS 重投影；写信托它自修 3 项数据缺陷；batch-register 逗号粘连与 mail-send 收件方 inbox 缺失已修
 - 2026-09-18 v2.0.0 已发布（tag v2.0.0）：README 中英重写、manifest 升 2.0.0、仓库描述与 topics 更新；下游项目来信已处理并回信
 - 2026-09-18 发布树复审：从 GitHub 全新 clone 后跑完整闸门 PASS；并把 now-verify 的「未记录的工作」判定从文件 mtime 改为 git 状态（否则任何 clone 都会因 mtime=克隆当天而自判红），因此在任何人依赖 v2.0.0 之前修正了发布提交
 - 2026-09-18 新增 zh-sync-check：铁律 1「中英同步」从人眼核对变成机器判据（文件集合/标题层级序列/围栏数/表格行数一致），并做空转检验（删一个中文小节即红）；已接入 conformance
 - 2026-09-18 审计发现并补齐：flush.md 两版都补上 events.log 指名（此前 9 个 skill 文档中唯一没点名原语的）；新增 entry-check（身份锁 + AGENTS.md 薄指针，含空转检验）；handoff-test 夹具因缺身份锁被新守卫抓出并修正
 - 2026-09-18 隐私修正：发布记录与状态事件里泄露的私人语境/兄弟项目名已从 notes/validation.md、events.log、CURRENT_STATUS.md 改写（原日志归档到 _archive/events-pre-redaction-2026-09-18.log，不发布）
 - 2026-09-18 新增发布机制：.publish-exclude.txt（不发布的路径）与 .publish-terms.txt（禁止词表）两个本地数据文件 + tools/publish-scan.ps1；RELEASING.md 要求发布前在发布树上跑扫描——排除清单与禁止词表从此由数据枚举，不再靠当场回忆
+- 2026-09-18 发布修正完成：公开 master 重挂回 3ebcc0e 之上的干净发布提交（旧泄露提交从任何 ref 不可达），并把预脱敏日志归档与一封含人名的旧信件一并列入不发布清单；全新 clone 验证：闸门 PASS、工作树无个人语境词、旧提交不可达
+- 2026-09-18 隐私复查（用户要求）：整个公开历史被重写——从每个提交里删除两份会话导出与那份事故报告，私人邮箱替换为 GitHub noreply，残余个人语境词改泛称；11 个 tag 与 master 全部强推并用全新 clone 复核（个人信息 0 命中、旧提交不可达、闸门 PASS）
+- 2026-09-18 本地禁止词表加入私人邮箱、并把会话导出列入不发布清单；三个 plugin manifest 的联系邮箱改指 GitHub noreply，避免下一次发布把私人信息带回去
+- 2026-09-18 toolbelt portability: child processes re-run the same PowerShell host; Windows-only path separators and regexes removed for Linux/macOS (CI pending)
+- (+2 older in events.log)
 
 ## Dead ends (negative ledger)
 - 可用性收口: 试过把投影做成不落盘、用时现算，但人类可读快照更有价值，故保留落盘+conformance校验

@@ -19,6 +19,7 @@
 - `tools/handoff-test.ps1` — Deterministic handoff regression test: non-linear fixture → asserts projection, frontier, part headings, evidence, and that guards go red on broken input
 - `tools/lib/doc-harness-config.json` — Single source of normative parameters (thresholds, ops version)
 - `tools/lib/doc-state.ps1` — Shared parser (Get-DocState) that all tools read instead of parsing prose
+- `tools/lib/pshost.ps1` — Portable child-process host (re-runs the same PowerShell host, so the toolbelt works under both Windows PowerShell and `pwsh` on Linux/macOS)
 - `tools/project.ps1` — Project an event log into `## NOW` + work surface (event-log-primitive prototype)
 - `tools/now-verify.ps1` — Verify `## NOW`: bounded, valid UTF-8, refresh marker, resolvable read-first, and no file changed after the last recorded event (unrecorded work → red)
 - `tools/unregistered.ps1` — Heuristic check for files on disk not mentioned in any FILE_INDEX

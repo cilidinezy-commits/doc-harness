@@ -58,3 +58,9 @@
 # 2026-09-18 privacy redaction: sibling-project names and off-project context were removed from earlier lines; the pre-redaction log is archived at _archive/events-pre-redaction-2026-09-18.log (not published)
 2026-09-18 note:set 隐私修正：发布记录与状态事件里泄露的私人语境/兄弟项目名已从 notes/validation.md、events.log、CURRENT_STATUS.md 改写（原日志归档到 _archive/events-pre-redaction-2026-09-18.log，不发布）
 2026-09-18 note:set 新增发布机制：.publish-exclude.txt（不发布的路径）与 .publish-terms.txt（禁止词表）两个本地数据文件 + tools/publish-scan.ps1；RELEASING.md 要求发布前在发布树上跑扫描——排除清单与禁止词表从此由数据枚举，不再靠当场回忆
+2026-09-18 note:set 发布修正完成：公开 master 重挂回 3ebcc0e 之上的干净发布提交（旧泄露提交从任何 ref 不可达），并把预脱敏日志归档与一封含人名的旧信件一并列入不发布清单；全新 clone 验证：闸门 PASS、工作树无个人语境词、旧提交不可达
+2026-09-18 judgment:set 发布物是「树 + 历史 + 数据文件」三件事：只改工作树不改历史，泄露仍然可检出；排除清单与禁止词表必须是持久数据文件，而不是当场回忆 source=notes/validation.md class=root
+2026-09-18 note:set 隐私复查（用户要求）：整个公开历史被重写——从每个提交里删除两份会话导出与那份事故报告，私人邮箱替换为 GitHub noreply，残余个人语境词改泛称；11 个 tag 与 master 全部强推并用全新 clone 复核（个人信息 0 命中、旧提交不可达、闸门 PASS）
+2026-09-18 note:set 本地禁止词表加入私人邮箱、并把会话导出列入不发布清单；三个 plugin manifest 的联系邮箱改指 GitHub noreply，避免下一次发布把私人信息带回去
+2026-09-18 judgment:set 公开物是「工作树 + 全部可达历史 + tag」三件套：只清工作树等于没清；复核必须只看真实 ref，别把 filter-branch 的备份 ref 算进去（否则会误判重写失败） source=notes/validation.md class=root
+2026-09-18 note:set toolbelt portability: child processes re-run the same PowerShell host; Windows-only path separators and regexes removed for Linux/macOS (CI pending)

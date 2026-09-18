@@ -28,7 +28,7 @@ if ($Layer -eq 'now') {
     $files = @((Join-Path $root 'CLAUDE.md'))
 } elseif ($Layer -eq 'all') {
     $more = Get-ChildItem -LiteralPath $root -Recurse -File | Where-Object {
-        $_.Extension -eq '.md' -and $_.FullName -notmatch '\\(\.git|\.venv|node_modules|inbox|outbox|__pycache__|\.claude|_archive|_runtime|_validation|_[^\\]*)\\'
+        $_.Extension -eq '.md' -and ($_.FullName.Substring($root.Length + 1).Replace('\','/') -notmatch '(^|/)(\.git|\.venv|node_modules|inbox|outbox|__pycache__|\.claude|_archive|_runtime|_validation|_[^/]*)(/|$)')
     } | ForEach-Object { $_.FullName }
     foreach ($m in $more) { if (-not $files.Contains($m)) { $files.Add($m) } }
 }

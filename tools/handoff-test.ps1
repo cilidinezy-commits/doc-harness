@@ -13,9 +13,11 @@ param(
 $ErrorActionPreference = 'Stop'
 $toolsDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 . (Join-Path $toolsDir 'lib/doc-state.ps1')
+. (Join-Path $toolsDir 'lib/pshost.ps1')
 
 if (-not $WorkDir) {
-    $WorkDir = Join-Path $env:TEMP ('doc-harness-handoff-' + ([Guid]::NewGuid().ToString('N').Substring(0, 8)))
+    # Path::GetTempPath() is the portable one: $env:TEMP does not exist on Linux/macOS.
+    $WorkDir = Join-Path ([System.IO.Path]::GetTempPath()) ('doc-harness-handoff-' + ([Guid]::NewGuid().ToString('N').Substring(0, 8)))
 }
 New-Item -ItemType Directory -Path (Join-Path $WorkDir 'notes') -Force | Out-Null
 $today = Get-Date -Format 'yyyy-MM-dd'
@@ -71,8 +73,8 @@ $index = @(
     'Stable anchor placeholder.'
 ), (New-Object System.Text.UTF8Encoding($false)))
 
-$proj = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $toolsDir 'project.ps1'),'-ProjectRoot',$WorkDir,'-Write') -Wait -PassThru -WindowStyle Hidden
-Assert 'project runs' ($proj.ExitCode -eq 0) ('project.ps1 exit ' + $proj.ExitCode)
+$projCode = Invoke-PsScript -Script (Join-Path $toolsDir 'project.ps1') -ScriptArgs @('-ProjectRoot',$WorkDir,'-Write')
+Assert 'project runs' ($projCode -eq 0) ('project.ps1 exit ' + $projCode)
 $csPath = Join-Path $WorkDir 'CURRENT_STATUS.md'
 if (-not (Test-Path -LiteralPath $csPath)) { Write-Output ('FAIL: projection not written to ' + $csPath); exit 1 }
 $cs = [System.IO.File]::ReadAllText($csPath, [System.Text.Encoding]::UTF8)
@@ -119,8 +121,8 @@ $tampered = $cs + "- hand-edited line`n"
 $expected = Render-CurrentStatus -State $s
 Assert 'hand editing is caught as projection-stale' (($tampered.Replace("`r`n","`n").TrimEnd("`n")) -ne ($expected.Replace("`r`n","`n").TrimEnd("`n"))) 'tamper not detected'
 
-$conf = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $toolsDir 'conformance.ps1'),'-ProjectRoot',$WorkDir) -Wait -PassThru -WindowStyle Hidden
-Assert 'conformance is green on the fixture' ($conf.ExitCode -eq 0) ('conformance exit ' + $conf.ExitCode)
+$confCode = Invoke-PsScript -Script (Join-Path $toolsDir 'conformance.ps1') -ScriptArgs @('-ProjectRoot',$WorkDir)
+Assert 'conformance is green on the fixture' ($confCode -eq 0) ('conformance exit ' + $confCode)
 
 # ---------------------------------------------------------------- schema migration
 # A project that predates a schema change must be able to adopt it without hand-editing the log,
@@ -132,12 +134,12 @@ New-Item -ItemType Directory -Path $migDir -Force | Out-Null
     "$today unit:close T1 evidence=notes/alpha.md",
     "$today judgment:set an old judgment source=notes/alpha.md"
 ), (New-Object System.Text.UTF8Encoding($false)))
-$check1 = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $toolsDir 'cite-check.ps1'),'-ProjectRoot',$migDir) -Wait -PassThru -WindowStyle Hidden
-Assert 'pre-migration log fails cite-check' ($check1.ExitCode -ne 0) 'missing class was not caught'
-$mig = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $toolsDir 'log-migrate.ps1'),'-ProjectRoot',$migDir,'-Reason','handoff-test') -Wait -PassThru -WindowStyle Hidden
-Assert 'migration runs' ($mig.ExitCode -eq 0) ('log-migrate exit ' + $mig.ExitCode)
-$check2 = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $toolsDir 'cite-check.ps1'),'-ProjectRoot',$migDir) -Wait -PassThru -WindowStyle Hidden
-Assert 'post-migration log passes cite-check' ($check2.ExitCode -eq 0) 'migration did not satisfy the guard'
+$check1 = Invoke-PsScript -Script (Join-Path $toolsDir 'cite-check.ps1') -ScriptArgs @('-ProjectRoot',$migDir)
+Assert 'pre-migration log fails cite-check' ($check1 -ne 0) 'missing class was not caught'
+$migCode = Invoke-PsScript -Script (Join-Path $toolsDir 'log-migrate.ps1') -ScriptArgs @('-ProjectRoot',$migDir,'-Reason','handoff-test')
+Assert 'migration runs' ($migCode -eq 0) ('log-migrate exit ' + $migCode)
+$check2 = Invoke-PsScript -Script (Join-Path $toolsDir 'cite-check.ps1') -ScriptArgs @('-ProjectRoot',$migDir)
+Assert 'post-migration log passes cite-check' ($check2 -eq 0) 'migration did not satisfy the guard'
 Assert 'migration archived the old log' (Test-Path -LiteralPath (Join-Path $migDir ('_archive/events-pre-migration-' + $today + '.log'))) 'no archive'
 Assert 'migration left a comment trail, not a fake event' ([System.IO.File]::ReadAllText((Join-Path $migDir 'events.log'), [System.Text.Encoding]::UTF8) -match '(?m)^#.*schema migration') 'no comment trail'
 

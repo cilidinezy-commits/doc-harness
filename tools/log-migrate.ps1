@@ -20,6 +20,7 @@ param(
 # It never invents evidence: closes with no evidence= at all are reported, not patched.
 $ErrorActionPreference = 'Stop'
 $toolsDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+. (Join-Path $toolsDir 'lib/pshost.ps1')
 $root = (Resolve-Path -LiteralPath $ProjectRoot).Path
 $ev = Join-Path $root 'events.log'
 if (-not (Test-Path -LiteralPath $ev)) { Write-Output 'FAIL: events.log not found'; exit 1 }
@@ -72,8 +73,8 @@ if (-not (Test-Path -LiteralPath $archiveDir)) { New-Item -ItemType Directory -P
 [System.IO.File]::WriteAllLines($ev, $out, (New-Object System.Text.UTF8Encoding($false)))
 Write-Output ('migrated ' + $changed + ' event(s); pre-migration log -> ' + $archiveRel)
 
-$proj = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $toolsDir 'project.ps1'),'-ProjectRoot',$root,'-Write') -Wait -PassThru -WindowStyle Hidden
-if ($proj.ExitCode -ne 0) { Write-Output 'FAIL: project.ps1'; exit $proj.ExitCode }
+$projCode = Invoke-PsScript -Script (Join-Path $toolsDir 'project.ps1') -ScriptArgs @('-ProjectRoot',$root,'-Write')
+if ($projCode -ne 0) { Write-Output 'FAIL: project.ps1'; exit $projCode }
 Write-Output 're-projected'
 if ($noEvidence.Count -gt 0) { Write-Output ('WARN: still missing evidence on: ' + ($noEvidence -join ', ') + ' - add it by hand where the artifact is known') }
 Write-Output ('REMINDER: register ' + $archiveRel + ' in FILE_INDEX.md')

@@ -2,7 +2,7 @@ param(
     [string]$Inbox = '.\inbox',
     [int]$IntervalSeconds = 60,
     [int]$CheckInSeconds = 7200,
-    [string]$Heartbeat = '.\_runtime\mail-poll-heartbeat.log',
+    [string]$Heartbeat = './_runtime/mail-poll-heartbeat.log',
     [int]$NotifyDelaySeconds = 0
 )
 $ErrorActionPreference = 'SilentlyContinue'

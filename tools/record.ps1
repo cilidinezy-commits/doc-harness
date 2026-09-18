@@ -14,6 +14,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $toolsDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 . (Join-Path $toolsDir 'lib/doc-state.ps1')
+. (Join-Path $toolsDir 'lib/pshost.ps1')
 $root = (Resolve-Path -LiteralPath $ProjectRoot).Path
 $ev = Join-Path $root 'events.log'
 if (-not (Test-Path -LiteralPath $ev)) { Write-Output 'FAIL: events.log not found'; exit 1 }
@@ -56,13 +57,13 @@ Add-Content -LiteralPath $ev -Value $lines -Encoding UTF8
 $lines | ForEach-Object { Write-Output ("appended: " + $_) }
 
 # Re-project only if the log is well-formed: a malformed event must not overwrite a good projection.
-$proj = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $toolsDir 'project.ps1'),'-ProjectRoot',$root,'-Write') -Wait -PassThru -WindowStyle Hidden
-if ($proj.ExitCode -ne 0) { Write-Output 'FAIL: event appended, but the log did not parse - fix the event, then re-project'; exit $proj.ExitCode }
+$projCode = Invoke-PsScript -Script (Join-Path $toolsDir 'project.ps1') -ScriptArgs @('-ProjectRoot',$root,'-Write')
+if ($projCode -ne 0) { Write-Output 'FAIL: event appended, but the log did not parse - fix the event, then re-project'; exit $projCode }
 Write-Output ('recorded ' + $lines.Count + ' event(s) + re-projected CURRENT_STATUS.md')
 
 # Conformance has two very different outcomes here, and conflating them misleads: a failure means
 # SOME guard is red, not that the record failed. Say which.
-$confOut = & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $toolsDir 'conformance.ps1') -ProjectRoot $root 2>&1
+$confOut = & (Get-PsHostPath) -NoProfile -File (Join-Path $toolsDir 'conformance.ps1') -ProjectRoot $root 2>&1
 $confCode = $LASTEXITCODE
 if ($confCode -ne 0) {
     Write-Output ('conformance: RED - ' + (($confOut | Where-Object { $_ -match '\S' }) -join ' | '))

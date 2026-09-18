@@ -88,7 +88,7 @@ if (-not $NoFreshness) {
             $rel = $rel.Replace('\', '/')
             if ($rel -match $skip) { continue }
             if ($rel -eq 'CURRENT_STATUS.md' -or $rel -eq 'events.log') { continue }
-            $full = Join-Path $s.Root ($rel.Replace('/', '\'))
+            $full = Join-Path $s.Root $rel
             if (Test-Path -LiteralPath $full) { Add-WorkDate (Get-Item -LiteralPath $full).LastWriteTime.Date $rel }
             else { Add-WorkDate (Get-Date).Date $rel }   # deletion is work too
         }

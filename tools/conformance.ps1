@@ -2,26 +2,26 @@ param([string]$ProjectRoot = '.', [switch]$Full)
 $ErrorActionPreference = 'Continue'
 $root = (Resolve-Path -LiteralPath $ProjectRoot).Path
 $toolsDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+. (Join-Path $toolsDir 'lib/pshost.ps1')
 $fail = @()
 foreach ($t in @('now-verify.ps1','encoding-guard.ps1','unregistered.ps1','dead-pointer.ps1','recurrence.ps1','cite-check.ps1','stale-check.ps1','skill-consistency.ps1','entry-check.ps1')) {
   $script = Join-Path $toolsDir $t
-  $p = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-File',$script,'-ProjectRoot',$root) -Wait -PassThru -WindowStyle Hidden
-  $code = $p.ExitCode
+  $code = Invoke-PsScript -Script $script -ScriptArgs @('-ProjectRoot',$root)
   if ($code -ne 0) { $fail += ("{0}(exit {1})" -f $t, $code) }
 }
 
 # The embedded ops block must equal the installed ops source (skipped when no source is present).
 # Conformance never writes, so this runs in -Check mode.
-$oe = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-File',(Join-Path $toolsDir 'ops-embed.ps1'),'-ProjectRoot',$root,'-Check') -Wait -PassThru -WindowStyle Hidden
-if ($oe.ExitCode -ne 0) { $fail += ("ops-embed.ps1(exit {0})" -f $oe.ExitCode) }
+$oe = Invoke-PsScript -Script (Join-Path $toolsDir 'ops-embed.ps1') -ScriptArgs @('-ProjectRoot',$root,'-Check')
+if ($oe -ne 0) { $fail += ("ops-embed.ps1(exit {0})" -f $oe) }
 
 # -Full additionally runs the mechanism regression test (a fixture project in a temp dir). It is
 # kept out of the default path so that recording one state change stays fast, and is meant for
 # release/CI or whenever the projection machinery itself was touched.
 if ($Full) {
   $ht = Join-Path $toolsDir 'handoff-test.ps1'
-  $p = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-File',$ht) -Wait -PassThru -WindowStyle Hidden
-  if ($p.ExitCode -ne 0) { $fail += ("handoff-test.ps1(exit {0})" -f $p.ExitCode) }
+  $code = Invoke-PsScript -Script $ht
+  if ($code -ne 0) { $fail += ("handoff-test.ps1(exit {0})" -f $code) }
 }
 
 # Version drift: ops sentinel in CLAUDE.md must equal spec **Version** line (skip if spec absent).

@@ -15,10 +15,10 @@ param(
 $ErrorActionPreference = 'SilentlyContinue'
 $root = (Resolve-Path -LiteralPath $ProjectRoot).Path
 if (-not $Inbox) { $Inbox = Join-Path $root 'inbox' }
-if (-not $Heartbeat) { $Heartbeat = Join-Path $root '_runtime\mail-daemon-heartbeat.log' }
-if (-not $StatusFile) { $StatusFile = Join-Path $root '_runtime\mail-status.md' }
+if (-not $Heartbeat) { $Heartbeat = Join-Path $root '_runtime/mail-daemon-heartbeat.log' }
+if (-not $StatusFile) { $StatusFile = Join-Path $root '_runtime/mail-status.md' }
 $procDir = Join-Path $Inbox '_processing'
-$log = Join-Path $root '_runtime\mail-daemon.log'
+$log = Join-Path $root '_runtime/mail-daemon.log'
 New-Item -ItemType Directory -Path $procDir -Force | Out-Null
 $hbDir = Split-Path -Parent $Heartbeat
 if ($hbDir) { New-Item -ItemType Directory -Path $hbDir -Force | Out-Null }
