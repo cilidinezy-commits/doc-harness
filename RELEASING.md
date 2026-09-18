@@ -37,6 +37,17 @@ Everything else is public, including this project's own harness instance (`CLAUD
    Copy-Item skill/spec.md DOC_HARNESS_SPEC.md -Force
    ```
 
+   **Toolbelt mirrors too**: the skill folders carry copies of `tools/`. After any change under
+   `tools/`, re-copy (the gate fails on any byte difference, via `toolbelt-sync.ps1`):
+
+   ```powershell
+   Copy-Item -Path tools/* -Destination skill/tools    -Recurse -Force
+   Copy-Item -Path tools/* -Destination skill-zh/tools -Recurse -Force
+   ```
+
+   (Copy the *contents* — `Copy-Item tools -Destination skill/tools` would nest the folder as
+   `skill/tools/tools/`; the sync guard catches that, which is how the mistake was found.)
+
 5. **Build the published commit** — never push the dev tree as-is. Work in a scratch clone so the
    dev tree is untouched, remove the not-published paths, prune their `FILE_INDEX.md` entries, then
    re-parent the curated tree onto the current public tip so the release lands as **one commit**:

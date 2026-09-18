@@ -75,7 +75,13 @@ Doc Harness 让项目仅凭文件即可恢复：任何新 agent 在上下文断�
 
 纯 PowerShell、工具无关。关键入口是 `record.ps1`（一步状态变更：追加事件 + 重新投影 + conformance）。其余：`project.ps1`、`search.ps1`、`conformance.ps1`、`now-verify`、`encoding-guard`、`unregistered`、`dead-pointer`、`cite-check`、`stale-check`、`recurrence`、`nested-git-guard`、`stale-writer-guard`、`batch-register`、`telemetry`，以及邮件族（`mail-daemon`、`mail-send`、`mail-poll`、`mail-ledger`）。
 
-**它在哪里**：工具带随本仓库发布，位置在 skill 目录**旁边**（`tools/`，不在 skill 目录内），且是**可选**的。没有它，上面的一切照样成立——但有两件事会变弱，值得知道是哪两件：(a) 把漂移变成红灯的守卫没有了；(b) 投影只能手写而不是生成——而那恰恰是 v2 想避免的那件事。要用它，就从克隆里跑（或把仓库的 `tools/` 复制进项目），并传 `-ProjectRoot <你的项目>`。
+**它在哪里**：工具带**就在这个 skill 目录里**（`tools/`，因此任何安装方式——插件市场、`cp -r`、Kimi CLI 复制——都会带上它），仓库根目录另存一份作为规范副本。用法是传 `-ProjectRoot <你的项目>`：
+
+```powershell
+powershell -File <本 skill 目录>/tools/record.ps1 -ProjectRoot C:\path\to\your\project -Verb close -Text "T3 evidence=docs/t3.md class=root"
+```
+
+它仍然是**可选**的，但值得知道不装它到底会弱在哪两处：(a) 把漂移变成红灯的守卫没有了；(b) 投影只能手写而不是生成——而那恰恰是 v2 想避免的那件事。
 
 ## 参考文档
 

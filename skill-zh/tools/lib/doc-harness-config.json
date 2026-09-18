@@ -1,0 +1,9 @@
+{
+  "now_max_lines": 30,
+  "now_freshness_warn_days": 3,
+  "worklog_soft_lines": 1000,
+  "worklog_hard_lines": 1500,
+  "inbox_archival_days": 30,
+  "recurrence_threshold": 2,
+  "ops_version": "2.0.0"
+}

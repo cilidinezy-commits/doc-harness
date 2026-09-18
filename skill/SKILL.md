@@ -75,7 +75,17 @@ Inspect the directory: all core files → suggest `check`; none → suggest `ini
 
 Plain PowerShell, tool-agnostic. The key entry is `record.ps1` (one-step state change: append event + re-project + conformance). Others: `project.ps1`, `search.ps1`, `conformance.ps1`, `now-verify`, `encoding-guard`, `unregistered`, `dead-pointer`, `cite-check`, `stale-check`, `recurrence`, `nested-git-guard`, `stale-writer-guard`, `batch-register`, `telemetry`, and the mail family (`mail-daemon`, `mail-send`, `mail-poll`, `mail-ledger`).
 
-**Where it lives**: the toolbelt ships in this repository next to the skill folder (`tools/`, not inside it) and is **optional**. Everything above still works without it — but two things get weaker, and it is worth knowing which: (a) the guards that turn drift into a red signal are gone, and (b) the projection has to be written by hand instead of generated — the one thing v2 exists to avoid. To use it, run it from a clone (or copy the repository's `tools/` into your project) and pass `-ProjectRoot <your project>`.
+**Where it lives**: the toolbelt ships **inside this skill folder** (`tools/`, so any install — plugin
+marketplace, `cp -r`, or a Kimi CLI copy — carries it), and the repository keeps the canonical copy at
+its root. Run it with `-ProjectRoot <your project>`:
+
+```powershell
+powershell -File <this skill folder>/tools/record.ps1 -ProjectRoot C:\path\to\your\project -Verb close -Text "T3 evidence=docs/t3.md class=root"
+```
+
+It is still **optional**, and it is worth knowing exactly what weakens without it: (a) the guards that
+turn drift into a red signal are gone, and (b) the projection has to be written by hand instead of
+generated — the one thing v2 exists to avoid.
 
 ## Reference Documents
 

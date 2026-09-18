@@ -43,6 +43,7 @@
 - `tools/stale-check.ps1` — Flag standing conclusions past their `conclusion_until` (freshness)
 - `tools/skill-consistency.ps1` — Skill docs: EN/ZH skeleton parity, identical normative identifiers, and no retired (v1) model vocabulary outside a migration/history sentence
 - `tools/entry-check.ps1` — Single entry: identity lock in CLAUDE.md, and AGENTS.md (if any) is a thin pointer rather than a second entry/state copy
+- `tools/toolbelt-sync.ps1` — The toolbelt's mirrored copies (`skill/tools/`, `skill-zh/tools/`) must be byte-identical to the canonical `tools/`
 - `tools/publish-scan.ps1` — Privacy scan for a release tree: no forbidden term (names/institutions/off-project context/sibling projects) anywhere; terms live in `.publish-terms.txt`
 
 ## English Skill Files (skill/)
@@ -89,6 +90,8 @@
 - `.gitattributes` — Pin LF for text files (the projection is compared byte-for-byte, so a CRLF checkout must not read as stale)
 
 ## Validation Fixtures
+- `skill/tools/` — Toolbelt mirror shipped inside the English skill (byte-identical to `tools/`; enforced by `toolbelt-sync.ps1`)
+- `skill-zh/tools/` — Toolbelt mirror shipped inside the Chinese skill (byte-identical to `tools/`)
 - `_validation/demo-project/` — Small branching fixture (three units, key judgment, read-first list) used for the handoff walkthrough
 - `_validation/trial-project/` — Mid-project fixture (in-flight units + a closed unit + a robust-check unit)
 - `_validation/adversarial-project/` — Deliberately broken fixture (four defects) proving the guards go red

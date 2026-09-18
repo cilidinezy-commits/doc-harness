@@ -69,3 +69,5 @@
 2026-09-18 next:set 待用户 kimi login 后做一次会话级验证（判别题：状态原语是 events.log 还是五文档），并把「支持 Kimi CLI」用精确说法写回对外材料 blocker=需要用户重新登录 Kimi CLI（当前 kimi --print 返回 401）
 2026-09-18 note:set 已发信给下游项目：把「支持 Kimi CLI」写回对外材料（附官方发现规则出处、复制式安装命令、以及「尚未做会话级验证」的诚实边界）；并已在全新 clone 上复核：kimi-skill/ 已不在树中、README 中英均含 Kimi 安装行、闸门 PASS
 2026-09-18 note:set 完成度审计（用户提问）发现并修掉两处真缺口：①文档把命令写成 Claude Code 专有形式——SKILL.md 与 spec §8 现在写明「命令名是约定不是功能」并给出 Kimi（/skill:doc-harness）与其它 agent（自然语言）的调用方式；②文档默认工具带就在项目里——SKILL.md 现在写明工具带在仓库的 tools/（不在 skill 目录内）且可选，并点明缺它时变弱的两件事；另给两版 SKILL.md 补 license: MIT 前置字段（Kimi 官方字段表）
+2026-09-18 note:set 工具带随 skill 走：已把 tools/ 复制进 skill/tools 与 skill-zh/tools（各 31 个文件），并新增 toolbelt-sync 守卫强制三份逐字节一致（空转检验：改一个字节即报红；复制成嵌套目录也会被它抓出——本轮就抓到一次）；ops-embed 增加「从自己所在 skill 目录找 operational_rules.md」的候选路径，安装态因此可用
+2026-09-18 note:set 安装态实测：用 skill-zh/tools/record.ps1 驱动一个真实项目——事件成功追加、投影成功生成；ops-embed -Check 能从 skill 目录自身发现操作规则；toolbelt-sync/skill-consistency 在安装态正确 SKIP。本地 ~/.kimi/skills/doc-harness 已更新为含 tools/ 的 v2（41 个文件）
