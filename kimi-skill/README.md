@@ -1,5 +1,7 @@
 # Doc Harness for Kimi CLI &nbsp;·&nbsp; v1.6.0
 
+> ⚠️ **已废弃（2026-09-07）**：本 Kimi CLI 版本**放弃维护**，日后恢复的可能性也不大。它不再属于 doc-harness 的活跃范围；请以 `skill/` + `skill-zh/`（v2.0.0）为准。本目录仅作历史留存。
+
 [→ Full project documentation (Claude Code + Kimi versions)](https://github.com/cilidinezy-commits/doc-harness)
 
 **Document-based project control for AI-human collaboration.**

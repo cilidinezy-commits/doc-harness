@@ -1,107 +1,67 @@
 ---
 name: doc-harness
-description: "Document-based project control that lets any AI agent or human resume work from files alone — no external memory needed. Use this skill whenever the user wants to structure a long-running project, track progress across sessions, recover state after context loss, coordinate multiple agents on the same project, audit project documentation health, or stop forgetting what was done last session. Triggers include: '/doc-harness init' and '/doc-harness check' (explicit slash commands); requests like 'help me set up this project', 'I keep losing track', 'my agent forgets between sessions', 'organize my project docs', 'audit this project', 'check the documentation', 'what did we do last time'; multi-week projects (theses, research, analyses, software modules) that span many sessions; cross-project coordination (inbox/outbox for file-based messages between projects)."
+description: "Document-based project control that lets any AI agent or human resume work from files alone — no external memory needed. Use whenever the user wants to structure a long-running project, track progress across sessions, recover state after context loss, coordinate multiple agents, audit documentation health, or stop forgetting what was done last session. Triggers include '/doc-harness init' and '/doc-harness check' (slash commands) and phrases like 'help me set up this project', 'I keep losing track', 'my agent forgets between sessions', 'organize my project docs', 'audit this project', 'what did we do last time'."
 argument-hint: "init [project-name] [description] | check | sync [--auto] | flush [--auto] | recall [query] | resume [--auto]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Doc Harness — Document-Based Project Control
 
-Doc Harness is a documentation system that enables any AI agent or human collaborator to understand and resume project work purely from reading files — no external memory needed.
+Doc Harness keeps a project resumable purely from files: a brand-new agent, after any context break, reads the entry and takes over correctly.
 
-It creates and maintains **five documents** per project:
-- **CLAUDE.md** — Project entry point (overview, recovery chain, iron rules, operational rules)
-- **CURRENT_STATUS.md** — Active state (tire tracks / car body / headlights / driving manual)
-- **FILE_INDEX.md** — File catalog organized by category
-- **WORKLOG.md** — Permanent work history (append-only)
-- **DOC_HARNESS_SPEC.md** — Complete specification (reference document)
+It maintains, per project:
 
-Two **optional** documents may be added when a project accumulates such content (see spec.md Chapter 13):
-- **PARKING_LOT.md** — Deferred items with preconditions for revival
-- **PHILOSOPHY.md** — Principles forged by this project's practice
+- **CLAUDE.md** — single authoritative entry: AGENT IDENTITY LOCK + stable anchor (framework anchor, iron rules, bottom-line principles) + operational rules.
+- **AGENTS.md** — thin pointer to CLAUDE.md (never a stale copy).
+- **events.log** — append-only event log: the single source of both history and current state.
+- **CURRENT_STATUS.md** — a **generated projection** of `events.log` (`## NOW` + work surface + dead ends); never hand-edited.
+- **FILE_INDEX.md** — file catalog; unregistered files are a red item.
+- **DOC_HARNESS_SPEC.md** — optional reference copy of the specification.
 
-One **optional** mechanism may be adopted when a project coordinates with others (see spec.md Chapter 14):
-- **Inter-project inbox/outbox** — self-contained file-based messaging protocol. `inbox/` and `outbox/` directories; YAML-frontmatter Markdown messages; lifecycle `unread → read → actioned`. Fully described inside doc-harness itself; no external spec needed.
+Optional: `PHILOSOPHY.md` (bottom-line principles), `PARKING_LOT.md`, `RUNBOOK.md`, and inter-project `inbox/`/`outbox/` (plus an optional `MAIL_LEDGER.md`).
+
+Core principle: **handoff over writing** — a new agent must be able to take over correctly from files alone. State changes are one `record` command; the deterministic toolbelt (`tools/`) verifies the document system's integrity.
 
 ## Commands
 
 ### `/doc-harness init [project-name] [description]`
 
-Initialize Doc Harness for a new project. Creates all 5 files in the current directory.
-
-**→ See [init.md](init.md) for full instructions and templates.**
+Create the files for a new project (clean init or mid-project adoption).
+**→ See [init.md](init.md).**
 
 ### `/doc-harness check`
 
-Audit the current project's documentation health and reflect on working principles.
-
-**→ See [check.md](check.md) for full check procedures.**
+Audit health: projection freshness (now_refreshed vs events.log), unregistered files (red), entry uniqueness, `events.log` well-formedness, inbox, ops-rules version, identity lock, stale conclusions (`conclusion_until`), provenance class (`class=root|decision|reported`); then reflect on the anchor and bottom-line principles.
+**→ See [check.md](check.md).**
 
 ### `/doc-harness sync [--auto]`
 
-Synchronize status documents with reality. Repair drift, refresh stale fields, register missing files, and optionally trigger phase transition or WORKLOG archival.
-
-- **`interactive`** (default): Ask before phase transitions, archival, or creating new principle documents.
-- **`auto`**: Execute fixes without asking.
-
-**→ See [sync.md](sync.md) for full sync procedures.**
+Repair drift: register files, append any missing state events to `events.log`, re-project `CURRENT_STATUS`, inbox housekeeping. `interactive` (default) asks before state changes; `auto` executes safe fixes.
+**→ See [sync.md](sync.md).**
 
 ### `/doc-harness flush [--auto]`
 
-Emergency save before context compression. Includes everything `sync` does, **plus mandatory extraction of important context information into documents**.
-
-`flush` runs in **five phases**: (A) sync, (B) context inventory, (C) write and register, (D) verification, (E) flush marker. **Phases B and C are the distinguishing feature** — they scan the agent's current context for information that exists only in memory, classify it, and write it to files. Without Phase B and C, `flush` is indistinguishable from `sync` and has failed.
-
-- **`interactive`** (default): Ask before each significant extraction.
-- **`auto`**: Use heuristics to classify and save context information without asking.
-
-**→ See [flush.md](flush.md) for full flush procedures. Includes empty-scan reporting requirements when no extractable items are found.**
-
-### `/doc-harness resume [--auto]`
-
-Structured state recovery: when context is empty or the user wants to resume work, systematically read status documents, verify understanding, and produce a recovery report before continuing.
-
-`resume` runs in **four phases**: (A) execute Recovery Chain (identity anchor → must-read → task-conditional), (B) produce Recovery Report (7-section structured synthesis), (C) Understanding Verification (5 forced questions proving comprehension), (D) resume decision.
-
-- **`interactive`** (default): Present Recovery Report to user for confirmation before proceeding.
-- **`auto`**: Perform full procedure without user interaction, apply auto-resume decision tree (≤7 days fresh + no edge conditions = proceed; otherwise = wait for user).
-
-**→ See [resume.md](resume.md) for full resume procedures.**
+Emergency save before compaction/session end: run sync, then **mandatorily** inventory context, write/register extracted items, verify a fresh arrival can find them, and **append the state events + re-project** last.
+**→ See [flush.md](flush.md).**
 
 ### `/doc-harness recall [query]`
 
-Retrieve information from the project's Doc Harness document hierarchy. Search systematically across registered documents and return structured, source-cited results.
+Retrieve information: Layer 0 stable anchor → Layer 1 `## NOW`/work surface → Layer 2 `events.log` (history) → Layer 3 FILE_INDEX → Layer 4 files. Read-only, source-cited. Mechanical grep via `tools/search.ps1`.
+**→ See [recall.md](recall.md).**
 
-**Query types**:
-- **Status/Plan**: "What's the current plan for auth?" → searches CURRENT_STATUS + headlights
-- **History/Decision**: "Why did we choose PostgreSQL?" → searches WORKLOG + tire tracks
-- **File lookup**: "Find all docs about caching" → searches FILE_INDEX
-- **Synthesis**: "All discussions about authentication" → comprehensive search across all layers
+### `/doc-harness resume [--auto]`
 
-**→ See [recall.md](recall.md) for the layered search protocol and output format.**
+Structured, verifiable takeover: identity → stable anchor → current state from `events.log` (verified fresh) → read-first list → dead-end ledger; then a Recovery Report + 5-question verification + proceed/wait decision. If context is empty or the user says "resume", run this.
+**→ See [resume.md](resume.md).**
 
 ### `/doc-harness` (no arguments)
 
-Inspect the current directory and suggest the right next step:
-- **All 4 core files present** (CLAUDE.md, CURRENT_STATUS.md, FILE_INDEX.md, WORKLOG.md) → suggest `/doc-harness check`.
-- **No Doc Harness files at all** → suggest `/doc-harness init` (clean init or mid-project adoption per `init.md` Step 2).
-- **Partial state** (some files present, others missing or malformed) → suggest `/doc-harness init` in **mid-project adoption mode** (see `init.md` Step 2 branch (b)/(c)); do NOT suggest `check` on a broken installation.
+Inspect the directory: all core files → suggest `check`; none → suggest `init`; partial → suggest `init` mid-project mode. Then show this help.
 
-Then show this help summary.
+## Deterministic Toolbelt (`tools/`)
 
-## Core Principle: "Write It Down or Lose It"
-
-Information in context will eventually be completely lost. Important information must be **written to a file** and **registered in FILE_INDEX**. Not written = lost. Not registered = undiscoverable = effectively lost.
-
-**Context-aware corollary**: if your runtime exposes a context-window usage metric (percentage or token count), treat **low remaining context** (~<20%) as an immediate trigger to flush CURRENT_STATUS before the next tool call, and consider a phase transition if the car body holds substantial unsaved work (see `spec.md` §11.2 bullet 4 for the concrete threshold). Compression is involuntary session end — preemptive writes are the only defense.
+Plain PowerShell, tool-agnostic. The key entry is `record.ps1` (one-step state change: append event + re-project + conformance). Others: `project.ps1`, `search.ps1`, `conformance.ps1`, `now-verify`, `encoding-guard`, `unregistered`, `dead-pointer`, `cite-check`, `stale-check`, `recurrence`, `nested-git-guard`, `stale-writer-guard`, `batch-register`, `telemetry`, and the mail family (`mail-daemon`, `mail-send`, `mail-poll`, `mail-ledger`).
 
 ## Reference Documents
 
-- [init.md](init.md) — Read when executing `/doc-harness init`. Covers clean init, mid-project adoption, partial-state repair, and optional inter-project inbox/outbox setup.
-- [check.md](check.md) — Read when executing `/doc-harness check`. Audit procedures for file health, recovery-chain soundness, mid-transition detection, and inbox status.
-- [sync.md](sync.md) — Read when executing `/doc-harness sync`. Drift repair, date refresh, file registration, phase-transition and archival triggers.
-- [flush.md](flush.md) — Read when executing `/doc-harness flush`. Emergency save with systematic context-to-document extraction.
-- [recall.md](recall.md) — Read when executing `/doc-harness recall`. Layered search protocol for retrieving information from registered documents.
-- [resume.md](resume.md) — Read when executing `/doc-harness resume`. Structured state recovery with Recovery Chain execution, Recovery Report synthesis, and Understanding Verification.
-- [operational_rules.md](operational_rules.md) — The operational rules embedded verbatim into every project's CLAUDE.md at `init` time. Carries the `<!-- doc-harness-ops-version -->` version tag so the check command can detect stale embeddings.
-- [spec.md](spec.md) — Complete Doc Harness specification (14 chapters + 5 appendices). Authoritative — all other files derive from it. Has a Table of Contents at the top for navigation without full-read.
+- [init.md](init.md) · [check.md](check.md) · [sync.md](sync.md) · [flush.md](flush.md) · [recall.md](recall.md) · [resume.md](resume.md) · [operational_rules.md](operational_rules.md) · [spec.md](spec.md) (authoritative).

@@ -1,154 +1,147 @@
 # Doc Harness — Init
 
-Create the five Doc Harness files for a new project.
+Initialize Doc Harness for a project so any future agent can take over from files alone.
 
 ## Step 1: Gather Information
 
-You need these details. Gather from three sources in priority order:
+Priority order: arguments → conversation context → ask the user. Infer, don't fabricate.
 
-**Source A — Arguments**: Extract project name and description from `$ARGUMENTS`.
-**Source B — Context**: If the project was just discussed in conversation, extract goals, first tasks, constraints, technical details.
-**Source C — Ask the user**: For anything still unknown, ask explicitly. Do NOT guess. Reasonable inference from context is OK; fabrication is not.
+**Required**:
+- Project name (short).
+- Project description (1–3 sentences).
+- The project's **framework anchor** (how it is layered / which layers are active / responsibility boundaries / north-star red lines). If unknown, leave a clear placeholder.
+- Initial **active work units** (1–3 minimal units in play) and the **#1 next step + blocker**.
 
-**Required** (must have before creating):
-- Project name (short, for document titles)
-- Project description (1-3 sentences)
-- First phase name (what is the initial work called)
-- First concrete task (what to do first — for "headlights")
+**Optional** (ask if unclear; OK to leave blank):
+- Iron rules, bottom-line principles, key technical details.
+- Inter-project inbox/outbox: ask "Does this project coordinate with other projects?" Default yes if dependencies were mentioned, otherwise no.
 
-**Optional** (ask if unclear, OK to leave blank):
-- Initial iron rules
-- Key technical details (tools, languages, paths)
-- Known sub-projects
-- **Inter-project inbox/outbox**: one y/n question — "Does this project coordinate with other projects (has dependencies in either direction)? If yes, I'll enable the inter-project inbox/outbox protocol (Chapter 14 of the spec)." Default: **yes** if the user mentioned dependencies or sibling projects in context; **no** for standalone projects. If enabled, see Step 3.6 below.
+## Step 2: Check Existing Files
 
-## Step 2: Check Existing Files and Project State
+- **(a) Clean** → blank templates.
+- **(b) Doc Harness already present** → do not overwrite; suggest `/doc-harness check`.
+- **(c) Non-empty without Doc Harness** → mid-project adoption: reconstruct history faithfully, propose a draft `events.log`, bulk-register existing files; ask the user to confirm.
+- **(d) Explicit clean restart** → confirm, then proceed as (a); append an override event to `events.log`.
 
-Check the target directory for three situations:
+## Step 3: Create Files
 
-**(a) Clean directory** (no files, or only trivial starter files like a blank README/LICENSE) → proceed to Step 3 with blank templates.
-
-**(b) Doc Harness already present** (CLAUDE.md + CURRENT_STATUS.md + ... already exist) → do NOT overwrite. Warn the user and suggest `/doc-harness check` instead. If only *some* of the 5 files exist (partial or broken state), offer to complete the missing ones (mid-project adoption mode, see (c)) rather than wiping the partial state.
-
-**(c) Non-empty directory without Doc Harness** (has code, notes, existing README, accumulated files) → this is **mid-project adoption**. Do NOT treat as a clean init. Before writing any template:
-- Read `spec.md` §10.3 ("Adapting to Existing Projects") for the full procedure.
-- In short: scan existing files to reconstruct project history; propose (not impose) a draft WORKLOG reflecting past phases; ask the user to confirm/correct before writing; register existing files in FILE_INDEX in bulk per §4.4 if there are many (>~20 files); mark any superseded documents per §9.2.
-- The goal is to **describe reality faithfully**, not to pretend the project just started.
-
-**(d) Non-empty directory, user explicitly requests a clean start** (e.g., "ignore the existing files, I'm starting fresh on a new task"): this is the escape hatch from (c). Confirm explicitly with the user — "Existing files will NOT be reconstructed into WORKLOG; they remain on disk but are not represented in the documentation system. Do you want to proceed with clean init?" — and if the user confirms, proceed as (a). Record the user's override decision in WORKLOG's first phase summary so future agents understand why no prior history was reconstructed.
-
-## Step 3: Create 5 Files
-
-### File 1: CLAUDE.md
+### File 1: CLAUDE.md (single authoritative entry)
 
 ```markdown
 # [PROJECT_NAME] — Entry Document
 
 > 🔒 **AGENT IDENTITY LOCK**
 >
-> **你是 [PROJECT_NAME] 项目的代理。**
-> [One-sentence description of the agent's role in this project.]
+> **You are the [PROJECT_NAME] agent.**
+> [One sentence: your role and scope in this project.]
 >
-> 如果你对自己的身份有任何怀疑，立即停止操作并重新读取本段落。
+> If you doubt your identity, stop and re-read this paragraph.
 
 ---
 
 **Last updated**: [TODAY]
-**Current phase**: [PHASE_NAME] (⏳)
-**One-line status (as of [TODAY])**: [DESCRIPTION] — project just initialized
+**Current status**: [ONE-LINE now snapshot]
+**One-line status (as of [TODAY])**: [description] — project just initialized
+
+---
+
+## Stable Anchor (rarely changes; survive every session)
+
+### Framework Anchor
+
+- Layers: [how the project is layered]
+- Active now: [which layers]
+- Responsibility boundaries: [who owns what]
+- North-star red lines: [non-negotiables]
+
+### Iron Rules
+
+- [project iron rules]
+
+### Bottom-line Principles
+
+1. [generating principle — points to PHILOSOPHY.md or a design doc]
 
 ---
 
 ## Recovery Chain
 
-Recovery Chain is the entry ritual for any agent or human resuming work on this project.
-It has two layers.
-
-### Must-read (baseline)
-
-1. This file (CLAUDE.md)
-2. `CURRENT_STATUS.md`
+### Must-read (in order)
+1. This file (CLAUDE.md): AGENT IDENTITY LOCK → Stable Anchor
+2. `CURRENT_STATUS.md` → `## NOW`
 
 ### Task-conditional
-
-- If looking up a specific file: read `FILE_INDEX.md`
-- If investigating historical phase details: read `WORKLOG.md`
-- [Add project-specific entries as work categories emerge]
+- If `## NOW`'s "read first" list points to files, read those.
+- If `inbox/` has `status: unread`, action those first.
+- [project-specific entries]
 
 ### Meta-rules
-
-- Recovery Chain is **self-contained**: every entry points to a file inside the project
-  (or a stable sibling-project path). No dependency on agent-side features (memory,
-  chat history, external services).
-- Recovery Chain is **living**: review and update at phase transitions.
+- Self-contained: only project-internal (or stable sibling) paths.
+- Living: review at architecture changes.
 
 ## Project Overview
 
-[DESCRIPTION expanded to 3-5 lines]
-
-## Project-Level Iron Rules
-
-[USER_PROVIDED_RULES or defaults:]
-- "Write it down or lose it" — important info must be saved to files and registered
-- [project-specific rules]
+[DESCRIPTION expanded to 3–5 lines]
 
 ## Key Technical Information
 
-[From context, or: "To be filled as project progresses"]
-
-## Sub-projects
-
-[If any, or remove section]
+[tools, languages, paths, or "to be filled"]
 
 ---
 
 ## Doc Harness — Operational Rules
 
-[INSERT FULL CONTENT OF operational_rules.md HERE]
+[EMBED operational_rules.md between its sentinels]
 ```
 
-**Important**: Read [operational_rules.md](operational_rules.md) and embed its FULL content (from the `<!-- doc-harness-ops-start -->` comment through the `<!-- doc-harness-ops-end -->` comment, inclusive) into the CLAUDE.md at the location marked above. Preserve **both sentinels and the `<!-- doc-harness-ops-version: N.N -->` version tag** — these delimit the region that future re-embeds (after a skill upgrade) and `/doc-harness check` §1.10 can safely locate and replace. **Re-embed semantics**: a future `init` pass or manual re-embed replaces ONLY the bytes between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->`. Any custom iron rules, project-specific sections, or other content outside the delimited region is preserved untouched.
+Embed `operational_rules.md` between `<!-- doc-harness-ops-start -->` and `<!-- doc-harness-ops-end -->` (inclusive). Re-embed replaces only that region.
+
+### File 1b: AGENTS.md (thin pointer)
+
+```markdown
+# [PROJECT_NAME] — Agent entry (thin pointer)
+
+The single authoritative entry is [`CLAUDE.md`](CLAUDE.md). Do not read this file as state; follow CLAUDE.md.
+```
+
+This prevents a stale AGENTS.md snapshot and avoids double injection by harnesses that read both files.
 
 ### File 2: CURRENT_STATUS.md
 
 ```markdown
+---
+now_refreshed: [TODAY]
+active_unit_ids: [unit-a, unit-b]
+read_first: ["notes/a.md", "notes/b.md"]
+---
+
 # CURRENT_STATUS — [PROJECT_NAME]
 
 **Last updated**: [TODAY]
-**Current phase**: [PHASE_NAME]
 
 ---
 
-## Recent Completed (Tire Tracks)
+## NOW
 
-(Project just started, no completed phases yet)
+- **In progress**: [1–3 active work units]
+- **Next step**: [#1 action] — blocker: [or "none"]
+- **Read first**: [2–4 files/anchors]
+- **Key judgment**: [recent direction/priority change, or "none yet"]
+- **Last refreshed**: [TODAY]
 
----
+## Work Surface
 
-## Current Work (Car Body)
+### Plan
+<ordered top-level parts; mark active / paused>
 
-### Phase Goal
-[What this initial phase aims to accomplish]
+### Units
+#### <part>
+- [active] `<unit-id>` <one-line description>
+- [future] `<unit-id>` <one-line description>
 
-### Completed Steps
-(No steps completed yet)
+## Recent History
 
----
-
-## Next Steps (Headlights)
-
-### Immediate Actions
-1. [First concrete task from gathered info]
-
-### Future Plans
-- [Broader goals from context]
-
----
-
-## Current Working Principles (Driving Manual)
-
-- Follow the Doc Harness operational rules (see CLAUDE.md)
-- [Phase-specific principles from context]
+(No completed work yet — see `events.log`.)
 ```
 
 ### File 3: FILE_INDEX.md
@@ -158,74 +151,36 @@ It has two layers.
 
 **Last updated**: [TODAY]
 
----
-
 ## Core Documents
-- `CLAUDE.md` — Project entry point
-- `CURRENT_STATUS.md` — Active status
-- `FILE_INDEX.md` — This file
-- `WORKLOG.md` — Work history
-- `DOC_HARNESS_SPEC.md` — Doc Harness specification (reference)
+- `CLAUDE.md` — single authoritative entry + stable anchor
+- `AGENTS.md` — thin pointer to CLAUDE.md
+- `CURRENT_STATUS.md` — NOW + work surface + recent history
+- `FILE_INDEX.md` — this file
+- `events.log` — append-only event log (history + state primitive)
 ```
 
-### File 4: WORKLOG.md
+### File 4: events.log
 
 ```markdown
-# WORKLOG — [PROJECT_NAME]
-
-## TOC
-| Phase | Time | Anchor |
-|-------|------|--------|
-| (No phases completed yet) | | |
+# events.log — [PROJECT_NAME]
+(append-only; one event per line — starts empty or with a migration event)
 ```
 
 ### File 5: DOC_HARNESS_SPEC.md
 
-Read [spec.md](spec.md) and write its content to the project directory as `DOC_HARNESS_SPEC.md`.
+**Optional** reference copy of `spec.md`. Not state; the installed skill already carries the spec. If absent, that is fine.
 
-If spec.md is not accessible, note in FILE_INDEX: "DOC_HARNESS_SPEC.md — not yet deployed (operational rules in CLAUDE.md are sufficient for daily use)".
+### Step 3.6: Optional inbox/outbox
 
-### Step 3.6: (Optional) Enable inter-project inbox/outbox
-
-If the user opted in (see Step 1), do the following:
-
-**(a) Create folders**: `inbox/` and `outbox/` at project root (both empty; git-track with `.gitkeep` if needed).
-
-**(b) Add the iron rule block** to CLAUDE.md inside the Iron Rules section (copy-paste, no customization needed):
-
-```markdown
-**Inter-project communication via inbox/outbox (file-based protocol)**
-
-- **Mechanism**: This project maintains `inbox/` (received messages) and `outbox/` (sent messages). Messages are Markdown files with YAML frontmatter; filename `YYYY-MM-DD-from-<source>-<topic>.md`.
-- **Why this is mandatory (if adopted)**: Cross-project information exchanged only in chat is lost on session end. File-based messages survive session boundaries and are discoverable by any future agent through this project's Recovery Chain.
-- **Receiving**: Recovery Chain checks `inbox/` for `status: unread`. Read → update to `status: read`. After acting on the message → `status: actioned`. Never edit received messages beyond the status field; to respond, write a new message.
-- **Sending**: Write to this project's `outbox/` (permanent sender-side record) AND copy the same file into the recipient project's `inbox/`. Record the exchange in CURRENT_STATUS so it is traceable next session.
-- **Snapshots over pointers**: When communicating numbers/deliverables to another project, put the value in the message body rather than referencing internal files.
-- **Full specification**: `DOC_HARNESS_SPEC.md` §14 (in this project's root).
-```
-
-**(c) Add to Recovery Chain** task-conditional layer in CLAUDE.md:
-
-```markdown
-- If `inbox/` has any file with `status: unread`: read and action those first
-```
-
-**(d) Register in FILE_INDEX**:
-
-```markdown
-## Inter-Project Communication
-- `inbox/` — Incoming messages from other projects
-- `outbox/` — Outgoing messages (drafts and sent-copies)
-```
+Create `inbox/` + `outbox/`; add the inter-project iron-rule block and the Recovery Chain unread entry; register both in FILE_INDEX.
 
 ## Step 4: Verify
 
-- All 5 files exist
-- FILE_INDEX lists all 5 (plus `inbox/`/`outbox/` if enabled)
-- CURRENT_STATUS has all 4 sections
-- CLAUDE.md contains embedded operational rules (and inter-project iron rule block if enabled)
-- CLAUDE.md begins with AGENT IDENTITY LOCK at top
-- WORKLOG has empty TOC
-- If inter-project comms enabled: `inbox/` and `outbox/` exist; Recovery Chain includes the task-conditional entry
+- CLAUDE.md begins with AGENT IDENTITY LOCK and contains a Stable Anchor + embedded operational rules.
+- AGENTS.md is a thin pointer.
+- CURRENT_STATUS has a bounded `## NOW` + Work Surface.
+- FILE_INDEX lists all core docs.
+- `events.log` exists (empty, or with migration events).
+- inbox/outbox present if enabled.
 
-Report: "Doc Harness initialized for [PROJECT_NAME]. 5 files created[, with inter-project inbox/outbox enabled if applicable]."
+Report: "Doc Harness initialized for [PROJECT_NAME]."

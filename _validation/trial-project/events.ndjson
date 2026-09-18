@@ -1,0 +1,11 @@
+﻿2026-09-07 unit:open alpha 建模主效应
+2026-09-07 unit:open beta 机制检验
+2026-09-07 unit:open gamma 稳健性检验
+2026-09-07 unit:open delta 异质性分析
+2026-09-07 unit:activate alpha
+2026-09-07 unit:activate beta
+2026-09-07 unit:close beta evidence=notes/beta-findings.md
+2026-09-07 unit:activate gamma
+2026-09-07 judgment:set "主效应量级对样本选择敏感" source=notes/beta-findings.md
+2026-09-07 next:set "完成 gamma 异方差稳健标准误" blocker=none
+2026-09-07 read-first:set [notes/beta-findings.md, WORKLOG.md]

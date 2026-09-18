@@ -3,12 +3,243 @@
 ## Table of Contents
 | Phase | Period | Anchor |
 |-------|--------|--------|
-| Phase 4: Maintenance & field-feedback watch (v1.7.1 packaging fix) | 2026-04-19 ~ 2026-09-01 | [→](#phase-4-v171-packaging-fix--plugin-manifest-modernization-2026-09-01) |
+| Phase 4: Maintenance & field-feedback watch (v1.4.1 → v1.7.2) | 2026-04-19 ~ 2026-09-07 | [→](#phase-4-maintenance--field-feedback-watch-complete-record) |
 | Phase 3: v1.2 → v1.3 → v1.4 + publishing | 2026-04-19 | [→](#phase-3-v12-development-2026-04-19) |
 | Phase 2: Independent project | 2026-04-03 | [→](#phase-2-independent-project-setup-2026-04-03) |
 | Phase 1: Design → publish (in project_reorganization) | 2026-04-01 ~ 04-03 | [→](#phase-1-design-development-and-publishing-2026-04-01--2026-04-03) |
 
 ---
+
+## Phase 4: Maintenance & field-feedback watch (complete record)
+
+### Summary
+
+Phase 4 was the maintenance-and-field-feedback phase following Phase 3's v1.4 publishing. Over ~4.5 months it shipped v1.4.1 → v1.7.2: WORKLOG archival filename correction, the sync/flush commands (v1.5.0), the recall command (v1.5.1), AGENT IDENTITY LOCK (v1.6.0), flush Phase B/C hardening (v1.6.1), the resume command (v1.7.0), a packaging-only plugin-manifest fix (v1.7.1), and sub-agent delegation for closed context-heavy reads (v1.7.2). It also added the Kimi CLI skill variant, marketing notes, cross-project messaging, and wired lit-extract as an active field-feedback source. Closed by a self-applied `sync` plus this phase transition to Phase 5.
+
+### Phase Goal
+
+**Maintenance & field-feedback watch.** v1.7.2 is the current shipped version (latest: sub-agent delegation for closed, context-heavy reads). Installation paths are verified; community catalogs notified. This phase holds until accumulated real-world signal justifies v1.8 — with lit-extract now serving as an active feedback source for doc-harness usage. No proactive design or spec work planned beyond field-feedback patches.
+
+### Completed Steps
+
+#### v1.7.2 — sub-agent delegation for closed, context-heavy reads (2026-09-07)
+
+User-directed improvement (surfaced by the Anthropic Commerce Agents article): when a single self-contained read would load a large amount of raw text into main context, delegate read-and-condense to a low-intelligence sub-agent and keep only its condensed, cited summary. Added to `skill/operational_rules.md` ("During Work"), `skill/recall.md` (rule 10), `skill/resume.md` (Phase A Step 2), and `skill/spec.md` §11.7/§11.8; full bilingual mirror in `skill-zh/`; `DOC_HARNESS_SPEC.md` re-synced; `doc-harness-ops-version` bumped to 1.7.2. No new command.
+
+#### Resume run (2026-09-07)
+
+Executed `/doc-harness resume` (interactive). Confirmed identity (doc-harness agent), Phase 4 maintenance mode, latest completed step v1.7.1. Edge conditions found (recorded, not yet fixed): `inbox/2026-04-22-from-whoami-agent-identity-confusion-report.md` lacks YAML frontmatter/`status`; the "Phase Goal" paragraph (now corrected above) and the headlights "Immediate Actions" list were stale v1.4→v1.5-era text.
+
+#### Cross-project messages sent (2026-09-07)
+
+Delivered two messages: (1) `from-aiagents` → lit-extract, "Anthropic Commerce Agents 可借鉴要点" (staged, copied to `AIAgents/outbox/` and `lit-extract/inbox/`); (2) `from-doc-harness` → lit-extract, "请在使用中积累 doc-harness 改进建议" (written to `doc-harness/outbox/` and copied to `lit-extract/inbox/`). Registered the doc-harness outbox copy in FILE_INDEX.
+
+[Erratum (2026-09-07): the "from-aiagents" message was an overstep — doc-harness must not send mail in another project's name; AIAgents has its own agent. That message is flagged for removal. The "from-doc-harness" feedback request is legitimate doc-harness communication.]
+
+#### Sync (2026-09-07)
+
+`/doc-harness sync` (interactive) executed. Auto fixes applied: registered `.gitignore` in FILE_INDEX; refreshed FILE_INDEX "Last updated" to 2026-09-07; archived 3 stale (>30 days) actioned inbox messages to `inbox/_archive/`; quarantined 1 malformed inbox message (no YAML frontmatter) to `inbox/_malformed/` per §14.8. Car body is 222 lines (≥200 threshold) — phase-transition decision pending user confirmation. WORKLOG 301 lines (under 1000), no archival needed.
+
+#### v1.4.1 patch — §5.5 WORKLOG archival filename correction (2026-04-19)
+
+First field-feedback hit of Phase 4. User (also the author) flagged that the v1.2 quarterly-bin archive filename (`WORKLOG_ARCHIVE_<YYYY-QN>.md`) grows unbounded for high-density projects — a project writing 5,000 lines/quarter puts all 5,000 lines into one "archive," defeating the purpose. Corrected to per-event date naming (`WORKLOG_ARCHIVE_<YYYY-MM-DD>.md`), which keeps each archive bounded by the ~1000-line trigger.
+
+Changes made (7 files):
+- `skill/spec.md` §5.5 (procedure rewritten; step 2 filename change; cross-quarter scar step removed; new step 7 logging archival in CURRENT_STATUS; git commit message updated; version bumped to v1.4.1 + new version-history row); TOC chapter 5 description adjusted.
+- `skill/operational_rules.md` mirror-updated; version tag `<!-- doc-harness-ops-version: 1.4.1 -->`.
+- `skill-zh/spec.md` and `skill-zh/operational_rules.md` — full Chinese mirror.
+- `README.md` and `README_zh.md` — v1.2 FAQ entry amended with v1.4.1 note.
+- `DOC_HARNESS_SPEC.md` re-synced from `skill/spec.md`.
+
+Committed + pushed to GitHub. Plugin marketplace consumers will get v1.4.1 via `/plugin marketplace update doc-harness`.
+
+Side observation (worth keeping as a driving-manual principle, see below): The Phase 4 rule "don't iterate without real user signal" worked — this is exactly the signal pattern it was waiting for. Decision on v1.5 aggregation remains: 1 of ≥3 real-world issues logged. Does not trigger v1.5 on its own.
+
+#### v1.5.0 design — sync + flush commands (2026-04-22)
+
+User requested two new commands to fill the gap between `check` (read-only diagnosis) and `init` (creation).
+
+- **`/doc-harness sync`** — Status synchronization. Repairs drift (unregistered files, stale dates), optionally triggers phase transition or WORKLOG archival. Two modes: `auto` (default, no asking) and `interactive` (asks before major changes). Distinct from `check`: sync modifies files; check only reports.
+- **`/doc-harness flush`** — Emergency context save. Includes everything sync does, PLUS mandatory extraction of important context information into documents before compression. Core guarantee: after flush, a new agent reading Recovery Chain recovers state as if context was never compressed. Two modes: `auto` (heuristic classification) and `interactive` (asks per item).
+
+**Design artifacts created**:
+- `skill/sync.md` (222 lines) — English sync procedure with 5-step workflow
+- `skill/flush.md` (261 lines) — English flush procedure with 5-phase workflow (A: sync, B: inventory, C: write/register, D: verification, E: marker)
+- `skill-zh/sync.md` (211 lines) — Chinese mirror
+- `skill-zh/flush.md` (247 lines) — Chinese mirror
+- `skill/SKILL.md` — Command listing and argument-hint expanded
+- `skill/spec.md` — §11.5 (sync), §11.6 (flush), Version History v1.5.0
+- `skill/operational_rules.md` — Version bumped to 1.5.0; added sync/flush references
+- `skill/check.md` — Updated "Write It Down" check to mention flush; added pre-sync/flush to "When to use"
+- Same 5 files mirrored in `skill-zh/`
+
+**Completed**: All design artifacts, English skill files, Chinese mirrors, project root doc updates, DOC_HARNESS_SPEC.md re-sync, README bilingual updates. Verified: version numbers consistent, new files registered, argument-hints aligned.
+
+**Post-commit design change (2026-04-22)**: User decided default mode for both `sync` and `flush` should be **interactive** (asking), not auto. Auto now requires explicit `--auto` flag. Rationale: phase transitions and context extractions involve judgment; the safe default is to ask. Updated in all 8 skill files + both READMEs.
+
+#### GitHub push SSL fix via WhoAMI inbox (2026-04-22)
+
+`git push` for marketplace.json update (commit `235e19a`) repeatedly failed with `schannel: failed to receive handshake, SSL/TLS connection failed`. Received inbox message from WhoAMI (`2026-04-22-from-whoami-github-push-experience-report.md`) sharing their Windows + Clash Verge push solution. Applied the 4-config combo:
+- `http.sslBackend = schannel`
+- `http.proxy = http://127.0.0.1:7897`
+- `https.proxy = http://127.0.0.1:7897`
+- `http.lowSpeedLimit = 1000` + `http.lowSpeedTime = 60`
+
+Push succeeded immediately after configuration. WhoAMI message marked `actioned`.
+
+#### Kimi CLI skill version created (2026-04-22)
+
+Created `kimi-skill/` — a Kimi CLI-compatible skill version of Doc Harness, adapting the v1.5.0 feature set for Kimi's natural-language trigger model.
+
+#### Documentation sync run (2026-04-22)
+
+`/doc-harness sync` executed by Kimi CLI. Fixes applied:
+- Registered 3 inbox messages in FILE_INDEX (SMSS mandate, WhoAMI proposals, WhoAMI push experience)
+- Updated CLAUDE.md one-line status to reflect v1.5.0 shipped + kimi-skill created + standalone repo published
+- Updated CLAUDE.md current phase description
+- Car body: 84 lines (under limit); WORKLOG: 261 lines (under limit); no phase transition or archival needed
+
+#### Context flush (2026-04-22 21:38) — 1 item extracted to file
+- Sync actions: phase transition no; archival no
+- New file created: `notes/kimi-claude-interop.md` — Cross-tool skill discovery behavior (Kimi auto-discovers Claude skills, brand-directory priority rules, dual distribution strategy)
+- Existing files appended: none
+- Context-principle extraction: skipped by user
+
+#### v1.5.1 design — recall command (2026-04-22)
+
+User requested a fifth command to fill the retrieval gap: `recall`.
+
+- **`/doc-harness recall [query]`** — Information retrieval. Searches systematically across all registered documents along the Doc Harness hierarchy (CLAUDE.md → CURRENT_STATUS → WORKLOG → FILE_INDEX → individual files) and returns structured, source-cited answers. Four query types: status/plan (Layer 0–1), history/decision (Layer 1–2), file lookup (Layer 3–4), cross-document synthesis (Layer 1–4). Read-only; never modifies files.
+
+**Design artifacts created**:
+- `skill/recall.md` (~270 lines) — English recall procedure with layered search protocol
+- `skill-zh/recall.md` (~260 lines) — Chinese mirror
+- `kimi-skill/references/recall.md` (~230 lines) — Kimi CLI adaptation (natural-language triggers)
+- `skill/SKILL.md`, `skill-zh/SKILL.md`, `kimi-skill/SKILL.md` — Command listings updated
+- `skill/spec.md`, `skill-zh/spec.md` — §11.7 recall normative spec added
+- `README.md`, `README_zh.md` — Feature lists updated
+
+**Completed**: All design artifacts, English + Chinese + Kimi skill files, project root doc updates. Recall.md registered in FILE_INDEX under all three skill categories.
+
+#### Context flush (2026-04-22) — auto mode
+
+`/doc-harness flush --auto` executed. Phase A (sync): registered `PHILOSOPHY.md` and `kimi-skill/README.md` in FILE_INDEX; no phase transition or archival triggered. Phase B (inventory): no new context items requiring extraction — all session work already committed. Phase D (verification): gap found — Recovery Chain missing PHILOSOPHY.md reference; fixed by adding task-conditional entry. Also fixed outdated "Two subcommands" text in CLAUDE.md → "Five commands".
+
+**Key differences from Claude Code version**:
+- No slash commands (`/doc-harness init`) — all triggers are natural language parsed from SKILL.md `description`
+- No `argument-hint` or `allowed-tools` in frontmatter (Kimi only supports `name` + `description`)
+- No `--auto` / `--interactive` flags — Kimi uses conversation context to decide whether to ask the user
+- Supports `references/` directory for on-demand loaded docs (same mechanism as Claude Code's reference docs)
+
+**Files created**:
+- `kimi-skill/SKILL.md` (132 lines) — entry point with trigger table mapping natural language to procedures
+- `kimi-skill/references/init.md` — project setup, including inter-project inbox/outbox adoption
+- `kimi-skill/references/check.md` — health audit + principle reflection
+- `kimi-skill/references/sync.md` — drift repair with ask/auto heuristics
+- `kimi-skill/references/flush.md` — emergency context save before compression
+- `kimi-skill/references/spec.md` — normative spec reference for edge cases
+
+**Translation approach**: All docs written in English with Chinese annotations where helpful. Chinese mirror (`kimi-skill-zh/`) can follow later per Iron Rule 1.
+
+Committed + pushed to GitHub (`f36a1ae`).
+
+#### v1.6.0 — AGENT IDENTITY LOCK (2026-04-22)
+
+WhoAMI agent experienced identity confusion (INC-2026-04-22-001): during cross-project investigation of lit-system-api code, the agent incorrectly identified itself as lit's agent, writing to lit's outbox/, modifying lit's internal docs, and sending messages with wrong `from:` field. User required 4 corrections.
+
+**Response — v1.6.0 spec upgrade**:
+- **AGENT IDENTITY LOCK** at top of CLAUDE.md template: cognitive anchor (not rule) — "你是 [PROJECT] 的代理" only, no "你不是谁" per user feedback
+- **Recovery Chain Step 0**: identity anchor ritual before reading any files
+- **Pre-send checklist §14.3.2**: 5-item sender self-defense (from field, outbox path, inbox path, no doc tampering, protocol active)
+- **check §1.11**: identity lock presence verification
+- **Bilingual sync**: all changes mirrored skill/ → skill-zh/
+
+**Files changed**: 17 files across skill/, skill-zh/, project root, kimi-skill/. Version bump v1.5.1 → v1.6.0. Local installs (Claude + Kimi) updated. Git commit `76db4b3`; GitHub push done.
+
+#### Marketing materials + final sync (2026-04-23)
+
+- Created `notes/reddit-v160-announcement.md` — Reddit-style announcement post focusing on the five commands (init/check/sync/flush/recall)
+- Created `notes/wechat-promo-v160.md` — WeChat group promotion copy in Chinese, using conversational tone with pain-point hooks
+- Sync: registered both marketing files in FILE_INDEX; dates already current (2026-04-23)
+- Cleanup: removed accidental kimi-export files from repo, added `.gitignore` rule
+- Push: all commits synced to GitHub
+
+#### Context flush (2026-04-23) — auto mode
+- Sync: registered `notes/wechat-promo-v160.md`
+- No phase transition or archival triggered
+- Verification: all checks passed
+
+#### v1.6.1 — flush Phase B/C hardening (2026-04-24)
+
+User reported that `/doc-harness flush` in practice frequently skipped Phase B (Context Inventory) and Phase C (Write & Register), producing output indistinguishable from `sync`. This patch makes Phase B/C structurally unskippable through full-chain reinforcement.
+
+**Root cause**: Agents either (a) relied on SKILL.md's one-sentence flush description without opening `flush.md`, or (b) treated Phase B's descriptive language as optional guidance.
+
+**Fix applied across all instruction layers**:
+- `skill/flush.md` (EN): Added "Common Failure Mode" callout at top; Phase B/C headers marked **MANDATORY — non-skippable**; Phase A→B completion gate with explicit agent declaration; Empty Scan Report format (mandatory when zero extractable items found); Phase B/C/D completion checklists; output format template enforces Phase B presence even when empty.
+- `skill/spec.md` §11.6 (EN): Added normative sentence: "Phase B and Phase C are non-skippable... silently omitting Phase B is a flush failure."
+- `skill/SKILL.md` (EN): Expanded flush from one sentence to a paragraph naming all five phases; added anti-failure warning.
+- `skill/operational_rules.md` (EN): Added "Critical distinction" paragraph and "flush failure mode" bullet in sync-vs-flush section.
+- `skill-zh/flush.md`, `skill-zh/spec.md`, `skill-zh/SKILL.md`, `skill-zh/operational_rules.md` (ZH): Full bilingual mirror per Iron Rule 1.
+- `kimi-skill/SKILL.md` (EN): Expanded flush description in natural-language trigger table.
+- `kimi-skill/references/flush.md` (EN): Core rewrite with all mandatory Phase B/C hardening.
+- `DOC_HARNESS_SPEC.md`: Re-synced from `skill/spec.md`.
+- `CLAUDE.md`: Updated operational rules section with sync-vs-flush distinction; refreshed dates and one-line status.
+- `CURRENT_STATUS.md`: This entry.
+
+**Files changed**: 11 skill files + 3 project root docs. Version bump v1.6.0 → v1.6.1. No new files created.
+
+#### v1.7.0 — `/doc-harness resume` 结构化状态恢复命令 (2026-04-24)
+
+User reported that when returning to a project with empty context and all status documents present, there was no explicit command to guide the agent through systematic recovery of project state. The existing Recovery Chain and Session Start protocol were implicit — agents could skip them silently, and there was no proof that understanding was actually recovered.
+
+**Response — v1.7.0 spec upgrade**:
+- **New sixth command**: `/doc-harness resume [--auto]` — structured state recovery
+- **4-phase procedure**:
+  - Phase A: Execute Recovery Chain (identity anchor → must-read → task-conditional) + edge-condition scan (mid-transition §6.3.1, pause §6.4, inbox unread, freshness)
+  - Phase B: Produce Recovery Report — 7-section structured synthesis (Identity Confirmation, Current Phase & Goal, Active Work Summary, Next Steps with freshness check, Unread Signals, Edge Conditions, Agent Readiness Self-Assessment)
+  - Phase C: Understanding Verification — 5 forced questions answered in agent's own words to prove comprehension (not just reading): phase goal, #1 next step + blocker, last completed step, unread signals, safety-to-proceed check
+  - Phase D: Resume decision — interactive (user confirmation) or auto (decision tree: ≤7d fresh + no edge conditions = proceed; otherwise = wait)
+- **Auto-resume decision tree**: ≤7 days → proceed; 8–30 days or edge conditions → wait; >30 days or paused → always wait
+- **Relationship to existing commands**: resume fills the gap between `init` (no docs) and `check/sync/flush/recall` (docs present, agent already oriented). It is the mandatory first step when context is empty.
+
+**Design artifacts created**:
+- `skill/resume.md` (~260 lines) — English resume procedure with 4-phase workflow
+- `skill-zh/resume.md` (~240 lines) — Chinese mirror
+- `kimi-skill/references/resume.md` (~180 lines) — Kimi CLI adaptation
+- `skill/spec.md` — §11.7 resume normative spec (recall shifted to §11.8)
+- `skill/SKILL.md`, `skill-zh/SKILL.md`, `kimi-skill/SKILL.md` — Command listings updated (5 → 6 commands)
+- `skill/operational_rules.md`, `skill-zh/operational_rules.md` — Session Start step 4: auto-trigger resume on empty context
+- `DOC_HARNESS_SPEC.md` — Re-synced
+- `CLAUDE.md` — Command count 5 → 6, one-line status updated
+- `CURRENT_STATUS.md` — This entry
+
+**Version rationale**: v1.7.0 (not v1.6.2) because this is a **new command** — a feature-level addition, not a patch. The flush hardening (v1.6.1) and resume command (v1.7.0) are separate logical increments.
+
+#### README synced to v1.7.0 (2026-04-24)
+- Updated version badge v1.6.0 → v1.7.0, command count 5 → 6 throughout both READMEs
+- Added `/doc-harness resume` to command table with triggers and description
+- Updated Day-to-Day Usage: context resets / new agent arrival now use `resume`
+- Added FAQ entries for v1.7.0 (resume) and v1.6.1 (flush hardening)
+- Bilingual sync: EN + ZH per Iron Rule 1
+- Committed + pushed: `ff67704`
+
+#### Local skill deployment verified and redeployed (2026-04-24)
+- User requested verification that local Claude Code and Kimi CLI skills were fully updated to v1.7.0
+- Performed SHA256 hash comparison across all 9 files in both install locations
+- Result: all files matched dev source perfectly on first check
+- Re-deployed full copy from dev source to both locations as extra safeguard
+- Claude Code (`~/.claude/skills/doc-harness/`): 9 files — init/check/sync/flush/recall/resume/operational_rules/SKILL/spec
+- Kimi CLI (`~/.kimi/skills/doc-harness/`): 9 files — SKILL/README + references/init/check/sync/flush/recall/resume/spec
+
+#### Context flushed (2026-04-24) — 2 items extracted to files
+- Sync actions: phase transition no; archival no
+- New files created: none
+- Existing files appended: `CURRENT_STATUS.md` — README sync record + deployment verification record
+
+### Unresolved Issues
+
+(None.)
 
 ## Phase 4: v1.7.1 packaging fix + plugin-manifest modernization (2026-09-01)
 

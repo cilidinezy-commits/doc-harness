@@ -1,0 +1,7 @@
+# Doc Harness is line-ending sensitive in one place: the projection (CURRENT_STATUS.md) is
+# compared byte-for-byte against the generated text. Pin LF for text files so a clone on a
+# machine with core.autocrlf=true cannot turn a correct projection into a false "stale".
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.zip binary

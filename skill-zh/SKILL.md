@@ -1,107 +1,67 @@
 ---
 name: doc-harness
-description: "基于文档的项目控制系统，让任何 AI 智能体或人类仅通过读取文件就能恢复项目工作状态——无需外部记忆。当用户需要管理长期项目、跨 session 追踪进度、context 丢失后恢复状态、多智能体协作、审计项目文档健康状况、或避免忘记上次做到哪里时，应使用本 skill。触发场景：'/doc-harness init' 与 '/doc-harness check'（显式斜杠命令）；“帮我把这个项目结构化”、“老是忘记做到哪里了”、“智能体 session 之间会忘记上下文”、“整理项目文档”、“审计这个项目”、“上次我们做了什么”等请求；跨周的长期项目（论文、研究、分析、软件模块）；跨项目协调（inbox/outbox 文件级消息）。"
-argument-hint: "init [项目名] [描述] | check | sync [--auto] | flush [--auto] | recall [query] | resume [--auto]"
+description: "基于文档的项目控制：让任何 AI 智能体或人仅凭文件即可恢复工作状态——无需外部记忆。当用户需要管理长期项目、跨 session 追踪进度、context 丢失后恢复状态、多智能体协作、审计文档健康、或避免忘记上次做到哪里时使用。触发词包括 '/doc-harness init'、'/doc-harness check' 等斜杠命令，以及『帮我搭建这个项目』『我总是忘』『智能体在 session 之间会忘记』『整理项目文档』『审计这个项目』『上次我们做了什么』等。"
+argument-hint: "init [项目名] [描述] | check | sync [--auto] | flush [--auto] | recall [查询] | resume [--auto]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
-# Doc Harness — 基于文档的项目控制系统
+# Doc Harness — 基于文档的项目控制
 
-Doc Harness 是一套文档管理系统，使任何 AI Agent 或人类协作者能够仅通过阅读文件来理解和恢复项目工作状态——无需任何外部记忆系统。
+Doc Harness 让项目仅凭文件即可恢复：任何新 agent 在上下文断裂后，读入口就能正确接手。
 
-每个项目创建并维护**五个文档**：
-- **CLAUDE.md** — 项目入口（概述、恢复链、铁律、操作规则）
-- **CURRENT_STATUS.md** — 活跃状态（车辙/车身/车灯/驾驶手册）
-- **FILE_INDEX.md** — 按类别组织的文件目录
-- **WORKLOG.md** — 永久工作历史（只增不改）
-- **DOC_HARNESS_SPEC.md** — 完整规范（参考文档）
+每个项目维护：
 
-另有两个**可选文档**，当项目真正积累了相应内容时才创建（详见 spec.md 第13章）：
-- **PARKING_LOT.md** — 暂缓事项，含复活前置条件
-- **PHILOSOPHY.md** — 本项目实践催生的原则
+- **CLAUDE.md** —— 唯一权威入口：AGENT IDENTITY LOCK + 稳定锚（框架锚、铁律、底层原则）+ 操作规则。
+- **AGENTS.md** —— 指向 CLAUDE.md 的薄指针（绝不过时复制）。
+- **events.log** —— append-only 事件日志：历史与当前状态的**单一来源**。
+- **CURRENT_STATUS.md** —— 由 `events.log` **生成的投影**（`## NOW` + 活跃工作面 + 否定台账）；绝不手工编辑。
+- **FILE_INDEX.md** —— 文件目录；未注册文件是红项。
+- **DOC_HARNESS_SPEC.md** —— 可选的规范参考副本。
 
-当项目需要与其他项目协调时，可启用一套**可选机制**（详见 spec.md 第14章）：
-- **跨项目 inbox/outbox** — 自含式文件消息协议。`inbox/` 和 `outbox/` 目录；带 YAML 前置信息的 Markdown 消息；生命周期 `unread → read → actioned`。完整规范内嵌于 doc-harness 本身，无需外部文档。
+可选：`PHILOSOPHY.md`（底层原则）、`PARKING_LOT.md`、`RUNBOOK.md`，以及跨项目 `inbox/`/`outbox/`（可另配 `MAIL_LEDGER.md`）。
+
+核心原则：**接手优先于记录**——新 agent 必须能仅凭文件正确接手。状态变化是一条 `record` 命令；确定性工具带（`tools/`）负责验证文档体系的完整性。
 
 ## 命令
 
 ### `/doc-harness init [项目名] [描述]`
 
-为新项目初始化 Doc Harness。在当前目录创建全部5个文件。
-
-**→ 详见 [init.md](init.md)**
+为新项目创建文件（干净初始化或中途采纳）。
+**→ 见 [init.md](init.md)。**
 
 ### `/doc-harness check`
 
-审计当前项目的文档健康状况并反思工作原则。
-
-**→ 详见 [check.md](check.md)**
+审计健康：投影新鲜度（now_refreshed vs events.log）、未注册文件（红）、入口唯一、`events.log` 良好性、收件箱、操作规则版本、身份锁、超期结论（`conclusion_until`）、来源 class（`class=root|decision|reported`）；然后反思锚与底层原则。
+**→ 见 [check.md](check.md)。**
 
 ### `/doc-harness sync [--auto]`
 
-将状态文档与现实同步。修复漂移、刷新陈旧字段、注册缺失文件，并可选择触发阶段切换或 WORKLOG 归档。
-
-- **`interactive`**（默认）：在阶段切换、归档或创建新原则文档之前询问用户。
-- **`auto`**：执行修复，无需询问。
-
-**→ 详见 [sync.md](sync.md)**
+修复漂移：注册文件、向 `events.log` 追加缺失的状态事件、重新投影 CURRENT_STATUS、收件箱整理。`interactive`（默认）在状态变更前询问；`auto` 执行安全修复。
+**→ 见 [sync.md](sync.md)。**
 
 ### `/doc-harness flush [--auto]`
 
-上下文压缩前的紧急保存。包含 `sync` 的一切功能，**加上强制性地将上下文中的重要信息提取到文档中**。
+压缩 / session 结束前的紧急保存：先 sync，再**强制**盘点上下文、写入并注册提取项、验证新 agent 能找到、最后**追加状态事件并重新投影**。
+**→ 见 [flush.md](flush.md)。**
 
-`flush` 分为**五个阶段**：(A) 同步、(B) 上下文盘点、(C) 写入并注册、(D) 验证、(E) 冲刷标记。**阶段 B 和阶段 C 是区分特征**——它们扫描智能体当前上下文中仅存于内存的信息，对其分类并写入文件。没有阶段 B 和阶段 C，`flush` 与 `sync` 毫无区别，即冲刷失败。
+### `/doc-harness recall [查询]`
 
-- **`interactive`**（默认）：在每次重要提取之前询问用户。
-- **`auto`**：使用启发式规则对上下文信息进行分类和保存，无需询问。
-
-**→ 详见 [flush.md](flush.md)。含空扫描报告要求（当无可提取条目时必须产出）。**
+检索信息：第 0 层稳定锚 → 第 1 层 `## NOW`/活跃工作面 → 第 2 层 `events.log`（历史）→ 第 3 层 FILE_INDEX → 第 4 层文件。只读、带来源引用。机械 grep 用 `tools/search.ps1`。
+**→ 见 [recall.md](recall.md)。**
 
 ### `/doc-harness resume [--auto]`
 
-结构化状态恢复：当上下文为空或用户希望继续工作时，系统性地阅读状态文档、验证理解、并在继续工作前产出恢复报告。
-
-`resume` 分为**四个阶段**：(A) 执行恢复链（身份锚定 → 必读 → 任务条件读）、(B) 产出恢复报告（7 节结构化综合）、(C) 理解验证（5 道强制问题证明理解）、(D) 恢复决策。
-
-- **`interactive`**（默认）：将恢复报告呈现给用户确认后再继续。
-- **`auto`**：无需用户交互执行完整流程，应用自动恢复决策树（≤7 天新鲜 + 无边缘条件 = 继续；否则 = 等待用户）。
-
-**→ 详见 [resume.md](resume.md)。**
-
-### `/doc-harness recall [query]`
-
-从项目 Doc Harness 文档层次结构中检索信息。在已注册文档中进行系统化搜索，返回结构化、带来源引用的结果。
-
-**查询类型**：
-- **状态/计划**："认证当前计划是什么？" → 搜索 CURRENT_STATUS + headlights
-- **历史/决策**："我们为什么选 PostgreSQL？" → 搜索 WORKLOG + tire tracks
-- **文件查找**："找所有关于缓存的文档" → 搜索 FILE_INDEX
-- **综合**："所有关于认证的讨论" → 跨所有层综合搜索
-
-**→ 完整分层搜索协议和输出格式见 [recall.md](recall.md)。**
+结构化、可验证的接手：身份 → 稳定锚 → 从 `events.log` 读当前状态（并校验新鲜）→ 先读清单 → 否定台账；再出恢复报告 + 5 问验证 + 继续/等待决策。上下文为空或用户说「恢复」时运行。
+**→ 见 [resume.md](resume.md)。**
 
 ### `/doc-harness`（无参数）
 
-检查当前目录并给出合适的下一步建议：
-- **4个核心文件齐全**（CLAUDE.md、CURRENT_STATUS.md、FILE_INDEX.md、WORKLOG.md）→ 建议 `/doc-harness check`。
-- **完全没有 Doc Harness 文件** → 建议 `/doc-harness init`（按 `init.md` 第二步执行干净 init 或中途引入）。
-- **部分存在**（部分文件存在，其他缺失或损坏）→ 建议 `/doc-harness init` 进入**中途引入模式**（见 `init.md` 第二步 (b)/(c) 分支）；**不要**对损坏的安装建议 `check`。
+检查目录：核心文件齐全 → 建议 `check`；完全没有 → 建议 `init`；部分存在 → 建议 `init` 中途采纳模式。然后显示本帮助。
 
-然后显示以下帮助信息。
+## 确定性工具带（`tools/`）
 
-## 首要原则："落笔为安"
-
-Context 中的信息早晚彻底丢失。重要信息必须**写入文件**并**注册到 FILE_INDEX**。不写=丢失，不注册=虽存在但不可发现=等同于丢失。
-
-**上下文感知推论**：如果运行环境暴露了 context 使用率（百分比或 token 数），将**剩余不足**（~<20%）视作立即刷新 CURRENT_STATUS 的触发信号（在下次工具调用前完成）；如车身已积累大量未保存工作，考虑立即阶段切换（具体阈值见 `spec.md` §11.2 第 4 条）。压缩等同于非自愿的 session 结束——提前写盘是唯一防御。
+纯 PowerShell、工具无关。关键入口是 `record.ps1`（一步状态变更：追加事件 + 重新投影 + conformance）。其余：`project.ps1`、`search.ps1`、`conformance.ps1`、`now-verify`、`encoding-guard`、`unregistered`、`dead-pointer`、`cite-check`、`stale-check`、`recurrence`、`nested-git-guard`、`stale-writer-guard`、`batch-register`、`telemetry`，以及邮件族（`mail-daemon`、`mail-send`、`mail-poll`、`mail-ledger`）。
 
 ## 参考文档
 
-- [init.md](init.md) — 执行 `/doc-harness init` 时读。涵盖干净 init、中途引入、部分状态修复、可选 inbox/outbox 协议启用。
-- [check.md](check.md) — 执行 `/doc-harness check` 时读。审计文件健康、恢复链健全性、mid-transition 检测、inbox 状态等。
-- [sync.md](sync.md) — 执行 `/doc-harness sync` 时读。漂移修复、日期刷新、文件注册、阶段切换与归档触发。
-- [flush.md](flush.md) — 执行 `/doc-harness flush` 时读。紧急保存，含系统性的上下文到文档的提取。
-- [recall.md](recall.md) — 执行 `/doc-harness recall` 时读。从已注册文档中检索信息的分层搜索协议。
-- [resume.md](resume.md) — 执行 `/doc-harness resume` 时读。结构化状态恢复，含恢复链执行、恢复报告综合与理解验证。
-- [operational_rules.md](operational_rules.md) — `init` 时原样嵌入每个项目 CLAUDE.md 的操作规则。带有 `<!-- doc-harness-ops-version -->` 版本标签，供 check 检测过时嵌入。
-- [spec.md](spec.md) — Doc Harness 完整规范（14 章 + 5 附录）。权威文档——其他文件皆从此派生。顶部有目录可供不全读导航。
+- [init.md](init.md) · [check.md](check.md) · [sync.md](sync.md) · [flush.md](flush.md) · [recall.md](recall.md) · [resume.md](resume.md) · [operational_rules.md](operational_rules.md) · [spec.md](spec.md)（权威）。

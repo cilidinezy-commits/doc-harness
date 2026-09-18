@@ -1,0 +1,60 @@
+2026-09-07 plan:set 底层调研 → 核心设计 → 事件日志原语 → 工具带 → 自应用/验证 → 发布（待用户确认）
+2026-09-07 unit:open 核心文档重写 skill/命令全量 v2.0.0
+2026-09-07 unit:activate 核心文档重写
+2026-09-07 unit:close 核心文档重写 evidence=skill/spec.md class=root
+2026-09-07 unit:open 确定性工具带 14 件
+2026-09-07 unit:activate 确定性工具带
+2026-09-07 unit:close 确定性工具带 evidence=tools/ class=root
+2026-09-07 unit:open 自应用与对抗验证
+2026-09-07 unit:activate 自应用与对抗验证
+2026-09-07 unit:close 自应用与对抗验证 evidence=notes/validation.md class=root
+2026-09-07 unit:open 吸收两方评审 共识落地
+2026-09-07 unit:activate 吸收两方评审
+2026-09-07 unit:open 发布 README/插件/GitHub/安装副本
+2026-09-07 judgment:set 事件日志是原语，NOW 与工作面是投影 source=notes/state-model.md class=decision
+2026-09-07 next:set 完成事件日志原语开发并自迁移验证 blocker=none
+2026-09-07 read-first:set notes/state-model.md, notes/validation.md
+2026-09-09 unit:close 吸收两方评审 evidence=notes/validation.md class=decision
+2026-09-09 unit:open 可用性收口 单命令记录/工具随skill走/投影策略
+2026-09-09 unit:activate 可用性收口
+2026-09-09 next:set 完成可用性收口：单命令记录 + 工具随 skill 走 + 投影策略
+2026-09-11 next:set 完成 L3：时效标注(stale-check)+根源(cite-check升级)+否定台账
+2026-09-12 dead-end:set 可用性收口: 试过把投影做成不落盘、用时现算，但人类可读快照更有价值，故保留落盘+conformance校验
+2026-09-13 unit:close 可用性收口 evidence=notes/validation.md class=root
+2026-09-13 unit:open 自洽收口 文档/命令/工具同一模型+单一解析器+接手测试
+2026-09-13 unit:activate 自洽收口
+2026-09-13 judgment:set 记录状态的代价必须低到没有理由不记（一步或批量记录），而未记录的工作必须会红 source=tools/now-verify.ps1 class=root
+2026-09-13 next:set 在 某真实项目 项目做真实试用并收集反馈，之后才谈发布 blocker=需要用户决定试用节奏与发布时机
+2026-09-13 read-first:set skill/spec.md, notes/state-model.md, tools/README.md
+2026-09-13 dead-end:set plan 多行结构：试过把 parts 做成一等元素，最终让 unit-id 的 part/unit 前缀承载结构（少一个词汇表，扁平项目零成本）
+2026-09-14 unit:close 自洽收口 evidence=tools/handoff-test.ps1 class=root
+2026-09-14 unit:open 真实项目试用 把 v2 装进 某真实项目 并让它用一段时间
+2026-09-14 unit:activate 真实项目试用
+2026-09-14 judgment:set 守卫的价值在于能在真实项目上抓出真问题：某真实项目 首轮就被 now-verify/unregistered/cite-check/ops-embed 抓出四类缺陷 source=notes/validation.md class=root
+2026-09-14 next:set 部署 v2 到 某真实项目 与 agent 级安装，并写信让它修自身数据缺陷后开始试用 blocker=需要 某真实项目 的 agent 真正用起来
+2026-09-14 read-first:set skill/spec.md, notes/validation.md, tools/README.md
+2026-09-14 dead-end:set 单一默认 class：迁移工具若只给一个默认 class，会把收口（root）与判断（decision）混为一谈；改为两个独立开关
+2026-09-14 note:set 新增 note:set 动词（改状态文档但非单元/判断/计划的杂务可记录）；渲染器去除非 ASCII 字面量；record.ps1 区分「记录失败」与「其它守卫变红」；ops 块重新嵌入
+2026-09-14 next:set 把 v2 部署到 某真实项目 并写信告知它首轮 4 项缺陷与精确修法，然后观察它能否自愈 blocker=需要 某真实项目 的 agent 真正用起来
+2026-09-18 note:set v2 skill+工具带已部署到 Misc（项目内英文版）与 agent 级（中文版）；Misc 的 ops 块重新嵌入、CURRENT_STATUS 重投影；写信托它自修 3 项数据缺陷；batch-register 逗号粘连与 mail-send 收件方 inbox 缺失已修
+2026-09-18 next:set 等 某真实项目 回信与自修结果；期间继续复查 v2 其余薄弱面 blocker=需要 某真实项目 的 agent 使用一段时间
+2026-09-18 unit:close 吸收两方评审 evidence=notes/validation.md class=decision
+2026-09-18 unit:open v2发布 把 v2.0.0 发布到 GitHub（发布树自洽 + 门面与产品一致）
+2026-09-18 unit:activate v2发布
+2026-09-18 unit:close v2发布 evidence=notes/validation.md class=root
+2026-09-18 unit:open 对外口径快照 回应 某下游项目对 v2 对外描述与对外材料一致性的请求
+2026-09-18 unit:activate 对外口径快照
+2026-09-18 unit:close 对外口径快照 evidence=README.md class=root
+2026-09-18 judgment:set 发布树必须自己通过自己的闸门：被排除的文件不能出现在任何守卫的引用里（否则发布的仓库自己不过自己的检查） source=notes/validation.md class=root
+2026-09-18 next:set 等该下游项目回《引用清单》逐句核对；把发布流程固化为脚本，避免手抄排除清单再次漂移 blocker=无
+2026-09-18 read-first:set README.md, RELEASING.md, notes/validation.md
+2026-09-18 note:set v2.0.0 已发布（tag v2.0.0）：README 中英重写、manifest 升 2.0.0、仓库描述与 topics 更新；下游项目来信已处理并回信
+2026-09-18 dead-end:set 用显式清单枚举「要排除发布」的文件：一次就漏掉当天新到的一封信；应让排除规则从磁盘现状枚举（pathspec），而不是靠记忆列举
+2026-09-18 note:set 发布树复审：从 GitHub 全新 clone 后跑完整闸门 PASS；并把 now-verify 的「未记录的工作」判定从文件 mtime 改为 git 状态（否则任何 clone 都会因 mtime=克隆当天而自判红），因此在任何人依赖 v2.0.0 之前修正了发布提交
+2026-09-18 dead-end:set 用文件 mtime 判断「有没有未记录的工作」：在发布/克隆场景下必然误报（mtime=克隆当天）；必须优先用 git 状态（未提交改动 / 未触碰 events.log 的提交），非 git 项目才退回 mtime
+2026-09-18 note:set 新增 zh-sync-check：铁律 1「中英同步」从人眼核对变成机器判据（文件集合/标题层级序列/围栏数/表格行数一致），并做空转检验（删一个中文小节即红）；已接入 conformance
+2026-09-18 note:set 审计发现并补齐：flush.md 两版都补上 events.log 指名（此前 9 个 skill 文档中唯一没点名原语的）；新增 entry-check（身份锁 + AGENTS.md 薄指针，含空转检验）；handoff-test 夹具因缺身份锁被新守卫抓出并修正
+2026-09-18 judgment:set 「会红」的判据必须覆盖到规则本身：语言一致、入口唯一、单解析器、不得教回旧模型——这些过去都靠人眼评审，现在都有机器判据 source=notes/validation.md class=root
+# 2026-09-18 privacy redaction: sibling-project names and off-project context were removed from earlier lines; the pre-redaction log is archived at _archive/events-pre-redaction-2026-09-18.log (not published)
+2026-09-18 note:set 隐私修正：发布记录与状态事件里泄露的私人语境/兄弟项目名已从 notes/validation.md、events.log、CURRENT_STATUS.md 改写（原日志归档到 _archive/events-pre-redaction-2026-09-18.log，不发布）
+2026-09-18 note:set 新增发布机制：.publish-exclude.txt（不发布的路径）与 .publish-terms.txt（禁止词表）两个本地数据文件 + tools/publish-scan.ps1；RELEASING.md 要求发布前在发布树上跑扫描——排除清单与禁止词表从此由数据枚举，不再靠当场回忆

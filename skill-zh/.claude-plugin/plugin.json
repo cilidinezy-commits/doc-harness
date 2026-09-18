@@ -1,7 +1,7 @@
 {
   "name": "doc-harness-zh",
-  "description": "基于文档的项目控制系统（中文版）。让任何 AI 智能体仅通过读取文件即可恢复项目工作状态，支持上下文压缩前的紧急保存。命令：/doc-harness init、/doc-harness check、/doc-harness sync、/doc-harness flush、/doc-harness recall、/doc-harness resume。",
-  "version": "1.7.1",
+  "description": "基于文档的项目控制系统（中文版）。以 append-only 的 events.log 为原语，CURRENT_STATUS.md（NOW + 活跃工作面）是由它生成的投影；配套守卫检查漂移、死指针、缺失溯源与未记录的工作。命令：/doc-harness init、check、sync、flush、recall、resume。",
+  "version": "2.0.0",
   "author": {
     "name": "cilidinezy-commits",
     "email": "cilidinezy-commits@users.noreply.github.com"
