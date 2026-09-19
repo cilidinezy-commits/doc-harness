@@ -104,22 +104,22 @@ Change the anchor only on a real architecture change, not per session.
 
 Every discipline/rule/lesson declares its placement:
 
-- **Gate (会红)**: a real guard exists. Ask "can a machine SEE this?" before writing.
-- **该红·量不到**: verifiable in principle, but no current instrument can see it — record as a named blind spot.
-- **Auto-inject (自动注入)**: must be present every session → CLAUDE.md top, short enough to be read.
-- **Queryable (可查)**: details → the four documents.
+- **Gate**: a real guard exists. Ask "can a machine SEE this?" before writing.
+- **Should-be-gated, unmeasurable**: verifiable in principle, but no current instrument can see it — record as a named blind spot.
+- **Auto-inject**: must be present every session → CLAUDE.md top, short enough to be read.
+- **Queryable**: details → the core documents.
 
 Falsifiability: never hand-copy a list that must stay in sync; verify every named file/id/number still exists (`tools/dead-pointer.ps1`).
 
-Recurrence: on the **2nd** restatement, force "why is this still a remembered rule?" Record `第 N 次（上次: <ref>）` + a mandatory same-shape field. `check` reports ≥2 restatements still queryable.
+Recurrence: on the **2nd** restatement, force "why is this still a remembered rule?" Record `Nth time (previous: <ref>)` + a mandatory same-shape field. `check` reports ≥2 restatements still queryable.
 
 ## NOW Block (top of CURRENT_STATUS)
 
 A fixed `## NOW` section, the first thing a resuming agent reads. **≤ ~20–30 lines.** Contains:
 
-- **In progress** (`在办`): the 1–3 active work units right now (may span branches; not a single linear step).
+- **In progress**: the 1–3 active work units right now (may span branches; not a single linear step).
 - **Next step**: the `#1` action + any blocker.
-- **Read first** (`先读`): a minimal handoff list (2–4 files/anchors), not a full map.
+- **Read first**: a minimal handoff list (2–4 files/anchors), not a full map.
 - **Key judgment** (optional but important): the most recent direction/priority change that reorients work. It must carry `source=<path> class=root|decision|reported` — the projection carries it verbatim and `cite-check` enforces it.
 - **Last refreshed**: projected from the last event's date — **recording an event is what refreshes NOW**.
 

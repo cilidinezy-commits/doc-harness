@@ -52,3 +52,4 @@ Ambiguous → default to D.
 ```
 
 Recall is read-only. It notes drift but does not fix it (`sync` fixes; `check` reports).
+

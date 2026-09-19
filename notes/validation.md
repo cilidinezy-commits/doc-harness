@@ -1,5 +1,8 @@
 # v2.0.0 验证记录（持续更新）
 
+> *Maintained in Chinese (the author's working language); this is the honest record of what has been
+> verified, what failed, and what is still unverified. English summary: [`README.md`](../README.md).*
+
 ## 已验证
 
 - **中英同步**：`skill/` 与 `skill-zh/` 各 9 个文件一一对应（check/flush/init/operational_rules/recall/resume/SKILL/spec/sync）。

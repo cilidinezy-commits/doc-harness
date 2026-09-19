@@ -71,3 +71,7 @@
 2026-09-18 note:set 完成度审计（用户提问）发现并修掉两处真缺口：①文档把命令写成 Claude Code 专有形式——SKILL.md 与 spec §8 现在写明「命令名是约定不是功能」并给出 Kimi（/skill:doc-harness）与其它 agent（自然语言）的调用方式；②文档默认工具带就在项目里——SKILL.md 现在写明工具带在仓库的 tools/（不在 skill 目录内）且可选，并点明缺它时变弱的两件事；另给两版 SKILL.md 补 license: MIT 前置字段（Kimi 官方字段表）
 2026-09-18 note:set 工具带随 skill 走：已把 tools/ 复制进 skill/tools 与 skill-zh/tools（各 31 个文件），并新增 toolbelt-sync 守卫强制三份逐字节一致（空转检验：改一个字节即报红；复制成嵌套目录也会被它抓出——本轮就抓到一次）；ops-embed 增加「从自己所在 skill 目录找 operational_rules.md」的候选路径，安装态因此可用
 2026-09-18 note:set 安装态实测：用 skill-zh/tools/record.ps1 驱动一个真实项目——事件成功追加、投影成功生成；ops-embed -Check 能从 skill 目录自身发现操作规则；toolbelt-sync/skill-consistency 在安装态正确 SKIP。本地 ~/.kimi/skills/doc-harness 已更新为含 tools/ 的 v2（41 个文件）
+2026-09-20 note:set 处理一个下游项目的来信（《指导者↔被指导者：转达工作方式》v1，无 YAML 头部）：采纳其「支持多语言有四层」判据（含第③层渲染、第④层各写各的），用它扫出并修掉英文文档中全部汉字——README 示例整段改为英文示例、spec 的 CJK 示例与中文括注、check 的输出模板、operational_rules 的四态与 NOW 字段括注；并把它做成会红的守卫「英文文档不得出现 CJK」（保留 README_zh/doc-harness-zh/skill-zh 这类指名中文版的例外），空转检验通过
+2026-09-20 note:set 英文读者体验补齐：PHILOSOPHY.md 顶部加英文导读＋四条原则一句话摘要（原文仍以中文维护，符合「各写各的」）；README 明确链接的两份中文笔记在顶部标注「以中文维护 + 英文摘要位置」；ops 块已重新嵌入 doc-harness 自身 CLAUDE.md
+2026-09-20 next:set 把更新后的 skill（含新守卫与本地化修正）部署到试用项目与本地 Kimi 安装并重嵌其 ops 块；随后给该下游项目回信（指出其来信缺 YAML 头部 + 通报我们采纳了哪条判据、修出什么） blocker=无
+# 2026-09-20 redaction: sibling project name removed from two event lines (state files are published; the name is not)

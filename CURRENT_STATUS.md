@@ -1,5 +1,5 @@
 ﻿---
-now_refreshed: 2026-09-18
+now_refreshed: 2026-09-20
 active_unit_ids: [真实项目试用]
 read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 ---
@@ -9,10 +9,10 @@ read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 ## NOW
 
 - **Active**: 真实项目试用
-- **Next**: 待用户 kimi login 后做一次会话级验证（判别题：状态原语是 events.log 还是五文档），并把「支持 Kimi CLI」用精确说法写回对外材料 blocker=需要用户重新登录 Kimi CLI（当前 kimi --print 返回 401）
+- **Next**: 把更新后的 skill（含新守卫与本地化修正）部署到试用项目与本地 Kimi 安装并重嵌其 ops 块；随后给该下游项目回信（指出其来信缺 YAML 头部 + 通报我们采纳了哪条判据、修出什么） blocker=无
 - **Read-first**: README.md, RELEASING.md, notes/validation.md
 - **Key-judgment**: 专用分支在模型换代后会变成负资产：v1.6 的 Kimi 分叉既过时又会（按同名优先规则）遮蔽新版；跨 agent 的正确形态是同一份 skill + 说清各家发现规则 source=notes/kimi-claude-interop.md class=root
-- **Refreshed**: 2026-09-18
+- **Refreshed**: 2026-09-20
 
 ## Work Surface
 
@@ -47,8 +47,6 @@ read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 - [done] `对外口径快照` evidence=README.md class=root
 
 ## Notes (housekeeping)
-- 2026-09-18 新增发布机制：.publish-exclude.txt（不发布的路径）与 .publish-terms.txt（禁止词表）两个本地数据文件 + tools/publish-scan.ps1；RELEASING.md 要求发布前在发布树上跑扫描——排除清单与禁止词表从此由数据枚举，不再靠当场回忆
-- 2026-09-18 发布修正完成：公开 master 重挂回 3ebcc0e 之上的干净发布提交（旧泄露提交从任何 ref 不可达），并把预脱敏日志归档与一封含人名的旧信件一并列入不发布清单；全新 clone 验证：闸门 PASS、工作树无个人语境词、旧提交不可达
 - 2026-09-18 隐私复查（用户要求）：整个公开历史被重写——从每个提交里删除两份会话导出与那份事故报告，私人邮箱替换为 GitHub noreply，残余个人语境词改泛称；11 个 tag 与 master 全部强推并用全新 clone 复核（个人信息 0 命中、旧提交不可达、闸门 PASS）
 - 2026-09-18 本地禁止词表加入私人邮箱、并把会话导出列入不发布清单；三个 plugin manifest 的联系邮箱改指 GitHub noreply，避免下一次发布把私人信息带回去
 - 2026-09-18 toolbelt portability: child processes re-run the same PowerShell host; Windows-only path separators and regexes removed for Linux/macOS (CI pending)
@@ -57,7 +55,9 @@ read_first: ["README.md", "RELEASING.md", "notes/validation.md"]
 - 2026-09-18 完成度审计（用户提问）发现并修掉两处真缺口：①文档把命令写成 Claude Code 专有形式——SKILL.md 与 spec §8 现在写明「命令名是约定不是功能」并给出 Kimi（/skill:doc-harness）与其它 agent（自然语言）的调用方式；②文档默认工具带就在项目里——SKILL.md 现在写明工具带在仓库的 tools/（不在 skill 目录内）且可选，并点明缺它时变弱的两件事；另给两版 SKILL.md 补 license: MIT 前置字段（Kimi 官方字段表）
 - 2026-09-18 工具带随 skill 走：已把 tools/ 复制进 skill/tools 与 skill-zh/tools（各 31 个文件），并新增 toolbelt-sync 守卫强制三份逐字节一致（空转检验：改一个字节即报红；复制成嵌套目录也会被它抓出——本轮就抓到一次）；ops-embed 增加「从自己所在 skill 目录找 operational_rules.md」的候选路径，安装态因此可用
 - 2026-09-18 安装态实测：用 skill-zh/tools/record.ps1 驱动一个真实项目——事件成功追加、投影成功生成；ops-embed -Check 能从 skill 目录自身发现操作规则；toolbelt-sync/skill-consistency 在安装态正确 SKIP。本地 ~/.kimi/skills/doc-harness 已更新为含 tools/ 的 v2（41 个文件）
-- (+7 older in events.log)
+- 2026-09-20 处理一个下游项目的来信（《指导者↔被指导者：转达工作方式》v1，无 YAML 头部）：采纳其「支持多语言有四层」判据（含第③层渲染、第④层各写各的），用它扫出并修掉英文文档中全部汉字——README 示例整段改为英文示例、spec 的 CJK 示例与中文括注、check 的输出模板、operational_rules 的四态与 NOW 字段括注；并把它做成会红的守卫「英文文档不得出现 CJK」（保留 README_zh/doc-harness-zh/skill-zh 这类指名中文版的例外），空转检验通过
+- 2026-09-20 英文读者体验补齐：PHILOSOPHY.md 顶部加英文导读＋四条原则一句话摘要（原文仍以中文维护，符合「各写各的」）；README 明确链接的两份中文笔记在顶部标注「以中文维护 + 英文摘要位置」；ops 块已重新嵌入 doc-harness 自身 CLAUDE.md
+- (+9 older in events.log)
 
 ## Dead ends (negative ledger)
 - 可用性收口: 试过把投影做成不落盘、用时现算，但人类可读快照更有价值，故保留落盘+conformance校验

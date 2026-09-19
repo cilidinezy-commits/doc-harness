@@ -119,8 +119,8 @@ Format (as projected):
 
 Rules:
 
-- `unit-id` is a stable, project-chosen identifier (e.g., `F49`, `C/出口对账`). It is referenced by `## NOW`. `[active]` / `[done]` units should carry a source pointer to their evidence.
-- A `unit-id` never contains a space (the parser splits `unit:open <id> <description>` on the first space). **Structure comes free with the id**: write `C/出口对账` and the surface groups it under `#### C`. Flat ids stay valid and render as a flat list — a project can stay flat until it actually branches.
+- `unit-id` is a stable, project-chosen identifier (e.g., `F49`, `shipping/reconcile`). It is referenced by `## NOW`. `[active]` / `[done]` units should carry a source pointer to their evidence.
+- A `unit-id` never contains a space (the parser splits `unit:open <id> <description>` on the first space). **Structure comes free with the id**: write `shipping/reconcile` and the surface groups it under `#### shipping`. Flat ids stay valid and render as a flat list — a project can stay flat until it actually branches.
 - Status markers: `[active]` (frontier), `[future]` (not started), `[done]` (closed; its close event carries the evidence), `[paused]`.
 - Structural changes (new part, reorg, unit moved, unit closed) are **surface mutations** — edit the surface in place; do not append a linear history.
 - Prefer **delta edits** (add/remove/change one unit) over rewriting the whole Work Surface.
@@ -148,15 +148,15 @@ Four placement states:
 
 | State | Meaning | Test |
 |-------|---------|------|
-| **Gate (会红)** | a real guard exists | violation turns something red |
-| **Should-be-gated, unmeasurable (该红·量不到)** | verifiable in principle, but no current instrument can see it | recorded as a named blind spot |
-| **Auto-inject (自动注入)** | cannot be a gate, but must be present every session | lives at the top of CLAUDE.md |
-| **Queryable (可查)** | details and rationale | the current documents |
+| **Gate** | a real guard exists | violation turns something red |
+| **Should-be-gated, unmeasurable** | verifiable in principle, but no current instrument can see it | recorded as a named blind spot |
+| **Auto-inject** | cannot be a gate, but must be present every session | lives at the top of CLAUDE.md |
+| **Queryable** | details and rationale | the current documents |
 
 Placement rule — before writing a discipline, ask **"can a machine SEE this?"** (not just "can it be verified"):
 
 - Yes and instrumentable → make the gate.
-- Yes in principle but no instrument → mark `该红·量不到` (a named blind spot; this is the only way its absence becomes visible).
+- Yes in principle but no instrument → mark it as a **named blind spot** (the only way its absence becomes visible).
 - No → it must live in the auto-inject layer, short enough to actually be read.
 - Queryable-only is an explicit choice that it may be lost.
 
@@ -169,7 +169,7 @@ Placement rule — before writing a discipline, ask **"can a machine SEE this?"*
 
 **Provenance**: every source pointer carries a class — `root` (verifiable at a real data structure / a real run / the code), `decision` (a stated decision), or `reported` (second-hand). A fact with no source, or a source with no class, is flagged. Guards check "does it carry a live root", not "is the root correct". A project that predates this convention migrates once (§5 Schema migration), and then only forward: new events must carry a class.
 
-**Recurrence**: a discipline re-stated is itself a signal. On the **2nd** restatement, force the question "why is this still a remembered rule?" — do not wait for the 3rd. When re-stating, record `第 N 次（上次: <ref>）` and a mandatory **same-shape** field: "which existing discipline is this the same shape as?" (or "new shape — how"). Tools cannot detect shape, but they can force the answer. `check` reports re-stated ≥2 times and still queryable.
+**Recurrence**: a discipline re-stated is itself a signal. On the **2nd** restatement, force the question "why is this still a remembered rule?" — do not wait for the 3rd. When re-stating, record `Nth time (previous: <ref>)` and a mandatory **same-shape** field: "which existing discipline is this the same shape as?" (or "new shape — how"). Tools cannot detect shape, but they can force the answer. `check` reports re-stated ≥2 times and still queryable.
 
 ## 7. Entry Uniqueness
 

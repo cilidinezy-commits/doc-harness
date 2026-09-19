@@ -1,5 +1,9 @@
 # 状态模型：从「三份手工快照」到「一份事件日志 + 投影」
 
+> *Maintained in Chinese (the author's working language). The English summary of the design lives in
+> [`README.md`](../README.md) (Design philosophy) and the normative detail in
+> [`DOC_HARNESS_SPEC.md`](../DOC_HARNESS_SPEC.md).*
+
 ## 问题的最底层表述
 
 当前 v2.0.0 把项目状态记成三份**手工维护**的东西，靠 conformance 拉平：

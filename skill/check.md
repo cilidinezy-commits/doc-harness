@@ -10,7 +10,7 @@ Required: `CLAUDE.md`, `AGENTS.md`, `events.log`, `CURRENT_STATUS.md`, `FILE_IND
 
 ### 1.2 NOW freshness
 
-Read `CURRENT_STATUS.md` `## NOW`'s "Last refreshed" / "最后刷新". Today → ✅; 1–3 days → ⚠️; >3 days → ❌ stale.
+Read `CURRENT_STATUS.md` `## NOW`'s "Refreshed" line. Today → ✅; 1–3 days → ⚠️; >3 days → ❌ stale.
 
 ### 1.3 NOW size and encoding
 
@@ -52,11 +52,11 @@ CLAUDE.md begins with AGENT IDENTITY LOCK + project name + self-test → ✅; el
 
 ### 1.12 Recurrence (written → used)
 
-Scan PHILOSOPHY.md / iron rules / `events.log` for `第 N 次` / `Nth time` markers. For any discipline re-stated **≥2 times** that is still marked queryable (`可查`) or has no layer, report:
+Scan PHILOSOPHY.md / iron rules / `events.log` for `Nth time` markers. For any discipline re-stated **≥2 times** that is still marked queryable or has no layer, report:
 
 ```
-⚠ 这些纪律已被重申 ≥3 次却仍靠记得（可查层）——它们早该是守卫：
-- [discipline] — 第 N 次（上次: <ref>）＋ missing same-shape field?
+⚠ These disciplines have been restated ≥3 times and still rely on being remembered (queryable layer) — they should have been guards:
+- [discipline] — Nth time (previous: <ref>) + missing same-shape field?
 ```
 
 No such markers → ✅.

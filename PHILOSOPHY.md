@@ -1,5 +1,15 @@
 # PHILOSOPHY — Doc Harness
 
+> **English readers**: this document is the author's working record and is maintained in Chinese.
+> The one-line English summary of each principle:
+>
+> 1. **Zoom out before patching** — when a fix keeps failing, step back and ask whether the problem (or the way you verify it) is what you think it is.
+> 2. **The curse of knowledge** — you know what you know; the recipient does not. Assume no shared context, and put the snapshot in the message itself.
+> 3. **Delegate the reading, keep only the conclusion** — a lead agent should not hoard raw text in its context; send a sub-agent to read and return findings.
+> 4. **A repeated failure becomes a guard** — if the same mistake recurs, stop restating the rule: make it something a machine can turn red.
+>
+> Full English summary of the design principles: [`README.md`](README.md) (Design philosophy). Normative rules: [`DOC_HARNESS_SPEC.md`](DOC_HARNESS_SPEC.md) §6.
+
 > 来自实践的原则。由具体工作催生的、可推广的教训。
 > 每条记录：原则陈述、催生它的实践、适用范围、首次记录日期、**层（会红 / 自动注入 / 可查）**。
 > 层规则：能机器验的→会红（做成守卫）；每次都要在场的→自动注入；详情→可查。重申时标 `第 N 次（上次: <ref>）`。

@@ -9,6 +9,11 @@ param([string]$ProjectRoot = '.')
 #   3. SAME NORMATIVE IDENTIFIERS - the facts that must not be translated: every file path with an
 #      extension and every event verb named in one language must be named in the other. (Phrases
 #      with translated placeholders, e.g. a command example, are deliberately out of scope.)
+#   4. NATIVE ENGLISH - the English documents must be written for English readers, not translated
+#      sentence by sentence: no CJK may appear in them. This scan is the mechanically checkable half
+#      of that rule; the other half (examples must be native, not the other edition's examples
+#      carried over) stays a review judgement. Lines that name the Chinese edition are allowed.
+#      (Criterion learned from a sibling project's field report, 2026-09-19.)
 #
 # Skips silently when there is no skill/ + skill-zh/ pair (i.e. in a normal project), so it can sit
 # inside conformance without burdening projects that merely use the skill.
@@ -121,10 +126,25 @@ foreach ($dir in @($en, $zh)) {
     }
 }
 
+# ---------------------------------------------------------------- 4. English documents stay English
+$englishDocs = @(Get-ChildItem -LiteralPath $en -File | ForEach-Object { $_.FullName })
+$readme = Join-Path $root 'README.md'
+if (Test-Path -LiteralPath $readme) { $englishDocs += $readme }
+$cjk = '[\u4e00-\u9fff]'
+$namesChineseEdition = 'README_zh|doc-harness-zh|skill-zh'
+foreach ($file in $englishDocs) {
+    $lines = [System.IO.File]::ReadAllLines($file, [System.Text.Encoding]::UTF8)
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -notmatch $cjk) { continue }
+        if ($lines[$i] -match $namesChineseEdition) { continue }
+        $fail += ("CJK in an English document: {0}:{1}  {2}" -f (Split-Path $file -Leaf), ($i + 1), $lines[$i].Trim())
+    }
+}
+
 # ---------------------------------------------------------------- report
 if ($fail.Count -gt 0) {
     Write-Output ('FAIL: skill docs are inconsistent (' + $fail.Count + ' item(s)):')
     $fail | ForEach-Object { Write-Output ('  ' + $_) }
     exit 1
 }
-Write-Output ('PASS: skill docs consistent - ' + $enNames.Count + ' file pairs; skeletons, normative identifiers and model vocabulary all agree')
+Write-Output ('PASS: skill docs consistent - ' + $enNames.Count + ' file pairs; skeletons, normative identifiers and vocabulary agree; English docs are CJK-free')

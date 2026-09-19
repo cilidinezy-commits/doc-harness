@@ -64,18 +64,18 @@ The design consequence: **the state must be a projection, not a document.** If s
 One line per state change, append-only:
 
 ```
-2026-06-02 plan:set 调研 | 设计 | 实施
-2026-06-02 unit:open C/出口对账 对齐报关行的字段口径
-2026-06-03 unit:activate C/出口对账
-2026-06-05 unit:close C/出口对账 evidence=notes/2026-06-05-对账.md class=root
-2026-06-05 next:set 复核 3 月异常单 blocker=等待业务方确认
-2026-06-05 judgment:set 口径以报关行回执为准 source=notes/2026-06-05-对账.md class=decision
-2026-06-06 dead-end:set 用对账单反推口径：账单本身有 3 天延迟，反推必然错位
+2026-06-02 plan:set research | design | rollout
+2026-06-02 unit:open shipping/reconcile agree the field definitions with the broker
+2026-06-03 unit:activate shipping/reconcile
+2026-06-05 unit:close shipping/reconcile evidence=notes/2026-06-05-reconcile.md class=root
+2026-06-05 next:set review the March exceptions blocker=waiting for the business side
+2026-06-05 judgment:set the broker's receipt is the source of truth source=notes/2026-06-05-reconcile.md class=decision
+2026-06-06 dead-end:set inferring definitions from the statements: they lag by three days, so the inference is always off
 ```
 
 Verbs: `unit:open / unit:activate / unit:close / unit:pause`, `next:set`, `judgment:set`, `read-first:set`, `plan:set`, `dead-end:set`, `note:set`. A line starting with `#` is a comment.
 
-Two details that matter: a unit id may be **hierarchical** (`C/出口对账` groups under part `C`, for free), and closing a unit **requires evidence with a provenance class** (`evidence=<path> class=root|decision|reported`). Recording state costs one line — which is why "I'll write it later" is never an excuse.
+Two details that matter: a unit id may be **hierarchical** (`shipping/reconcile` groups under the part `shipping`, for free), and closing a unit **requires evidence with a provenance class** (`evidence=<path> class=root|decision|reported`). Recording state costs one line — which is why "I'll write it later" is never an excuse.
 
 ### 2. `CURRENT_STATUS.md` — the projection
 
@@ -84,10 +84,10 @@ Generated from the log, **never hand-edited**:
 ```markdown
 ## NOW
 
-- **Active**: C/出口对账
-- **Next**: 复核 3 月异常单 — blocker: 等待业务方确认
-- **Read-first**: notes/2026-06-05-对账.md, CLAUDE.md
-- **Key-judgment**: 口径以报关行回执为准 source=notes/2026-06-05-对账.md class=decision
+- **Active**: shipping/reconcile
+- **Next**: review the March exceptions — blocker: waiting for the business side
+- **Read-first**: notes/2026-06-05-reconcile.md, CLAUDE.md
+- **Key-judgment**: the broker's receipt is the source of truth source=notes/2026-06-05-reconcile.md class=decision
 - **Refreshed**: 2026-06-05
 ```
 
@@ -183,7 +183,7 @@ In an agent session, `/doc-harness` (or "check this project's doc health") shoul
 Day to day you don't need commands — the operational rules are embedded in the project's `CLAUDE.md`, so the agent already knows. With the toolbelt installed, recording state is literally:
 
 ```powershell
-powershell -File tools/record.ps1 -ProjectRoot . -Verb close -Text "C/出口对账 evidence=notes/2026-06-05-对账.md class=root"
+powershell -File tools/record.ps1 -ProjectRoot . -Verb close -Text "shipping/reconcile evidence=notes/2026-06-05-reconcile.md class=root"
 ```
 
 ---
@@ -223,7 +223,7 @@ The short version, with the full text in [PHILOSOPHY.md](PHILOSOPHY.md) and norm
 
 ```
 skill/                English skill: SKILL.md + init/check/sync/flush/recall/resume + spec + ops rules
-skill-zh/             中文版（与 skill/ 一一对应）
+skill-zh/             Chinese skill (mirrors skill/ one-to-one, including its own tools/)
 tools/                Optional deterministic toolbelt (PowerShell) — see tools/README.md
 CLAUDE.md             This project's own entry (Doc Harness manages itself)
 CURRENT_STATUS.md     Generated projection — do not hand-edit
